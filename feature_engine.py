@@ -1,88 +1,77 @@
-# feature_engineering.py
-
-import numpy as np
 import pandas as pd
+import numpy as np
 
-def create_features(df: pd.DataFrame) -> pd.DataFrame:
-    # Copie du DF pour ne pas modifier l'original
-    df = df.copy()
-    
-    #------------------------------
-    # Vérifications de croissance et cohérence temporelle
-    #------------------------------
-    # Ces features supposent l'existence de colonnes 'XXX' et 'XXX_PRVS' pour comparer l'année en cours à l'année précédente
+def transform_dataframe(df):
+    """
+    Transforme un DataFrame en ajoutant de nouvelles colonnes définies par des calculs spécifiques.
+    :param df: Le DataFrame d'entrée contenant les colonnes nécessaires.
+    :return: Le DataFrame modifié avec les nouvelles colonnes ajoutées.
+    """
+    # Vérifie la présence des colonnes avant chaque calcul
+    if {'BREACH_COV', 'COVENANT_STATUS'}.issubset(df.columns):
+        df['breach_covenant_coherence'] = df['BREACH_COV'] == df['COVENANT_STATUS']
 
-    # EBITDA Growth
-    if 'EBITDA' in df.columns and 'EBITDA_PRVS' in df.columns:
-        df['EBITDA_growth'] = np.where(df['EBITDA_PRVS'] != 0,
-                                       (df['EBITDA'] - df['EBITDA_PRVS']) / df['EBITDA_PRVS'].abs(),
-                                       np.nan)
+    if {'OFF_BLNC_SHT_AMNT_INSTRMNT', 'OUTSTNDG_NMNL_AMNT_INSTRMNT'}.issubset(df.columns):
+        df['total_loan_amount'] = df['OFF_BLNC_SHT_AMNT_INSTRMNT'] + df['OUTSTNDG_NMNL_AMNT_INSTRMNT']
 
-    # Equity Growth
-    if 'EQTY' in df.columns and 'EQTY_PRVS' in df.columns:
-        df['EQTY_growth'] = np.where(df['EQTY_PRVS'] != 0,
-                                     (df['EQTY'] - df['EQTY_PRVS']) / df['EQTY_PRVS'].abs(),
-                                     np.nan)
+    if {'Montant_tot_du_prêt', 'TYP_INSTRMNT'}.issubset(df.columns):
+        df['average_loan_ratio'] = df.groupby('TYP_INSTRMNT')['Montant_tot_du_prêt'].transform('mean')
 
-    # Turnover Growth
-    if 'ANNL_TURNR' in df.columns and 'ANNL_TURNR_PRVS' in df.columns:
-        df['TURNOVER_growth'] = np.where(df['ANNL_TURNR_PRVS'] != 0,
-                                         (df['ANNL_TURNR'] - df['ANNL_TURNR_PRVS']) / df['ANNL_TURNR_PRVS'].abs(),
-                                         np.nan)
+    if {'EIR', 'EIR_INCPTN'}.issubset(df.columns):
+        df['interest_rate_diff'] = df['EIR'] - df['EIR_INCPTN']
 
-    # Net Income Growth
-    if 'NT_INCM' in df.columns and 'NT_INCM_PRVS' in df.columns:
-        df['NT_INCM_growth'] = np.where(df['NT_INCM_PRVS'] != 0,
-                                        (df['NT_INCM'] - df['NT_INCM_PRVS']) / df['NT_INCM_PRVS'].abs(),
-                                        np.nan)
+    if 'CSH_SWP_TRP' in df.columns:
+        df['bool_cash_trat_sweet'] = df['CSH_SWP_TRP'].replace(['N/A', np.nan], 'NouvelleCatégorie').astype('category')
 
-    #------------------------------
-    # Cohérence entre variables liées
-    #------------------------------
-    # LVRG_diff = |(GRP_NET_DEBT/EBITDA) - LVRG|
-    if all(col in df.columns for col in ['GRP_NET_DEBT','EBITDA','LVRG']):
-        df['LVRG_diff'] = np.where(df['EBITDA'] != 0,
-                                   np.abs((df['GRP_NET_DEBT'] / df['EBITDA']) - df['LVRG']),
-                                   np.nan)
+    if {'BRCHD_CVNTS', 'CSH_SWP_TRP'}.issubset(df.columns):
+        df['Brchd_cvnts_coherence'] = (
+            (~df['BRCHD_CVNTS'].isin(['No Breach', 'MISS'])) &
+            (~df['CSH_SWP_TRP'].isin(['N', 'N/A']))
+        )
 
-    # ND_consistency = |GRP_TTL_DST - CSH - GRP_NET_DEBT|
-    if all(col in df.columns for col in ['GRP_TTL_DST','CSH','GRP_NET_DEBT']):
-        df['ND_consistency'] = np.abs(df['GRP_TTL_DST'] - df['CSH'] - df['GRP_NET_DEBT'])
+    if {'LTV', 'EIR_INCPTN'}.issubset(df.columns):
+        df['ltv_diff'] = df['LTV'] - df['EIR_INCPTN']
 
-    # DBT_SRVC_RT cohérence avec EBITDA et TTL_INTRST_PD
-    # Implied_DBTSR = EBITDA / TTL_INTRST_PD
-    if all(col in df.columns for col in ['EBITDA','TTL_INTRST_PD','DBT_SRVC_RT']):
-        df['Implied_DBTSR'] = np.where(df['TTL_INTRST_PD'] != 0,
-                                       df['EBITDA'] / df['TTL_INTRST_PD'],
-                                       np.nan)
-        df['DBTSR_diff'] = np.abs(df['DBT_SRVC_RT'] - df['Implied_DBTSR'])
+    if {'PRFRMNG_STTS', 'LTV'}.issubset(df.columns):
+        df['prfmng_stts_coherence'] = (df['PRFRMNG_STTS'] == 1) & (df['LTV'] > 100)
 
-    #------------------------------
-    # Flags pour valeurs négatives anormales
-    #------------------------------
-    if 'EBITDA' in df.columns:
-        df['EBITDA_negative_flag'] = (df['EBITDA'] < 0).astype(int)
+    if {'DT_RFRCNC', 'DT_INCPTN'}.issubset(df.columns):
+        df['difference_days'] = (pd.to_datetime(df['DT_RFRCNC']) - pd.to_datetime(df['DT_INCPTN'])).dt.days
 
-    if 'EQTY' in df.columns:
-        df['EQTY_negative_flag'] = (df['EQTY'] < 0).astype(int)
+    if {'EBITDA', 'EBITDA_PRVS'}.issubset(df.columns):
+        df['ebitda_diff'] = df['EBITDA'] - df['EBITDA_PRVS']
 
-    if 'CSH' in df.columns:
-        df['CSH_negative_flag'] = (df['CSH'] < 0).astype(int)
+    if {'EBITDA', 'EBITDA_PRVS', 'GRP_EBITDA'}.issubset(df.columns):
+        df['ebitda_diff_ratio'] = (df['EBITDA'] - df['EBITDA_PRVS']) / df['GRP_EBITDA']
 
-    #------------------------------
-    # Vous pouvez ajouter d'autres features de data quality ici
-    # par exemple, check des valeurs extrêmes, outliers, etc.
-    #------------------------------
+    if {'CSH', 'CSH_PRVS'}.issubset(df.columns):
+        df['cash_diff'] = df['CSH'] - df['CSH_PRVS']
+
+    if {'TTL_DBT', 'TTL_DBT_PRVS'}.issubset(df.columns):
+        df['ttl_dbt_diff'] = df['TTL_DBT'] - df['TTL_DBT_PRVS']
+
+    if {'NT_INCM', 'NT_INCM_PRVS'}.issubset(df.columns):
+        df['nt_incm_diff'] = df['NT_INCM'] - df['NT_INCM_PRVS']
+
+    if {'LVRG', 'LVRG_PRVS'}.issubset(df.columns):
+        df['lvrg_diff'] = df['LVRG'] - df['LVRG_PRVS']
+
+    if {'TTL_DBT', 'CSH', 'EBITDA'}.issubset(df.columns):
+        df['lvrg_theorical_deviation'] = (df['TTL_DBT'] - df['CSH']) / df['EBITDA']
+
+    if {'EBITDA', 'TTL_INTRST_PD'}.issubset(df.columns):
+        df['interest_coverage_ratio'] = df['EBITDA'] / df['TTL_INTRST_PD']
+
+    if {'GRP_EBITDA', 'EBITDA'}.issubset(df.columns):
+        df['coherence_ebitda'] = df['GRP_EBITDA'] / df['EBITDA'] > 0
+
+    if {'GRP_EQTY', 'EQTY'}.issubset(df.columns):
+        df['coherence_eqty'] = df['GRP_EQTY'] / df['EQTY'] > 0
+
+    if {'GRP_NT_DBT', 'NT_DBT'}.issubset(df.columns):
+        df['coherence_nt_debt'] = df['GRP_NT_DBT'] / df['NT_DBT'] > 0
+
+    if {'GRP_TTL_DBT', 'TTL_DBT'}.issubset(df.columns):
+        df['coherence_ttl_debt'] = df['GRP_TTL_DBT'] / df['TTL_DBT'] > 0
 
     return df
-
-
-# Dans votre notebook Jupyter
-import pandas as pd
-from feature_engineering import create_features
-
-# Supposons que votre DataFrame s'appelle df
-df_enriched = create_features(df)
-
-# Maintenant df_enriched contient les nouvelles colonnes dérivées
-df_enriched.head()
