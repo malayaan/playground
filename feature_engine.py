@@ -1,23 +1,22 @@
-import pandas as pd
-import numpy as np
+import requests
 
-# Exemple de DataFrame
-data = {
-    'col1': [1, 2, 2, 4, 5],  # Numérique
-    'col2': ['A', 'B', 'A', 'C', 'C'],  # Catégorielle
-    'col3': ['X', np.nan, 'Y', 'X', 'Z'],  # Catégorielle
-    'col4': [1.1, 2.2, 3.3, 4.4, 5.5],  # Numérique
-    'col5': ['A', 'A', 'B', 'B', 'C'],  # Catégorielle
-}
-df = pd.DataFrame(data)
+# Fonction pour obtenir le taux de change d'une devise à une date donnée
+def get_exchange_rate(date, devise):
+    api_url = f"https://api.exchangerate.host/{date}"
+    response = requests.get(api_url)
+    if response.status_code == 200:
+        rates = response.json().get('rates', {})
+        return rates.get(devise, None)  # Retourne le taux pour la devise
+    else:
+        return None
 
-# Définir les colonnes catégorielles en fonction de nunique
-categorical_columns = [col for col in df.columns if df[col].nunique() < 30]
+# Exemple : Récupérer les taux pour chaque ligne du DataFrame
+def fetch_exchange_rates(row):
+    return get_exchange_rate(row['date'].strftime('%Y-%m-%d'), row['devis'])
 
-# Afficher les colonnes catégorielles détectées
-print("Colonnes catégorielles détectées :")
-print(categorical_columns)
+df['taux'] = df.apply(fetch_exchange_rates, axis=1)
 
-# Exemple : traitement des colonnes catégorielles détectées
-for column in categorical_columns:
-    print(f"Colonne '{column}' : {df[column].unique()}")
+# Calculer les montants convertis
+df['montant_converti'] = df['montant'] * df['taux']
+
+print(df)
