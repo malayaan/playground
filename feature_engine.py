@@ -1,116 +1,68 @@
-Ci-dessous une proposition de classification de chaque contrôle en fonction de son impact réglementaire (IFRS9, exigences BCE, etc.), de l’importance des variables (EIR, IFRS9_COT, statuts de défaut), et de la gravité des conséquences en cas d’absence ou d’incohérence. Les catégories sont :
+Voici une proposition de classification en tenant compte à la fois de la logique réglementaire (IFRS9, calculs prudentiels) et de l’importance opérationnelle. Les variables négatives sont souvent un indicateur de saisie incorrecte, surtout si ces champs sont censés représenter des montants financiers (capitaux, dettes, encours, etc.) qui ne peuvent être négatifs dans le contexte. Le niveau de criticité dépendra principalement de l’utilisation de ces données dans des calculs réglementaires (IFRS9, estimations d’exposition, off-balance calculation).
 
-Critique (poids 10) : Affecte directement la conformité réglementaire (IFRS9, classification, EIR en défaut, off-balance crucial)
+Logique de classification :
 
-Majeur (poids 5) : Cohérence interne de données importantes pour l’analyse du risque, sans être une exigence réglementaire absolue
+Critique (poids 10) : Champs directement utilisés dans le cadre d’IFRS9, du calcul des expositions (EAD), de la classification hors-bilan, ou ayant un impact fort sur la conformité réglementaire. Des valeurs négatives dans ces champs peuvent fausser les calculs prudentiels ou IFRS9, ce qui est inacceptable.
 
-Mineur (poids 1) : Informations complémentaires, cohérences secondaires, non essentielles à la conformité réglementaire ou au calcul prudentiel
+Majeur (poids 5) : Champs financiers importants pour l’analyse du risque (capital, dette nette, chiffre d’affaires débiteur) mais pas directement IFRS9. Des montants négatifs y sont incohérents, mais l’impact est plus sur la qualité interne de l’analyse crédit que sur la conformité réglementaire stricte.
 
-
-Hypothèses générales :
-
-Toute incohérence ou absence touchant directement IFRS9 (classification, provisioning, off-balance, EIR sur prêts en défaut) est Critique.
-
-Les incohérences sur les statuts internes (développement, construction) ou sur la présence de protections (collatéral) sont importantes, mais moins critiques que l’absence de champs IFRS9, donc Majeur.
-
-Les points de détail non directement liés aux règles de classification réglementaire ou à une exigence forte sont Mineurs.
+Mineur (poids 1) : Champs moins critiques réglementairement, où un montant négatif est surtout un problème de saisie ou d’interprétation interne, avec peu d’impact sur les calculs prudentiels ou IFRS9.
 
 
-Classification ligne par ligne (d’après la logique des contrôles décrits) :
+Analyse des champs :
 
-1. (EIR=NULL et NPMNT_STTS=25) : Prêt en défaut sans EIR effectif. Absence d’EIR sur un prêt en défaut (stade 3 IFRS9) est une non-conformité majeure réglementaire.
-Critique (10)
-
-
-2. Contrats avec un CCF ≠ 0% sur des lignes hors-bilan : Le CCF impacte le calcul des expositions pondérées en risque (RWA) et IFRS9. Mauvaise classification = souci réglementaire.
-Critique (10)
+1. EQTY_PRVS<0 (T-1 capital)
+Le capital (equity) est important pour évaluer la solidité financière d’un emprunteur, mais n’est pas directement un champ IFRS9. Des capitaux négatifs sont anormaux mais impactent surtout l’analyse du risque et la cohérence des données financières internes.
+Catégorie : Majeur (5)
 
 
-3. Contrôle sur l’IFRS9, RWA MFN=2, standard method : Implication sur le calcul prudentiel et IFRS9.
-Critique (10)
+2. EQTY<0 (capital)
+Même raisonnement que ci-dessus. Le capital négatif est très inhabituel, cela indique une anomalie de saisie ou une situation extrême. Ce n’est pas directement un champ IFRS9, mais un tel défaut fausse la vision du risque.
+Catégorie : Majeur (5)
 
 
-4. IFRS9 classification off-balance incohérente ou manquante : IFRS9 est une norme comptable réglementaire clé.
-Critique (10)
+3. GRP_NT_DBT<0 (financial debt)
+La dette nette négative (ce qui impliquerait plus de cash que de dette, ou une mauvaise saisie) n’est pas impossible dans certains contextes, mais demeure rare et incohérente si utilisée dans l’évaluation du risque. Ce n’est pas un champ IFRS9 direct, mais une incohérence financière importante.
+Catégorie : Majeur (5)
 
 
-5. Incohérence IFRS9 vs NPMNT_STTS : L’état de paiement (défaut, stade 2, 3) doit être cohérent avec IFRS9.
-Critique (10)
+4. ANNL_TRNVR_LE<0 (debtor turnover)
+Un chiffre d’affaires négatif est clairement une anomalie de données (sauf situations très particulières). Si le turnover n’est pas un champ critique pour IFRS9, cela reste important pour l’analyse du risque. Toutefois, l’impact réglementaire est moindre.
+Catégorie : Majeur (5)
 
 
-6. DVLPYMT_STTS et CNSTCTN_STTS incohérence : Affecte la cohérence des données opérationnelles, pas directement IFRS9.
-Majeur (5)
+5. ANNL_TRNVR_PRVS<0 (debtor T-1 turnover)
+Idem que ci-dessus, c’est une donnée importante pour comprendre l’évolution du client, mais pas forcément IFRS9.
+Catégorie : Majeur (5)
 
 
-7. TYPE_PRCTN (type de protection) vs DVLPYMT_STTS / CNSTCTN_STTS : Protection incohérente avec le stade de développement. Important pour l’analyse du risque, mais pas IFRS9 strict.
-Majeur (5)
+6. OFF_BLNC_SHT_AMNT_INSTRMNT<0 (Off-balance sheet amount)
+Les montants hors-bilan peuvent être utilisés dans le calcul de l’exposition au risque et dans IFRS9 (potentiellement via le CCF, Exposure At Default, etc.). Un montant négatif hors-bilan est une anomalie susceptible de fausser le calcul d’exposition, donc criticité élevée.
+Catégorie : Critique (10)
 
 
-8. Variations sur DVLPYMT_STTS / CNSTCTN_STTS : Cohérence interne, pas de mention IFRS9.
-Majeur (5)
+7. OFF_BLNC_SHT_AMNT_INSTRMNT_PRVS<0 (Previous off-balance sheet amount)
+Même logique que ci-dessus. Si la valeur précédente hors-bilan est négative, cela fausse potentiellement le suivi temporel des expositions.
+Catégorie : Critique (10)
 
 
-9. Autre incohérence DVLPYMT_STTS / CNSTCTN_STTS
-Majeur (5)
+8. OTSTNDNG_MNNL_AMNT_INSTRMNT<0 (Outstanding gross nominal amount)
+Le montant nominal en cours est généralement une donnée clé pour IFRS9 (ECL, staging, exposition au défaut). Un montant négatif est incompatible avec les calculs prudents.
+Catégorie : Critique (10)
 
 
-10. Encore une incohérence sur statuts internes
-Majeur (5)
+9. OTSTNDNG_MNNL_AMNT_INSTRMNT_PRVS<0 (Previous outstanding gross nominal amount)
+Même raisonnement que ci-dessus : historique d’encours négatif, problème critique du point de vue du suivi et du calcul IFRS9.
+Catégorie : Critique (10)
 
 
-11. TYPE_PRCTN et statuts internes (DVLPYMT, CNSTCTN)
-Majeur (5)
-
-
-12. Absence de protection réelle (cohérence entre champs) : Important pour l’estimation du risque mais pas nécessairement IFRS9 direct.
-Majeur (5)
-
-
-13. Incohérence sur un statut de paiement non clairement IFRS9 ? : Sans info contraire, semble interne.
-Majeur (5)
-
-
-14. Contrôle sur un champ annexe (Yearly express, etc.) sans lien direct IFRS9
-Majeur (5) ou Mineur (1) selon l’impact. S’il n’y a aucun lien réglementaire, on privilégiera Mineur.
-Mineur (1)
-
-
-15. Plan d’amortissement non configuré correctement, sans lien IFRS9 direct
-Mineur (1)
-
-
-16. Non-provisionnement IFRS9 d’un contrat : Provision IFRS9 manquante est une non-conformité majeure.
-Critique (10)
-
-
-17. Distinction instruments FV P&L ou Held for Trading IFRS9 : Classification IFRS9 incorrecte.
-Critique (10)
-
-
-18. Collatéral / Méthode d’évaluation pratique non conforme IFRS9 ? : La valorisation correcte du collatéral est clé dans IFRS9 (ECL).
-Si ce contrôle identifie l’absence d’évaluation conforme, c’est critique.
-Critique (10)
-
-
-19. Absence de méthode d’évaluation externe (expert) si exigé par IFRS9 : L’évaluation des actifs financiers doit suivre IFRS9.
-Critique (10)
-
-
-20. Off Balance mais IFRS9_COT non applicable ou manquant : IFRS9 classification manquante.
-Critique (10)
-
-
-
-(Si le fichier contient plus de 20 lignes, appliquer la même logique. Les champs strictement IFRS9 ou réglementaires sont Critiques, la cohérence interne du cycle de vie du prêt est Majeure, les détails de format ou non réglementaires sont Mineurs.)
 
 Récapitulatif :
 
-Critique (poids 10) : Lignes 1, 2, 3, 4, 5, 16, 17, 18, 19, 20
+Critique (10) : Données hors-bilan (I104, I105) et encours nominal (I114, I115) négatives, car impact direct potentiel sur IFRS9 et le calcul des expositions.
 
-Majeur (poids 5) : Lignes 6, 7, 8, 9, 10, 11, 12, 13
-
-Mineur (poids 1) : Lignes 14, 15
+Majeur (5) : Capital (EQTY, EQTY_PRVS), dette nette (GRP_NT_DBT) et chiffre d’affaires (ANNL_TRNVR_LE, ANNL_TRNVR_PRVS), importants pour l’analyse du risque, mais pas directement IFRS9. Des valeurs négatives faussent l’analyse du profil de risque, sans pour autant toucher immédiatement la classification réglementaire.
 
 
-Ainsi, on obtient un classement clair qui reflète la priorité d’action : corriger en premier les contrôles Critiques (affectant IFRS9, EIR défaut, provisionnement, classification), ensuite les Majeurs (cohérence interne des statuts), et enfin les Mineurs (détails de paramétrage interne ou formatage).
+Aucune ligne n’est classée en Mineur ici, car toutes ces variables représentent des données financières fondamentales. Même si elles ne sont pas toutes IFRS9, elles restent cruciales pour la compréhension du risque et la cohérence interne des données.
 
