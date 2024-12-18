@@ -1,68 +1,86 @@
-Voici une proposition de classification en tenant compte à la fois de la logique réglementaire (IFRS9, calculs prudentiels) et de l’importance opérationnelle. Les variables négatives sont souvent un indicateur de saisie incorrecte, surtout si ces champs sont censés représenter des montants financiers (capitaux, dettes, encours, etc.) qui ne peuvent être négatifs dans le contexte. Le niveau de criticité dépendra principalement de l’utilisation de ces données dans des calculs réglementaires (IFRS9, estimations d’exposition, off-balance calculation).
+Avec l’arrivée de la métrique métier et l’ensemble des analyses déjà réalisées, vous pouvez désormais fournir des résultats qui vont au-delà de la simple détection statistique d’anomalies. L’objectif est de livrer des outputs actionnables, qui réconcilient les priorités métier, la criticité réglementaire et les constats de la data science. Voici quelques pistes :
 
-Logique de classification :
+1. Un tableau de priorisation des anomalies
 
-Critique (poids 10) : Champs directement utilisés dans le cadre d’IFRS9, du calcul des expositions (EAD), de la classification hors-bilan, ou ayant un impact fort sur la conformité réglementaire. Des valeurs négatives dans ces champs peuvent fausser les calculs prudentiels ou IFRS9, ce qui est inacceptable.
+Contenu : Une liste des contrats/observations présentant les plus grosses lacunes, accompagnée pour chacun :
 
-Majeur (poids 5) : Champs financiers importants pour l’analyse du risque (capital, dette nette, chiffre d’affaires débiteur) mais pas directement IFRS9. Des montants négatifs y sont incohérents, mais l’impact est plus sur la qualité interne de l’analyse crédit que sur la conformité réglementaire stricte.
+Du score d’anomalie statistique (issu de l’Isolation Forest).
 
-Mineur (poids 1) : Champs moins critiques réglementairement, où un montant négatif est surtout un problème de saisie ou d’interprétation interne, avec peu d’impact sur les calculs prudentiels ou IFRS9.
+Du score métier (pondération des règles et importance réglementaire).
 
-
-Analyse des champs :
-
-1. EQTY_PRVS<0 (T-1 capital)
-Le capital (equity) est important pour évaluer la solidité financière d’un emprunteur, mais n’est pas directement un champ IFRS9. Des capitaux négatifs sont anormaux mais impactent surtout l’analyse du risque et la cohérence des données financières internes.
-Catégorie : Majeur (5)
+De l’identification des variables clés responsables de l’anomalie.
 
 
-2. EQTY<0 (capital)
-Même raisonnement que ci-dessus. Le capital négatif est très inhabituel, cela indique une anomalie de saisie ou une situation extrême. Ce n’est pas directement un champ IFRS9, mais un tel défaut fausse la vision du risque.
-Catégorie : Majeur (5)
+Impact : Ce tableau permettra au métier de voir immédiatement où concentrer les efforts de correction. Vous montrez ainsi comment vos outils techniques se traduisent en actions concrètes. Les lignes en tête de liste seront celles qui combinent forte anomalie statistique ET fort impact métier, garantissant une correction prioritaire.
 
 
-3. GRP_NT_DBT<0 (financial debt)
-La dette nette négative (ce qui impliquerait plus de cash que de dette, ou une mauvaise saisie) n’est pas impossible dans certains contextes, mais demeure rare et incohérente si utilisée dans l’évaluation du risque. Ce n’est pas un champ IFRS9 direct, mais une incohérence financière importante.
-Catégorie : Majeur (5)
+2. Un rapport synthétique sur les variables et contrôles à fort enjeu
+
+Contenu : Un classement global des variables les plus problématiques, basé sur la combinaison du score métier et de l’analyse des chemins d’isolation. Pour chaque variable :
+
+Son rôle (IFRS9, EIR, statuts de défaut…)
+
+La nature des problèmes rencontrés (valeurs extrêmes, incohérences récurrentes).
 
 
-4. ANNL_TRNVR_LE<0 (debtor turnover)
-Un chiffre d’affaires négatif est clairement une anomalie de données (sauf situations très particulières). Si le turnover n’est pas un champ critique pour IFRS9, cela reste important pour l’analyse du risque. Toutefois, l’impact réglementaire est moindre.
-Catégorie : Majeur (5)
+Impact : Au lieu de simplement dire « il y a des anomalies », vous montrez quelles variables sont souvent en cause et expliquent pourquoi. Cela aide à cibler les actions correctives sur les champs stratégiques (ex. IFRS9_COT, EIR pour défaut, etc.).
 
 
-5. ANNL_TRNVR_PRVS<0 (debtor T-1 turnover)
-Idem que ci-dessus, c’est une donnée importante pour comprendre l’évolution du client, mais pas forcément IFRS9.
-Catégorie : Majeur (5)
+3. Des exemples concrets illustrés
+
+Contenu : Présenter 2-3 cas réels, typiques des problèmes rencontrés, avec :
+
+La ligne de données avant correction,
+
+Les principales variables fautives mises en évidence,
+
+L’écart entre la valeur rencontrée et la valeur attendue (moyenne du dataset, seuil IFRS9, etc.),
+
+L’explication métier (par exemple : « Ce contrat n’a pas d’EIR alors qu’il est en défaut stade 3, ce qui est contraire aux normes IFRS9 »).
 
 
-6. OFF_BLNC_SHT_AMNT_INSTRMNT<0 (Off-balance sheet amount)
-Les montants hors-bilan peuvent être utilisés dans le calcul de l’exposition au risque et dans IFRS9 (potentiellement via le CCF, Exposure At Default, etc.). Un montant négatif hors-bilan est une anomalie susceptible de fausser le calcul d’exposition, donc criticité élevée.
-Catégorie : Critique (10)
+Impact : Ces exemples ancrent les analyses dans le concret, facilitent la compréhension pour les décisionnaires et montrent la valeur ajoutée de la démarche.
 
 
-7. OFF_BLNC_SHT_AMNT_INSTRMNT_PRVS<0 (Previous off-balance sheet amount)
-Même logique que ci-dessus. Si la valeur précédente hors-bilan est négative, cela fausse potentiellement le suivi temporel des expositions.
-Catégorie : Critique (10)
+4. Des indicateurs de suivi et d’amélioration
+
+Contenu : Proposer un « data quality score » global, intégrant la métrique métier, que vous recalculerez régulièrement.
+
+Impact : Ce score permettra de mesurer l’évolution de la qualité de la loan tape dans le temps, et de montrer les progrès réalisés après mise en œuvre des corrections. Un KPI clair qui donne du sens aux efforts d’amélioration.
 
 
-8. OTSTNDNG_MNNL_AMNT_INSTRMNT<0 (Outstanding gross nominal amount)
-Le montant nominal en cours est généralement une donnée clé pour IFRS9 (ECL, staging, exposition au défaut). Un montant négatif est incompatible avec les calculs prudents.
-Catégorie : Critique (10)
+5. Des recommandations opérationnelles
+
+Contenu : Sur la base des anomalies détectées et de leur criticité, formuler des recommandations ciblées :
+
+Ajuster ou renforcer certains contrôles internes,
+
+Mettre en place une formation à destination des équipes en charge de la saisie de données,
+
+Corriger en priorité les variables IFRS9 critiques avant la prochaine extraction réglementaire.
 
 
-9. OTSTNDNG_MNNL_AMNT_INSTRMNT_PRVS<0 (Previous outstanding gross nominal amount)
-Même raisonnement que ci-dessus : historique d’encours négatif, problème critique du point de vue du suivi et du calcul IFRS9.
-Catégorie : Critique (10)
+Impact : Ces recommandations vont aider le management à passer de la détection à l’action, en priorisant des mesures concrètes à court terme (ex. nettoyer les données pour les top anomalies identifiées) et à moyen terme (ex. améliorer le processus de collecte des données pour éviter la réapparition des mêmes erreurs).
+
+
+6. Un support visuel et synthétique pour la direction
+
+Contenu : Un dashboard ou un slide résumant :
+
+Le nombre total d’anomalies détectées,
+
+Le pourcentage d’anomalies jugées critiques selon la métrique métier,
+
+Le top 5 des variables les plus souvent en cause,
+
+Les progrès attendus après corrections.
+
+
+Impact : La direction aura une vision d’ensemble, immédiatement lisible, des problèmes et des efforts prioritaires. Cela favorise un engagement décisionnel plus rapide et plus efficace.
 
 
 
-Récapitulatif :
+---
 
-Critique (10) : Données hors-bilan (I104, I105) et encours nominal (I114, I115) négatives, car impact direct potentiel sur IFRS9 et le calcul des expositions.
-
-Majeur (5) : Capital (EQTY, EQTY_PRVS), dette nette (GRP_NT_DBT) et chiffre d’affaires (ANNL_TRNVR_LE, ANNL_TRNVR_PRVS), importants pour l’analyse du risque, mais pas directement IFRS9. Des valeurs négatives faussent l’analyse du profil de risque, sans pour autant toucher immédiatement la classification réglementaire.
-
-
-Aucune ligne n’est classée en Mineur ici, car toutes ces variables représentent des données financières fondamentales. Même si elles ne sont pas toutes IFRS9, elles restent cruciales pour la compréhension du risque et la cohérence interne des données.
+En somme, vous pouvez désormais produire un livrable complet et impactant, mêlant scores de détection, priorités métier, illustrations concrètes, métriques de suivi et recommandations actionnables. Ce n’est plus un simple diagnostic statistique, mais un véritable outil d’aide à la décision, appuyé sur des cas concrets et aligné avec les enjeux réglementaires et opérationnels. Ce type de livrable aura un impact maximal auprès du management et des équipes en charge de la qualité des données.
 
