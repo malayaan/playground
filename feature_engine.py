@@ -11,7 +11,7 @@ Pour prolonger la magie des fêtes, je propose également d’organiser une acti
 ⚽ Un match de foot
 🪂 Du parapente
 🧗 De l’escalade
-💃 Une séance de danse
+🏋️‍♀️ Une séance de gym ou fitness
 
 👉 Je vous invite à voter pour votre activité préférée via ce sondage : [insérer lien sondage]
 
