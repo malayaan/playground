@@ -10,6 +10,9 @@ LongTapeRiskValues = pd.DataFrame(index=loan_tape.index, columns=control_names)
 
 # Étape 2 : Fonction pour traiter une ligne individuelle
 def process_row(index, row):
+    # Simuler un délai pour tester la progression
+    time.sleep(0.1)  # Facultatif : Retirer dans le code final
+
     # Initialiser les valeurs pour la ligne
     single_row_df = loan_tape.loc[[index]]
 
@@ -35,25 +38,21 @@ def process_row(index, row):
     return anomaly_values, risk_values
 
 # Étape 3 : Intégration de tqdm pour afficher la progression
-# Créer une barre de progression personnalisée
-def tqdm_joblib(tqdm_object):
-    """Wrap `tqdm` instance for joblib.Parallel."""
-    class TqdmBatchCompletionCallback:
-        def __init__(self, tqdm_object):
-            self.tqdm_object = tqdm_object
-            self.tqdm_object.total = tqdm_object.total
+def tqdm_parallel(iterable, func, n_jobs=-1, backend="loky"):
+    """Wrapper pour intégrer tqdm à joblib.Parallel."""
+    with tqdm(total=len(iterable)) as pbar:
+        def tqdm_update(*args):
+            pbar.update()
+        results = Parallel(n_jobs=n_jobs, backend=backend)(
+            delayed(func)(*item) for item in iterable
+        )
+    return results
 
-        def __call__(self, *args, **kwargs):
-            self.tqdm_object.update(n=1)
+# Étape 4 : Préparer les données pour joblib et tqdm
+iterable = [(index, row) for index, row in loan_tape.iterrows()]
 
-    return TqdmBatchCompletionCallback(tqdm_object)
-
-# Étape 4 : Lancer les calculs parallèles avec tqdm
-with tqdm(total=len(loan_tape), desc="Traitement des lignes", unit="ligne") as progress_bar:
-    results = Parallel(n_jobs=-1, backend="loky", verbose=0)(
-        delayed(process_row)(index, row)
-        for index, row in loan_tape.iterrows()
-    )
+# Lancer le traitement avec tqdm et joblib
+results = tqdm_parallel(iterable, process_row)
 
 # Étape 5 : Stocker les résultats dans les DataFrames
 for idx, (anomaly_values, risk_values) in enumerate(results):
