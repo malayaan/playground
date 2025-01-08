@@ -1,31 +1,22 @@
-Voici une version concise et percutante de l'analyse :
-
-
----
-
-Analyse des résultats :
+Analyse concise des résultats :
 
 1. Limites des règles actuelles :
 
-Les règles métiers sur-priorisent certains champs (CNSTRCTN_STTS, DVLPMNT_STTS) mais passent à côté d'autres champs critiques identifiés par le modèle (PRCTN_VL, DT_ORGN_MRTY, EIR).
+Les règles se concentrent sur CNSTRCTN_STTS et DVLPMNT_STTS, mais ces champs ne sont pas prioritaires selon le modèle.
 
-Elles manquent de flexibilité pour capter les anomalies complexes ou corrélées entre plusieurs champs.
+Des champs critiques comme EIR_INCPN, DT_ORGN_MRTY, et PRCTN_VL sont révélés par le modèle mais sous-évalués par les règles.
 
 
 
 2. Zones d'ombre révélées par le modèle :
 
-Des champs comme PRCTN_VL et DT_ORGN_MRTY, peu présents dans les contrôles, apparaissent comme problématiques majeurs dans le modèle.
-
-Le modèle met également en avant des champs connus (EIR, OFF_BLNC_SHT_AMNT_INSTRMNT) avec une criticité accrue, révélant des problèmes sous-évalués par les règles.
+Le modèle identifie des problèmes complexes ou corrélés que les règles ne captent pas, comme pour OFF_BLNC_SHT_AMNT_INSTRMNT, qui est important dans les deux approches mais avec des priorités différentes.
 
 
 
-3. Conclusion pratique :
+3. Recommandation :
 
-Le modèle complète les règles en identifiant des champs non couverts et en hiérarchisant différemment les priorités.
-
-Une approche combinée (modèle + règles) permettrait une couverture plus exhaustive des problèmes et une allocation optimale des efforts.
+Adapter les règles pour intégrer les champs identifiés par le modèle et réduire la sur-priorisation des champs moins critiques.
 
 
 
@@ -33,5 +24,5 @@ Une approche combinée (modèle + règles) permettrait une couverture plus exhau
 
 ---
 
-Cette synthèse met en avant les principaux insights de façon concise et lisible.
+Ce résumé met en évidence les écarts principaux et propose une action claire.
 
