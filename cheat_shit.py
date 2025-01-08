@@ -1,60 +1,83 @@
-import matplotlib.pyplot as plt
-import seaborn as sns
+Description professionnelle de la démarche
 
-# Étape 1.1 : Calculer les scores globaux pour les features
-# Somme et moyenne des poids
-feature_scores = features_csv.sum(axis=0).reset_index()
-feature_scores.columns = ['Feature', 'Total_Weight']
-feature_scores['Average_Weight'] = features_csv.mean(axis=0).values
+Objectif
 
-# Ajouter une métrique combinée : Score d'importance (Total * Moyenne)
-feature_scores['Impact_Score'] = feature_scores['Total_Weight'] * feature_scores['Average_Weight']
+La démarche vise à identifier de manière systématique les features et les contrôles présentant le plus fort enjeu en termes de qualité des données dans la Loan Tape. L’objectif est d’orienter les efforts vers les zones critiques pour renforcer la pertinence des analyses, optimiser la gestion des anomalies, et proposer des priorités claires pour la remédiation.
 
-# Trier les features par Impact Score
-feature_scores = feature_scores.sort_values(by='Impact_Score', ascending=False)
 
-# Étape 1.2 : Calculer les scores globaux pour les contrôles
-# Somme et moyenne des poids
-control_scores = controles_csv.sum(axis=0).reset_index()
-control_scores.columns = ['Control', 'Total_Weight']
-control_scores['Average_Weight'] = controles_csv.mean(axis=0).values
+---
 
-# Ajouter une métrique combinée : Score d'importance (Total * Moyenne)
-control_scores['Impact_Score'] = control_scores['Total_Weight'] * control_scores['Average_Weight']
+Étape 1 : Identification des features et contrôles à fort enjeu
 
-# Trier les contrôles par Impact Score
-control_scores = control_scores.sort_values(by='Impact_Score', ascending=False)
+Cette première étape consiste à évaluer l’impact global des features et des contrôles grâce à des métriques consolidées.
 
-# Afficher les résultats sous forme de tableau
-print("Top 10 Features les plus problématiques :")
-print(feature_scores[['Feature', 'Total_Weight', 'Average_Weight', 'Impact_Score']].head(10))
+Pour chaque feature et contrôle, nous calculons :
 
-print("\nTop 10 Contrôles les plus problématiques :")
-print(control_scores[['Control', 'Total_Weight', 'Average_Weight', 'Impact_Score']].head(10))
+Poids total (Total Weight) : Reflète l’importance cumulative sur l’ensemble des lignes.
 
-# Étape 1.3 : Visualiser les résultats
-# Top 10 Features
-plt.figure(figsize=(12, 6))
-sns.barplot(
-    data=feature_scores.head(10),
-    x='Impact_Score',
-    y='Feature',
-    palette='Blues_d'
-)
-plt.title("Top 10 Features les Plus Problématiques (Impact Score)")
-plt.xlabel("Impact Score (Total Weight x Average Weight)")
-plt.ylabel("Feature")
-plt.show()
+Poids moyen (Average Weight) : Mesure la récurrence des anomalies associées.
 
-# Top 10 Contrôles
-plt.figure(figsize=(12, 6))
-sns.barplot(
-    data=control_scores.head(10),
-    x='Impact_Score',
-    y='Control',
-    palette='Reds_d'
-)
-plt.title("Top 10 Contrôles les Plus Problématiques (Impact Score)")
-plt.xlabel("Impact Score (Total Weight x Average Weight)")
-plt.ylabel("Control")
-plt.show()
+Score d’impact (Impact Score) : Combine les deux métriques précédentes pour identifier les éléments à la fois critiques et récurrents.
+
+
+Les résultats sont ensuite classés par ordre décroissant d’importance, permettant de prioriser les efforts sur les 10 features et contrôles les plus problématiques.
+
+
+Étape 2 : Relier les features aux champs originaux
+
+Une fois les features critiques identifiées, cette étape permet d’analyser leur origine dans la Loan Tape :
+
+Les features sont reliées à leurs champs d’origine grâce à un dictionnaire métier.
+
+La fréquence d’utilisation des champs originaux est calculée, mettant en évidence les champs les plus impliqués dans la génération des anomalies.
+
+Cela permet de localiser précisément les zones de vulnérabilité dans les données brutes.
+
+
+
+---
+
+Étape 3 : Synthèse et visualisation
+
+Tableaux analytiques :
+
+Une vue synthétique des 10 features et contrôles à fort enjeu, avec leurs poids totaux, poids moyens, et scores d’impact.
+
+
+Visualisations :
+
+Graphiques en barres pour illustrer les éléments les plus problématiques et leur score d’impact.
+
+Une heatmap pour analyser les champs originaux les plus associés aux anomalies.
+
+
+
+
+---
+
+Résultats attendus
+
+1. Identification prioritaire des zones critiques : Une hiérarchisation claire des features et contrôles problématiques, facilitant une allocation optimale des ressources pour la remédiation.
+
+
+2. Analyse fine des origines : Une compréhension approfondie des champs initiaux contribuant aux anomalies, permettant d’adresser les causes à la source.
+
+
+3. Outil d’aide à la décision : Des métriques consolidées et visuelles pour communiquer efficacement avec les parties prenantes métiers et techniques.
+
+
+
+
+---
+
+Valeur ajoutée
+
+Précision : L’approche combine des données analytiques (scores d’impact) et une contextualisation métier (champs originaux) pour maximiser la pertinence des résultats.
+
+Actionnable : Les priorités dégagées permettent une action ciblée et mesurable.
+
+Complémentarité : La démarche enrichit les contrôles actuels en intégrant une dimension globale et data-driven, tout en restant alignée avec les exigences métiers.
+
+
+Cette méthodologie garantit une analyse robuste et orientée vers les résultats, renforçant la qualité des données et la fiabilité des processus dans un cadre critique tel que l’audit bancaire.
+
