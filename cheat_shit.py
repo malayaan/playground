@@ -1,83 +1,84 @@
-Description professionnelle de la démarche
+# Associer les features aux champs originaux
+feature_scores['Original_Fields'] = feature_scores['Feature'].map(dico)
 
-Objectif
+# Associer les contrôles aux champs originaux
+# On suppose que `control_to_columns` est un dictionnaire similaire pour les contrôles
+control_to_columns = {
+    'control_1': ['field_1', 'field_3'],
+    'control_2': ['field_4', 'field_5'],
+    # Ajouter vos correspondances pour les contrôles ici
+}
+control_scores['Original_Fields'] = control_scores['Control'].map(control_to_columns)
 
-La démarche vise à identifier de manière systématique les features et les contrôles présentant le plus fort enjeu en termes de qualité des données dans la Loan Tape. L’objectif est d’orienter les efforts vers les zones critiques pour renforcer la pertinence des analyses, optimiser la gestion des anomalies, et proposer des priorités claires pour la remédiation.
+# Initialiser un dictionnaire pour les champs des features
+fields_from_features = {}
 
+# Parcourir chaque feature et ses champs associés
+for feature, fields in dico.items():
+    if feature in feature_scores['Feature'].values:  # Vérifier que la feature est problématique
+        impact_score = feature_scores.loc[feature_scores['Feature'] == feature, 'Impact_Score'].values[0]
+        for field in fields:
+            if field not in fields_from_features:
+                fields_from_features[field] = {'Total_Impact_Score': 0, 'Feature_Count': 0}
+            fields_from_features[field]['Total_Impact_Score'] += impact_score
+            fields_from_features[field]['Feature_Count'] += 1
 
----
+# Transformer en DataFrame
+fields_features_df = pd.DataFrame.from_dict(fields_from_features, orient='index')
+fields_features_df.index.name = 'Field'
+fields_features_df.reset_index(inplace=True)
+fields_features_df['Average_Impact_Score'] = fields_features_df['Total_Impact_Score'] / fields_features_df['Feature_Count']
 
-Étape 1 : Identification des features et contrôles à fort enjeu
+# Trier par impact total décroissant
+fields_features_df = fields_features_df.sort_values(by='Total_Impact_Score', ascending=False)
 
-Cette première étape consiste à évaluer l’impact global des features et des contrôles grâce à des métriques consolidées.
+# Initialiser un dictionnaire pour les champs des contrôles
+fields_from_controls = {}
 
-Pour chaque feature et contrôle, nous calculons :
+# Parcourir chaque contrôle et ses champs associés
+for control, fields in control_to_columns.items():
+    if control in control_scores['Control'].values:  # Vérifier que le contrôle est problématique
+        impact_score = control_scores.loc[control_scores['Control'] == control, 'Impact_Score'].values[0]
+        for field in fields:
+            if field not in fields_from_controls:
+                fields_from_controls[field] = {'Total_Impact_Score': 0, 'Control_Count': 0}
+            fields_from_controls[field]['Total_Impact_Score'] += impact_score
+            fields_from_controls[field]['Control_Count'] += 1
 
-Poids total (Total Weight) : Reflète l’importance cumulative sur l’ensemble des lignes.
+# Transformer en DataFrame
+fields_controls_df = pd.DataFrame.from_dict(fields_from_controls, orient='index')
+fields_controls_df.index.name = 'Field'
+fields_controls_df.reset_index(inplace=True)
+fields_controls_df['Average_Impact_Score'] = fields_controls_df['Total_Impact_Score'] / fields_controls_df['Control_Count']
 
-Poids moyen (Average Weight) : Mesure la récurrence des anomalies associées.
+# Trier par impact total décroissant
+fields_controls_df = fields_controls_df.sort_values(by='Total_Impact_Score', ascending=False)
 
-Score d’impact (Impact Score) : Combine les deux métriques précédentes pour identifier les éléments à la fois critiques et récurrents.
+import matplotlib.pyplot as plt
+import seaborn as sns
 
+# Top 10 champs d'après les features
+plt.figure(figsize=(12, 6))
+sns.barplot(
+    data=fields_features_df.head(10),
+    x='Total_Impact_Score',
+    y='Field',
+    palette='Blues_d'
+)
+plt.title("Top 10 Champs les Plus Problématiques (Basé sur les Features)")
+plt.xlabel("Total Impact Score")
+plt.ylabel("Field")
+plt.show()
 
-Les résultats sont ensuite classés par ordre décroissant d’importance, permettant de prioriser les efforts sur les 10 features et contrôles les plus problématiques.
-
-
-Étape 2 : Relier les features aux champs originaux
-
-Une fois les features critiques identifiées, cette étape permet d’analyser leur origine dans la Loan Tape :
-
-Les features sont reliées à leurs champs d’origine grâce à un dictionnaire métier.
-
-La fréquence d’utilisation des champs originaux est calculée, mettant en évidence les champs les plus impliqués dans la génération des anomalies.
-
-Cela permet de localiser précisément les zones de vulnérabilité dans les données brutes.
-
-
-
----
-
-Étape 3 : Synthèse et visualisation
-
-Tableaux analytiques :
-
-Une vue synthétique des 10 features et contrôles à fort enjeu, avec leurs poids totaux, poids moyens, et scores d’impact.
-
-
-Visualisations :
-
-Graphiques en barres pour illustrer les éléments les plus problématiques et leur score d’impact.
-
-Une heatmap pour analyser les champs originaux les plus associés aux anomalies.
-
-
-
-
----
-
-Résultats attendus
-
-1. Identification prioritaire des zones critiques : Une hiérarchisation claire des features et contrôles problématiques, facilitant une allocation optimale des ressources pour la remédiation.
-
-
-2. Analyse fine des origines : Une compréhension approfondie des champs initiaux contribuant aux anomalies, permettant d’adresser les causes à la source.
-
-
-3. Outil d’aide à la décision : Des métriques consolidées et visuelles pour communiquer efficacement avec les parties prenantes métiers et techniques.
-
-
-
-
----
-
-Valeur ajoutée
-
-Précision : L’approche combine des données analytiques (scores d’impact) et une contextualisation métier (champs originaux) pour maximiser la pertinence des résultats.
-
-Actionnable : Les priorités dégagées permettent une action ciblée et mesurable.
-
-Complémentarité : La démarche enrichit les contrôles actuels en intégrant une dimension globale et data-driven, tout en restant alignée avec les exigences métiers.
-
-
-Cette méthodologie garantit une analyse robuste et orientée vers les résultats, renforçant la qualité des données et la fiabilité des processus dans un cadre critique tel que l’audit bancaire.
-
+# Top 10 champs d'après les contrôles
+plt.figure(figsize=(12, 6))
+sns.barplot(
+    data=fields_controls_df.head(10),
+    x='Total_Impact_Score',
+    y='Field',
+    palette='Reds_d'
+)
+plt.title("Top 10 Champs les Plus Problématiques (Basé sur les Contrôles)")
+plt.xlabel("Total Impact Score")
+plt.ylabel("Field")
+plt.show()
