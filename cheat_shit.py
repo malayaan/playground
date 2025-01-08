@@ -1,28 +1,60 @@
-# Définir les seuils pour les métriques
-threshold_business = 0.5
-threshold_anomaly = 0.5
+import matplotlib.pyplot as plt
+import seaborn as sns
 
-# Ajouter des colonnes binaires pour représenter les classes
-df['business_class'] = np.where(df['business_metric'] > threshold_business, 1, 0)
-df['anomaly_class'] = np.where(df['anomaly_score'] > threshold_anomaly, 1, 0)
+# Étape 1.1 : Calculer les scores globaux pour les features
+# Somme et moyenne des poids
+feature_scores = features_csv.sum(axis=0).reset_index()
+feature_scores.columns = ['Feature', 'Total_Weight']
+feature_scores['Average_Weight'] = features_csv.mean(axis=0).values
 
-# Calculer les faux positifs (FP) et faux négatifs (FN)
-# FP : anomaly_class = 1, business_class = 0
-# FN : anomaly_class = 0, business_class = 1
-false_positives = df[(df['anomaly_class'] == 1) & (df['business_class'] == 0)]
-false_negatives = df[(df['anomaly_class'] == 0) & (df['business_class'] == 1)]
+# Ajouter une métrique combinée : Score d'importance (Total * Moyenne)
+feature_scores['Impact_Score'] = feature_scores['Total_Weight'] * feature_scores['Average_Weight']
 
-# Ajouter une colonne de "distance" pour trier par écart entre les métriques
-false_positives = false_positives.assign(difference=abs(df['business_metric'] - df['anomaly_score']))
-false_negatives = false_negatives.assign(difference=abs(df['business_metric'] - df['anomaly_score']))
+# Trier les features par Impact Score
+feature_scores = feature_scores.sort_values(by='Impact_Score', ascending=False)
 
-# Sélectionner les 10 pires cas (ceux avec la plus grande différence)
-top_10_fp = false_positives.nlargest(10, 'difference')
-top_10_fn = false_negatives.nlargest(10, 'difference')
+# Étape 1.2 : Calculer les scores globaux pour les contrôles
+# Somme et moyenne des poids
+control_scores = controles_csv.sum(axis=0).reset_index()
+control_scores.columns = ['Control', 'Total_Weight']
+control_scores['Average_Weight'] = controles_csv.mean(axis=0).values
 
-# Afficher les résultats
-print("Top 10 Faux Positifs :")
-print(top_10_fp[['business_metric', 'anomaly_score', 'difference']])
+# Ajouter une métrique combinée : Score d'importance (Total * Moyenne)
+control_scores['Impact_Score'] = control_scores['Total_Weight'] * control_scores['Average_Weight']
 
-print("\nTop 10 Faux Négatifs :")
-print(top_10_fn[['business_metric', 'anomaly_score', 'difference']])
+# Trier les contrôles par Impact Score
+control_scores = control_scores.sort_values(by='Impact_Score', ascending=False)
+
+# Afficher les résultats sous forme de tableau
+print("Top 10 Features les plus problématiques :")
+print(feature_scores[['Feature', 'Total_Weight', 'Average_Weight', 'Impact_Score']].head(10))
+
+print("\nTop 10 Contrôles les plus problématiques :")
+print(control_scores[['Control', 'Total_Weight', 'Average_Weight', 'Impact_Score']].head(10))
+
+# Étape 1.3 : Visualiser les résultats
+# Top 10 Features
+plt.figure(figsize=(12, 6))
+sns.barplot(
+    data=feature_scores.head(10),
+    x='Impact_Score',
+    y='Feature',
+    palette='Blues_d'
+)
+plt.title("Top 10 Features les Plus Problématiques (Impact Score)")
+plt.xlabel("Impact Score (Total Weight x Average Weight)")
+plt.ylabel("Feature")
+plt.show()
+
+# Top 10 Contrôles
+plt.figure(figsize=(12, 6))
+sns.barplot(
+    data=control_scores.head(10),
+    x='Impact_Score',
+    y='Control',
+    palette='Reds_d'
+)
+plt.title("Top 10 Contrôles les Plus Problématiques (Impact Score)")
+plt.xlabel("Impact Score (Total Weight x Average Weight)")
+plt.ylabel("Control")
+plt.show()
