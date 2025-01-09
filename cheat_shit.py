@@ -1,70 +1,87 @@
-Analyse des résultats du clustering :
+Analyse concise :
 
-1. Structure des clusters :
+1. Relation entre contamination et scores d’anomalie (modèle) :
 
-Les clusters sont définis par le label HDBSCAN_label, avec plusieurs clusters identifiés, y compris un cluster pour les anomalies (-1).
+La contamination (issues des contrôles) indique la proportion d’anomalies (1) selon les règles.
 
-Chaque cluster contient des données statistiques importantes : nombre de points par classe (0 et 1), contamination, moyenne, maximum, minimum et écart-type.
+Les colonnes mean, max, min, et std reflètent la distribution des scores d’anomalie (modèle).
 
-
-
-2. Contamination :
-
-La colonne "Contamination" montre la proportion d’anomalies (1) dans chaque cluster.
-
-Les clusters ayant une contamination proche de 100% ou 0% sont bien définis :
-
-Clusters propres : faible contamination, comme les clusters 7, 9 et 26.
-
-Clusters critiques : contamination élevée, comme les clusters 12, 13, et 14.
+Un écart entre la contamination et les scores d’anomalie peut révéler des points mal capturés ou des zones d’ombre dans les contrôles.
 
 
 
 
-3. Anomaly Score :
 
-Seuil d’anomalie fixé à 0.38 : les points au-dessus de ce seuil sont considérés comme des anomalies.
+---
 
-Cela permet de relier les clusters au seuil d’anomalie pour vérifier si les clusters contiennent réellement des points critiques.
+Exemples à regarder en détail :
 
+1. Cluster -1 (anomalies) :
 
+Contamination : 34.85%.
 
-4. Correspondance avec les classes issues des contrôles (0 et 1) :
+Scores d’anomalie :
 
-Les clusters avec des valeurs mixtes entre 0 et 1 indiquent une mauvaise séparation des classes par les contrôles.
+Moyenne (mean) : 0.25 → proche du seuil (0.38).
 
-Par exemple :
-
-Cluster 2 a 53% de contamination, ce qui montre un mélange important entre les deux classes.
-
-Cluster 3 et 4 ont une contamination modérée (4.99% et 8.1%), mais pourraient contenir des points mal identifiés.
+Maximum (max) : 0.94 → contient des anomalies très marquées.
 
 
-
-
-5. Clusters d’intérêt :
-
-Cluster -1 (anomalies) :
-
-Regroupe un grand nombre de points (26,713), avec une contamination de 34.85%.
-
-Les statistiques (moyenne, maximum, minimum) montrent des variations significatives, ce qui indique une diversité importante parmi les anomalies détectées.
-
-
-Cluster 12 et 13 :
-
-Contamination 100%, ce qui confirme qu’ils sont constitués uniquement d’anomalies.
-
-Ces clusters doivent être analysés plus en détail pour comprendre les caractéristiques des anomalies qu’ils regroupent.
+Conclusion : Ce cluster contient une grande proportion d'anomalies avec des écarts significatifs. Il faut inspecter ses champs pour comprendre pourquoi certaines anomalies sont capturées par les contrôles et d’autres non.
 
 
 
+2. Cluster 12 et 13 :
 
-6. Alignement avec les contrôles :
+Contamination : 100%.
 
-Les clusters à forte contamination (près de 100%) révèlent des zones mal couvertes ou non capturées par les contrôles (1).
+Scores d’anomalie :
 
-Les clusters modérément contaminés ou propres montrent une séparation correcte des données mais nécessitent une validation pour garantir qu’aucune anomalie n’est ignorée.
+Moyenne (mean) : très faible (0.03-0.04).
+
+Maximum (max) : faible (0.14-0.17).
+
+
+Conclusion : Ces clusters sont considérés comme anomalies par les contrôles, mais leurs scores d’anomalie (modèle) sont faibles. Cela suggère des faux positifs ou des règles trop strictes.
+
+
+
+3. Cluster 2 :
+
+Contamination : 53.67%.
+
+Scores d’anomalie :
+
+Moyenne (mean) : 0.12.
+
+Maximum (max) : 0.27.
+
+
+Conclusion : Mélange entre 0 et 1, avec des scores moyens faibles. Cela indique un cluster ambigu où les contrôles et le modèle ne s’alignent pas bien.
+
+
+
+
+
+---
+
+Points à tirer de l’inspection :
+
+1. Inspecter les clusters mixtes (e.g., Cluster 2) :
+
+Identifier pourquoi les contrôles et le modèle ne s’accordent pas sur la classification.
+
+
+
+2. Réévaluer les clusters avec faible score d’anomalie mais forte contamination (e.g., Cluster 12 et 13) :
+
+Vérifier si les contrôles sont trop stricts et génèrent des faux positifs.
+
+
+
+3. Prioriser les clusters avec de fortes anomalies (max élevé) :
+
+Exemple : Cluster -1 → Focus sur les champs associés pour ajuster les contrôles et affiner le modèle.
 
 
 
@@ -74,28 +91,5 @@ Les clusters modérément contaminés ou propres montrent une séparation correc
 
 Conclusion :
 
-1. Points critiques :
-
-Les clusters avec une contamination proche de 100% doivent être examinés pour identifier les patterns spécifiques des anomalies et les champs impliqués.
-
-Les clusters avec des valeurs mixtes (contamination entre 30-60%) signalent des problèmes de séparation entre les classes, ce qui peut révéler des champs ou contrôles mal définis.
-
-
-
-2. Amélioration des contrôles :
-
-Les contrôles actuels (classes 0 et 1) ne capturent pas bien certaines zones, comme les anomalies dans les clusters modérément contaminés.
-
-Les champs liés aux clusters les plus critiques peuvent être priorisés pour affiner les règles ou enrichir le modèle.
-
-
-
-3. Action recommandée :
-
-Explorer les clusters d’anomalies (-1, 12, 13) pour comprendre les caractéristiques clés des anomalies.
-
-Réévaluer les clusters mixtes (e.g. 2, 3, 4) pour valider la pertinence des seuils et contrôles.
-
-
-
+Les clusters montrent des
 
