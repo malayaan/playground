@@ -1,21 +1,11 @@
-New Perspectives:
+Shortcomings in Loan Tape Controls:
 
-1. Enhanced Controls:
+1. Inherent Limitations
+The current approach to controls on the Loan Tape is inherently limited, failing to detect all unexpected anomalies.
 
-Combines business rules with data science to uncover anomalies missed by traditional controls.
+2. High Number of False Positives
+Additionally, it generates a high number of false positives in the control results.
 
-
-
-2. Quantified DQ Monitoring:
-
-Provides measurable indicators to track and prioritize data quality improvements.
-
-
-
-3. Targeting Critical Areas:
-
-Highlights key variables and impactful anomalies for focused remediation efforts.
-
-
-
+3. Lack of Prioritization
+Furthermore, there is no way to prioritize data quality issues by criticality.
 
