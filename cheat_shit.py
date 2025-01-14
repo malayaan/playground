@@ -1,190 +1,43 @@
-Voici une proposition de plan détaillé avec des slides riches et chargées tout en restant clair et impactant. L'idée est de maximiser la valeur de chaque slide avec des visuels, des exemples concrets et des recommandations.
-
-
----
-
-Slide 1 : Introduction et Contexte
-
-Titre : "Loan Tape: A Critical Component of Risk Management and Compliance"
-
-Contenu :
-
-Rappel de l’importance stratégique de la Loan Tape pour la conformité réglementaire et la gestion des risques.
-
-Les enjeux liés à la qualité des données :
-
-Fiabilité pour les audits.
-
-Prévention des pénalités réglementaires.
-
-
-Insister sur l'objectif : renforcer la qualité et l'efficacité des contrôles.
-
-
-Visuel : Une infographie illustrant les processus d'audit liés à la Loan Tape.
-
-
-
----
-
-Slide 2 : Problèmes Actuels dans les Contrôles
-
-Titre : "Challenges with Existing Loan Tape Controls"
-
-Contenu :
-
-Résumé des lacunes :
-
-Limitations statiques des contrôles actuels.
-
-Génération excessive de faux positifs.
-
-Absence de priorisation des problématiques critiques.
-
-
-Exemples :
-
-Règles métier qui échouent à capturer des anomalies complexes.
-
-Cas concrets de champs critiques non couverts par des contrôles.
-
-
-Visuel : Tableau ou graphique récapitulant le nombre de champs manquants de contrôles et la répartition des anomalies (exemple tiré de vos données).
-
-
-
-
----
-
-Slide 3 : Une Approche Data-Driven Complète
-
-Titre : "Introducing a Data-Driven Approach for Loan Tape"
-
-Contenu :
-
-Présentation de la méthodologie :
-
-Intégration des contrôles métiers et modèles de machine learning.
-
-Analyse quantitative des anomalies.
-
-Identification des zones d'ombre et des champs critiques.
-
-
-Avantages :
-
-Révéler les failles dans les contrôles.
-
-Prioriser les efforts en fonction des impacts réels.
-
-S’adapter aux évolutions des données.
-
-
-Visuel : Un schéma illustrant l’interaction entre contrôles métiers et modèles data-driven.
-
-
-
-
----
-
-Slide 4 : Résultats Clés
-
-Titre : "Key Insights from the Data-Driven Analysis"
-
-Contenu :
-
-Résultats principaux :
-
-Liste des champs identifiés comme problématiques (top 5).
-
-Répartition des anomalies détectées par score et champ.
-
-Clusters ou catégories de données critiques identifiées.
-
-
-Cas Concrets :
-
-Exemple d'un champ spécifique (e.g., EIR_INCPN) avec ses valeurs extrêmes.
-
-Comparaison entre contrôles actuels et modèle pour une ligne.
-
-
-Visuel :
-
-Graphique des champs avec les scores d’impact.
-
-Histogrammes ou boxplots des valeurs extrêmes par champ.
-
-
-
-
-
----
-
-Slide 5 : Recommandations et Perspectives
-
-Titre : "Strengthening Loan Tape Controls"
-
-Contenu :
-
-Recommandations :
-
-Prioriser les champs identifiés à fort enjeu.
-
-Revoir les contrôles existants pour couvrir les zones d'ombre.
-
-Suivi régulier des données avec des indicateurs quantifiés.
-
-
-Perspectives :
-
-Implémentation progressive de l’approche data-driven.
-
-Collaboration entre métier et data science pour affiner les contrôles.
-
-
-Visuel : Tableau comparatif entre la situation actuelle et les améliorations proposées.
-
-
-
-
----
-
-Slide 6 : Conclusion et Appel à l’Action
-
-Titre : "Next Steps for Enhanced Loan Tape Supervision"
-
-Contenu :
-
-Synthèse :
-
-Les limites actuelles des contrôles.
-
-Les bénéfices concrets de l’approche data-driven.
-
-
-Prochaines étapes :
-
-Valider les priorités identifiées.
-
-Implémenter des outils de suivi des anomalies.
-
-Mettre en place une collaboration régulière métier/data.
-
-
-Visuel : Une checklist des prochaines actions.
-
-
-
-
----
-
-Approche générale :
-
-Chargez les slides avec des tableaux, graphiques et cas concrets issus de vos analyses.
-
-Utilisez un ton orienté solutions : montrez les limites, mais insistez surtout sur les opportunités et les bénéfices pour le métier.
-
-Préparez des réponses pour les objections potentielles sur les données ou la méthode.
-
-
+import numpy as np
+import matplotlib.pyplot as plt
+from sklearn.ensemble import IsolationForest
+
+# Génération des données
+np.random.seed(42)
+normal_data = np.random.normal(loc=0, scale=1, size=(300, 2))  # Données normales
+anomalies = np.random.uniform(low=-4, high=4, size=(30, 2))    # Anomalies
+data = np.vstack((normal_data, anomalies))
+
+# Ajout d'un flag caricatural pour les contrôles (marque quelques points normaux comme anormaux)
+controls_flagged = normal_data[np.random.choice(normal_data.shape[0], size=10, replace=False)]
+
+# Modèle Isolation Forest
+iso_forest = IsolationForest(contamination=0.1, random_state=42)
+iso_forest.fit(data)
+labels = iso_forest.predict(data)
+
+# Création du graphique
+plt.figure(figsize=(10, 6))
+
+# Points normaux
+plt.scatter(data[labels == 1][:, 0], data[labels == 1][:, 1], c='black', label='Normal Data')
+
+# Points anormaux détectés par le modèle
+plt.scatter(data[labels == -1][:, 0], data[labels == -1][:, 1], c='red', label='Detected Anomalies')
+
+# Points flaggés par les contrôles métiers
+plt.scatter(controls_flagged[:, 0], controls_flagged[:, 1], c='blue', edgecolor='white', s=120, label='Control-Flagged Points')
+
+# Ajout de la frontière de décision de l'Isolation Forest
+xx, yy = np.meshgrid(np.linspace(-5, 5, 100), np.linspace(-5, 5, 100))
+Z = iso_forest.decision_function(np.c_[xx.ravel(), yy.ravel()])
+Z = Z.reshape(xx.shape)
+plt.contour(xx, yy, Z, levels=[0], linewidths=2, colors='orange', label='Decision Boundary')
+
+# Customisation du graphique
+plt.title("Illustration of Anomaly Detection and Control Flags", fontsize=14)
+plt.xlabel("Feature 1")
+plt.ylabel("Feature 2")
+plt.legend(loc='upper left', fontsize=10)
+plt.grid(alpha=0.3)
+plt.show()
