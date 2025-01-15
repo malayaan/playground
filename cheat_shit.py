@@ -1,12 +1,7 @@
-Title: Gaps in Control Coverage
+Title: Concrete Example of Data-Driven Insight
 
 Text:
-The Total Impact Score reflects each field's importance in detecting anomalies.
+This graph of lvrg_theorical_deviation highlights outliers and uncovers potential data quality issues.
 
-Black bars: Fields covered by controls.
-
-Red bars: High-impact fields missing controls.
-
-
-This suggests some controls may be misaligned, while critical fields lack oversight, highlighting potential blind spots.
+It shows how a data-driven approach can pinpoint anomalies in uncontrolled fields and guide the creation of targeted, impactful rules.
 
