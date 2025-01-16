@@ -1,11 +1,8 @@
 import pandas as pd
 
-# Chargement des données
-# Assurez-vous que features_reduced_detected contient les colonnes :
-# 'anomaly_score', 'anomaly_class', 'business_metric', 'business_class', et les champs pertinents.
-features_reduced_detected = pd.read_csv('features_reduced_detected.csv')
-
-# Dictionnaire des champs et catégories
+# Charger les données
+lt_sgrf = pd.read_csv("lt_sgrf.csv")  # Loan Tape complète
+features_reduced_detected = pd.read_csv("features_reduced_detected.csv")  # Données réduites avec scores et classes
 categories = {
     "Pays": ["CNTRY"],
     "Statut de défaut": ["DT_DFLT_STTS"],
@@ -17,58 +14,48 @@ categories = {
     "Capacité de remboursement": ["DBT_RPYMNT_CPCTY_SNR_DBT", "DBT_RPYMNT_CPCTY_TTL"],
 }
 
-# Étape 1 : Identifier les champs sous-contrôlés
-def identify_undercontrolled_fields(features_df, categories_dict):
-    controlled_fields = set(features_df.columns)  # Champs dans features_reduced_detected
-    all_fields = set([field for fields in categories_dict.values() for field in fields])  # Tous les champs du dictionnaire
-    missing_controls = all_fields - controlled_fields  # Champs sans contrôle
-    return missing_controls
+# Initialiser un dictionnaire pour stocker les résultats
+category_analysis = {}
 
-missing_controls = identify_undercontrolled_fields(features_reduced_detected, categories)
+# Parcourir chaque catégorie et ses colonnes associées
+for category, fields in categories.items():
+    print(f"\nAnalyse pour la catégorie : {category}")
+    category_results = {}
+    
+    # Parcourir chaque champ de la catégorie
+    for field in fields:
+        if field in lt_sgrf.columns:
+            # Récupérer les valeurs uniques du champ
+            unique_values = lt_sgrf[field].dropna().unique()
+            
+            # Initialiser un dictionnaire pour les résultats par valeur unique
+            field_results = {}
+            
+            for value in unique_values:
+                # Filtrer les lignes de lt_sgrf correspondant à la valeur unique
+                matching_indices = lt_sgrf[lt_sgrf[field] == value].index
+                
+                # Aller dans features_reduced_detected pour récupérer les classes métier
+                if not matching_indices.empty:
+                    business_classes = features_reduced_detected.loc[matching_indices, 'business_class']
+                    class_distribution = business_classes.value_counts(normalize=True).to_dict()
+                    
+                    # Sauvegarder la répartition des classes
+                    field_results[value] = {
+                        "Matching_Lines": len(matching_indices),
+                        "Business_Class_Distribution": class_distribution
+                    }
+            
+            category_results[field] = field_results
+    
+    category_analysis[category] = category_results
 
-# Étape 2 : Distribution des anomalies par catégorie
-def anomaly_distribution_by_category(features_df, categories_dict):
-    results = {}
-    for category, fields in categories_dict.items():
-        fields_in_data = [field for field in fields if field in features_df.columns]
-        if fields_in_data:
-            anomalies = features_df[fields_in_data].notna().sum(axis=1)  # Nombre de champs non-NA
-            anomaly_class_distribution = features_df['anomaly_class'].value_counts(normalize=True)
-            results[category] = {
-                'Total_Fields': len(fields_in_data),
-                'Anomaly_Class_Distribution': anomaly_class_distribution.to_dict(),
-                'Average_Anomaly_Score': features_df[fields_in_data].mean(axis=1).mean()
-            }
-    return pd.DataFrame(results).transpose()
-
-anomaly_distribution = anomaly_distribution_by_category(features_reduced_detected, categories)
-
-# Étape 3 : Analyse des champs les plus impactés
-def impact_analysis(features_df, categories_dict):
-    impact_scores = {}
-    for category, fields in categories_dict.items():
-        fields_in_data = [field for field in fields if field in features_df.columns]
-        if fields_in_data:
-            for field in fields_in_data:
-                avg_anomaly_score = features_df['anomaly_score'][features_df[field].notna()].mean()
-                avg_business_metric = features_df['business_metric'][features_df[field].notna()].mean()
-                impact_scores[field] = {
-                    'Average_Anomaly_Score': avg_anomaly_score,
-                    'Average_Business_Metric': avg_business_metric
-                }
-    return pd.DataFrame(impact_scores).transpose()
-
-field_impact_scores = impact_analysis(features_reduced_detected, categories)
-
-# Étape 4 : Résultats synthétiques
-def summary_results(missing_controls, anomaly_distribution, field_impact_scores):
-    print("\nChamps sans contrôle :")
-    print(missing_controls)
-
-    print("\nDistribution des anomalies par catégorie :")
-    print(anomaly_distribution)
-
-    print("\nScores d'impact des champs :")
-    print(field_impact_scores.sort_values(by='Average_Anomaly_Score', ascending=False))
-
-summary_results(missing_controls, anomaly_distribution, field_impact_scores)
+# Afficher les résultats
+for category, fields_results in category_analysis.items():
+    print(f"\nRésultats pour la catégorie : {category}")
+    for field, values_results in fields_results.items():
+        print(f"\nChamp : {field}")
+        for value, analysis in values_results.items():
+            print(f"Valeur unique : {value}")
+            print(f"  Lignes correspondantes : {analysis['Matching_Lines']}")
+            print(f"  Répartition des classes métier : {analysis['Business_Class_Distribution']}")
