@@ -1,2 +1,2 @@
-"By grouping similar data under a single indicator, this approach provides greater transparency on the origin and scope of detected issues."
+"Consider analyzing statistical anomalies as the ECB might, to ensure a thorough and compliant review of data quality."
 
