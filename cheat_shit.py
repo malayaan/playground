@@ -1,31 +1,18 @@
-import pandas as pd
+Voici une version corrigée et reformulée pour plus de clarté :
 
-# Exemple de DataFrame
-data = {
-    "EntityId": [1, 1, 1, 2, 2, 3],
-    "InstrumentId": ["A", "A", "A", "B", "B", "C"],
-    "Protection1": [10, 10, 20, 5, 5, 30],
-    "Protection2": [100, 100, 100, 50, 60, 200],
-    "Value": [1.1, 1.1, 1.1, 2.2, 2.2, 3.3]
-}
-df = pd.DataFrame(data)
 
-# Identifiez les colonnes nécessitant une fonction d'agrégation
-def columns_needing_aggregation(df, group_cols):
-    # Colonnes non incluses dans le group_by
-    other_cols = [col for col in df.columns if col not in group_cols]
-    columns_to_aggregate = []
-    
-    for col in other_cols:
-        # Vérifier si les valeurs sont constantes pour chaque groupe
-        is_unique_per_group = df.groupby(group_cols)[col].nunique().max() == 1
-        if not is_unique_per_group:
-            columns_to_aggregate.append(col)
-    
-    return columns_to_aggregate
+---
 
-# Colonnes nécessitant une fonction d'agrégation
-group_cols = ["EntityId", "InstrumentId"]
-columns_to_aggregate = columns_needing_aggregation(df, group_cols)
+Pour donner du contexte :
+Nous avons analysé les champs utilisés dans les indicateurs de qualité des données (DQ) du modèle, mais absents des contrôles existants. Cette analyse a porté sur les valeurs extrêmes identifiées parmi les anomalies, et deux points majeurs en ressortent :
 
-print("Colonnes nécessitant une fonction d'agrégation :", columns_to_aggregate)
+Une approche systématique et globale : Le modèle examine l'ensemble des colonnes de manière systématique, ce qui permet de détecter des variables importantes qui ne sont pas intégrées dans les contrôles actuels.
+
+Un repérage basé sur des statistiques dynamiques : Contrairement à des contrôles avec des seuils fixes, le modèle met en évidence des valeurs aberrantes grâce à une analyse statistique adaptée à la distribution des données.
+
+
+
+---
+
+Cette version vise à rendre le texte plus direct et compréhensible tout en soulignant les points essentiels.
+
