@@ -1,16 +1,11 @@
-Présentation de la mission :
-Dans le cadre de l’audit du crédit à la consommation chez Franfinance et SGRF, nous déployons des approches data pour renforcer la sécurité et la performance. L’objectif est d’automatiser la détection de fraudes via OCR, d’optimiser les campagnes marketing grâce aux analyses d’appels et de mails, et de répondre aux enjeux de personnalisation client et d'efficacité des outils.
+Objet : Recommandation pour Nino Dupont – Recherche d'un poste à l'étranger
 
-Streams prévus :
+Bonjour [Nom du recruteur],
 
-OCR pour détecter anomalies et fraudes.
+Je souhaite vous recommander Nino Dupont, étudiant ingénieur en informatique à l’École des Mines d'Alès. Nino est compétent (Java, Python, C#), travailleur et très motivé. Ses stages chez Axon’Cable lui ont permis de développer des solutions techniques innovantes.
 
-Analyse d’appels et mails pour optimiser le marketing.
+Actuellement, il recherche une opportunité à l’étranger pour mettre en pratique ses compétences dans un environnement international. Je suis certain qu’il serait un atout précieux pour votre équipe.
 
-Modélisation prédictive des risques.
-
-Centralisation des données multi-sources.
-
-Suivi temps réel des KPIs stratégiques.
-
+Cordialement,
+[Votre nom]
 
