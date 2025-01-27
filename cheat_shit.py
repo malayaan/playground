@@ -1,18 +1,16 @@
-Voici une version corrigée et reformulée pour plus de clarté :
+Présentation de la mission :
+Dans le cadre de l’audit du crédit à la consommation chez Franfinance et SGRF, nous déployons des approches data pour renforcer la sécurité et la performance. L’objectif est d’automatiser la détection de fraudes via OCR, d’optimiser les campagnes marketing grâce aux analyses d’appels et de mails, et de répondre aux enjeux de personnalisation client et d'efficacité des outils.
 
+Streams prévus :
 
----
+OCR pour détecter anomalies et fraudes.
 
-Pour donner du contexte :
-Nous avons analysé les champs utilisés dans les indicateurs de qualité des données (DQ) du modèle, mais absents des contrôles existants. Cette analyse a porté sur les valeurs extrêmes identifiées parmi les anomalies, et deux points majeurs en ressortent :
+Analyse d’appels et mails pour optimiser le marketing.
 
-Une approche systématique et globale : Le modèle examine l'ensemble des colonnes de manière systématique, ce qui permet de détecter des variables importantes qui ne sont pas intégrées dans les contrôles actuels.
+Modélisation prédictive des risques.
 
-Un repérage basé sur des statistiques dynamiques : Contrairement à des contrôles avec des seuils fixes, le modèle met en évidence des valeurs aberrantes grâce à une analyse statistique adaptée à la distribution des données.
+Centralisation des données multi-sources.
 
+Suivi temps réel des KPIs stratégiques.
 
-
----
-
-Cette version vise à rendre le texte plus direct et compréhensible tout en soulignant les points essentiels.
 
