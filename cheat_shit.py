@@ -1,90 +1,76 @@
-import fitz  # PyMuPDF pour lire le PDF
+import fitz  # PyMuPDF pour lire directement le PDF
+import pytesseract
 import cv2
 import numpy as np
-from pylibdmtx.pylibdmtx import decode
 from pyzbar.pyzbar import decode as pyzbar_decode
+from pylibdmtx.pylibdmtx import decode as dmtx_decode
 from PIL import Image
 import io
-import pytesseract
 
-def extract_first_page_image(pdf_path):
+def extract_qr_code_from_pdf(pdf_path):
     """
-    Extrait l'image de la première page du PDF.
+    Extrait les QR Codes directement du PDF sans conversion en image.
     """
     doc = fitz.open(pdf_path)  # Ouvrir le PDF
-    page = doc[0]  # Première page
+    page = doc[0]  # Prendre la première page
 
-    for img in page.get_images(full=True):
+    # Extraire uniquement les objets images (codes-barres)
+    qr_images = []
+    for img_index, img in enumerate(page.get_images(full=True)):
         xref = img[0]
         base_image = doc.extract_image(xref)
-        image_bytes = base_image["image"]
-        img_pil = Image.open(io.BytesIO(image_bytes))
-        return img_pil  # Retourne la première image trouvée
+        img_pil = Image.open(io.BytesIO(base_image["image"]))
+        qr_images.append((img_pil, base_image["bbox"]))  # Ajouter image + position bbox
 
-    return None
+    return qr_images
 
-def detect_qr_codes(image):
-    """
-    Détecte les QR Codes / DataMatrix dans une image et retourne leurs positions et contenus.
-    """
-    image_cv = cv2.cvtColor(np.array(image), cv2.COLOR_RGB2GRAY)
-
-    # Appliquer un prétraitement pour améliorer la détection
-    _, image_bin = cv2.threshold(image_cv, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
-
-    # Détecter les QR Codes / DataMatrix
-    qr_codes = pyzbar_decode(image_bin)
-    datamatrix_codes = decode(image_bin)
-
-    qr_list = []
-    
-    # Ajouter les QR Codes détectés
-    for qr in qr_codes:
-        qr_list.append({
-            "type": "QR",
-            "data": qr.data.decode("utf-8"),
-            "position": qr.rect
-        })
-    
-    # Ajouter les DataMatrix détectés
-    for dm in datamatrix_codes:
-        qr_list.append({
-            "type": "DataMatrix",
-            "data": dm.data.decode("utf-8"),
-            "position": None  # Pas toujours dispo avec pylibdmtx
-        })
-
-    return qr_list
-
-def detect_text_below_qr(image, qr_position):
+def detect_text_below_qr(image, bbox):
     """
     Vérifie si le texte "2D-Doc" est écrit sous un QR Code donné.
     """
-    x, y, w, h = qr_position.left, qr_position.top, qr_position.width, qr_position.height
-    roi = np.array(image)[y + h : y + h + 40, x : x + w]  # Zone sous le QR Code
-    
-    # Extraire le texte avec OCR
+    x0, y0, x1, y1 = bbox  # Coordonnées du QR Code
+    roi = image.crop((x0, y1, x1, y1 + 50))  # Zone sous le QR Code
+
+    # OCR pour détecter "2D-Doc"
     text = pytesseract.image_to_string(roi, config="--psm 6").strip()
-    
+
     return "2D-Doc" in text
+
+def decode_qr(image):
+    """
+    Décode un QR Code ou DataMatrix dans une image.
+    """
+    image_cv = cv2.cvtColor(np.array(image), cv2.COLOR_RGB2GRAY)
+    _, image_bin = cv2.threshold(image_cv, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
+
+    # Essayer QR Code
+    qr_codes = pyzbar_decode(image_bin)
+    for qr in qr_codes:
+        return qr.data.decode("utf-8")
+
+    # Essayer DataMatrix (cas du 2D-Doc)
+    dm_codes = dmtx_decode(image_bin)
+    for dm in dm_codes:
+        return dm.data.decode("utf-8")
+
+    return None
 
 def process_pdf(pdf_path):
     """
     Extrait le premier QR Code valide d'un PDF (avec "2D-Doc" en dessous).
     """
-    image = extract_first_page_image(pdf_path)
+    qr_codes = extract_qr_code_from_pdf(pdf_path)
 
-    if image is None:
-        print("⚠️ Aucun QR Code détecté sur la première page.")
+    if not qr_codes:
+        print("⚠️ Aucun QR Code trouvé sur la première page.")
         return
 
-    qr_codes = detect_qr_codes(image)
-
-    for qr in qr_codes:
-        if qr["position"]:  # Vérifie que la position est disponible (QR Codes)
-            if detect_text_below_qr(image, qr["position"]):
-                print(f"✅ QR Code 2D-Doc détecté : {qr['data']}")
-                return qr["data"]
+    for img, bbox in qr_codes:
+        qr_data = decode_qr(img)
+        if qr_data:
+            if detect_text_below_qr(img, bbox):
+                print(f"✅ QR Code 2D-Doc détecté : {qr_data}")
+                return qr_data
 
     print("⚠️ Aucun QR Code 2D-Doc trouvé.")
 
