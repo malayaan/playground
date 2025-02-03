@@ -1,33 +1,26 @@
-import cv2
-from pyzbar.pyzbar import decode
+from pylibdmtx.pylibdmtx import decode
 from PIL import Image
 
-def scan_qr_code(image_path):
-    # Charger l'image avec OpenCV
-    image = cv2.imread(image_path)
-
-    # Convertir en niveaux de gris pour améliorer la détection
-    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-
-    # Scanner le QR Code
-    decoded_objects = decode(gray)
-
-    if not decoded_objects:
-        print("Aucun QR Code détecté.")
+def decode_datamatrix(image_path):
+    # Charger l'image avec Pillow
+    image = Image.open(image_path)
+    
+    # Décoder le DataMatrix
+    decoded_objects = decode(image)
+    
+    if decoded_objects:
+        for obj in decoded_objects:
+            print("Contenu du DataMatrix :", obj.data.decode('utf-8'))
+            return obj.data.decode('utf-8')
+    else:
+        print("Aucun code DataMatrix détecté.")
         return None
 
-    for obj in decoded_objects:
-        qr_data = obj.data.decode("utf-8")
-        print("Contenu du QR Code 2D-Doc :", qr_data)
-        return qr_data
-
-    return None
-
 # Exemple d'utilisation
-image_file = "qrcode.png"  # Remplacez par votre fichier
-qr_content = scan_qr_code(image_file)
+image_file = "/mnt/data/file-Hi7zTX6szxGwGPT7iPJLKU"
+data = decode_datamatrix(image_file)
 
-if qr_content:
-    print("QR Code 2D-Doc extrait avec succès :", qr_content)
+if data:
+    print("Code 2D-Doc extrait avec succès :", data)
 else:
-    print("Aucun QR Code trouvé.")
+    print("Impossible de lire le DataMatrix.")
