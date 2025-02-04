@@ -1,4 +1,3 @@
-import fitz  # PyMuPDF pour extraire les pages du PDF
 import cv2
 import numpy as np
 from pdf2image import convert_from_path
@@ -7,21 +6,21 @@ from PIL import Image
 
 def extract_first_page_as_image(pdf_path, dpi=300):
     """
-    Convertit la première page du PDF en image haute résolution.
+    Convertit UNIQUEMENT la première page du PDF en image haute résolution.
     """
     print("🔹 Extraction de la première page du PDF...")
-    images = convert_from_path(pdf_path, dpi=dpi)
+    images = convert_from_path(pdf_path, dpi=dpi, first_page=1, last_page=1)
     
     if not images:
         print("❌ ERREUR : Impossible d'extraire une image du PDF.")
         return None
 
-    print("✅ Image extraite avec succès.")
-    return images[0]
+    print("✅ Première page extraite avec succès.")
+    return images[0]  # Retourne l’image de la première page
 
 def read_2ddoc_from_pdf(pdf_path):
     """
-    Extrait un 2D-Doc depuis un PDF et le lit.
+    Extrait un 2D-Doc depuis la première page d'un PDF et le lit.
     """
     print("\n🔹 Début du scan du 2D-Doc à partir du PDF...")
 
@@ -54,6 +53,6 @@ def read_2ddoc_from_pdf(pdf_path):
 
     return qr_text
 
-# 📌 Test du script avec votre fichier PDF
-pdf_path = "chemin/vers/mon_fichier.pdf"  # Remplacez par votre fichier
+# 📌 Exécuter avec votre fichier PDF
+pdf_path = "chemin/vers/mon_fichier.pdf"  # Remplacez par le chemin du PDF
 read_2ddoc_from_pdf(pdf_path)
