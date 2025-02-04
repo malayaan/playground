@@ -1,7 +1,8 @@
 import cv2
 import numpy as np
-from pyzbar.pyzbar import decode
+from pylibdmtx.pylibdmtx import decode
 from PIL import Image
+import matplotlib.pyplot as plt
 
 def preprocess_image(image_path):
     """
@@ -16,26 +17,33 @@ def preprocess_image(image_path):
 
     print("✅ Image chargée.")
 
-    # Appliquer un filtre de contraste
+    # Augmenter le contraste
     print("🔹 Augmentation du contraste...")
     clahe = cv2.createCLAHE(clipLimit=3.0, tileGridSize=(8, 8))
     image = clahe.apply(image)
 
-    # Convertir en noir et blanc strict
-    print("🔹 Binarisation stricte...")
+    # Binarisation stricte
+    print("🔹 Conversion en noir et blanc...")
     _, image_bin = cv2.threshold(image, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
 
     # Redimensionner (x2)
-    print("🔹 Redimensionnement x2 pour améliorer la reconnaissance...")
+    print("🔹 Redimensionnement x2...")
     image_resized = cv2.resize(image_bin, None, fx=2, fy=2, interpolation=cv2.INTER_LINEAR)
+
+    # Afficher l’image prétraitée
+    plt.figure(figsize=(6, 6))
+    plt.imshow(image_resized, cmap="gray")
+    plt.title("Image prétraitée du 2D-Doc")
+    plt.axis("off")
+    plt.show()
 
     return image_resized
 
-def read_2ddoc_zxing(image_path):
+def read_2ddoc(image_path):
     """
-    Détecte un DataMatrix 2D-Doc en utilisant ZXing (pyzbar).
+    Détecte un DataMatrix 2D-Doc en utilisant pylibdmtx.
     """
-    print("\n🔹 Début du scan avec ZXing...")
+    print("\n🔹 Début du scan du 2D-Doc...")
 
     # Prétraitement
     processed_image = preprocess_image(image_path)
@@ -44,15 +52,12 @@ def read_2ddoc_zxing(image_path):
         print("❌ Impossible de prétraiter l’image.")
         return None
 
-    # Convertir en format compatible avec pyzbar
-    processed_image_pil = Image.fromarray(processed_image)
-
-    # Scanner avec pyzbar
+    # Scanner avec pylibdmtx
     print("🔹 Détection du 2D-Doc en cours...")
-    decoded_data = decode(processed_image_pil)
+    decoded_data = decode(processed_image)
 
     if not decoded_data:
-        print("❌ AUCUN 2D-Doc détecté après le prétraitement avec ZXing.")
+        print("❌ AUCUN 2D-Doc détecté après prétraitement.")
         return None
 
     # Extraction des données
@@ -62,6 +67,6 @@ def read_2ddoc_zxing(image_path):
 
     return qr_text
 
-# 📌 Test avec votre image
+# 📌 Exécuter avec votre image
 image_path = "chemin/vers/image_du_2d_doc.png"  # Remplacez par votre fichier
-read_2ddoc_zxing(image_path)
+read_2ddoc(image_path)
