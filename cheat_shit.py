@@ -1,58 +1,59 @@
+import fitz  # PyMuPDF
 import cv2
 import numpy as np
-from pdf2image import convert_from_path
 from pylibdmtx.pylibdmtx import decode
-from PIL import Image
 
-def extract_first_page_as_image(pdf_path, dpi=300):
+def extract_first_page_as_image(pdf_path, output_image="page1.png"):
     """
-    Convertit UNIQUEMENT la première page du PDF en image haute résolution.
+    Extrait la première page d'un PDF et la sauvegarde comme image.
     """
-    print("🔹 Extraction de la première page du PDF...")
-    images = convert_from_path(pdf_path, dpi=dpi, first_page=1, last_page=1)
-    
-    if not images:
-        print("❌ ERREUR : Impossible d'extraire une image du PDF.")
+    print("🔹 Extraction de la première page du PDF avec PyMuPDF...")
+    try:
+        # Ouvrir le PDF
+        pdf_document = fitz.open(pdf_path)
+        # Récupérer la première page
+        page = pdf_document[0]
+        # Convertir la page en image (300 DPI)
+        pix = page.get_pixmap(dpi=300)
+        # Sauvegarder l'image
+        pix.save(output_image)
+        print(f"✅ Première page extraite et sauvegardée sous {output_image}.")
+        return output_image
+    except Exception as e:
+        print(f"❌ ERREUR : {e}")
         return None
 
-    print("✅ Première page extraite avec succès.")
-    return images[0]  # Retourne l’image de la première page
-
-def read_2ddoc_from_pdf(pdf_path):
+def read_2ddoc_from_image(image_path):
     """
-    Extrait un 2D-Doc depuis la première page d'un PDF et le lit.
+    Détecte et lit un 2D-Doc dans une image.
     """
-    print("\n🔹 Début du scan du 2D-Doc à partir du PDF...")
+    print("🔹 Lecture du 2D-Doc à partir de l'image...")
+    image = cv2.imread(image_path, cv2.IMREAD_GRAYSCALE)
 
-    # Extraire la première page sous forme d’image
-    image_pil = extract_first_page_as_image(pdf_path)
-
-    if image_pil is None:
-        print("❌ Impossible d'extraire l’image depuis le PDF.")
+    if image is None:
+        print("❌ Impossible de charger l'image.")
         return None
 
-    # Convertir en niveaux de gris pour traitement
-    image_cv = cv2.cvtColor(np.array(image_pil), cv2.COLOR_RGB2GRAY)
-
-    # Appliquer une binarisation stricte (Noir et Blanc)
-    print("🔹 Conversion en noir et blanc...")
-    _, image_bin = cv2.threshold(image_cv, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
+    # Prétraitement pour améliorer la lisibilité
+    _, image_bin = cv2.threshold(image, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
 
     # Scanner le DataMatrix (2D-Doc)
-    print("🔹 Détection du 2D-Doc en cours...")
     decoded_data = decode(image_bin)
 
     if not decoded_data:
-        print("❌ AUCUN 2D-Doc détecté après extraction depuis le PDF.")
+        print("❌ AUCUN 2D-Doc détecté dans l'image.")
         return None
 
-    # Extraction des données
+    # Extraire les données
     qr_text = decoded_data[0].data.decode("utf-8")
     print("\n📄 **Données extraites du 2D-Doc :**\n")
     print(qr_text)
 
     return qr_text
 
-# 📌 Exécuter avec votre fichier PDF
-pdf_path = "chemin/vers/mon_fichier.pdf"  # Remplacez par le chemin du PDF
-read_2ddoc_from_pdf(pdf_path)
+# 📌 Test du script avec un PDF
+pdf_path = "chemin/vers/mon_fichier.pdf"  # Remplacez par le chemin de votre PDF
+image_path = extract_first_page_as_image(pdf_path)
+
+if image_path:
+    read_2ddoc_from_image(image_path)
