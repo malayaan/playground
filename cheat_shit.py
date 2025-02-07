@@ -1,84 +1,55 @@
-import fitz  # PyMuPDF
-import cv2
-import numpy as np
-from pylibdmtx.pylibdmtx import decode
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
 
-def extract_first_page_as_image(pdf_path, output_image="page1.png"):
+def analyze_easypoc_responses(df, entity_name, dico):
     """
-    Extrait la première page du PDF et la sauvegarde comme image.
+    Analyzes EasyPOC survey responses for a specific entity, focusing only on questions defined in the dictionary.
+    Outputs a DataFrame with percentages and a gradient-colored heatmap.
+
+    Arguments:
+    df -- DataFrame containing the EasyPOC survey responses.
+    entity_name -- Name of the entity to analyze.
+    dico -- Dictionary with questions of interest as keys and possible answers (from most positive to most negative) as values.
+
+    Returns:
+    A DataFrame containing percentages for each response and a heatmap visualization.
     """
-    print("🔹 Extraction de la première page du PDF avec PyMuPDF...")
-    try:
-        # Ouvrir le PDF
-        pdf_document = fitz.open(pdf_path)
-        # Récupérer la première page
-        page = pdf_document[0]
-        # Convertir la page en image (300 DPI)
-        pix = page.get_pixmap(dpi=300)
-        # Sauvegarder l'image
-        pix.save(output_image)
-        print(f"✅ Première page extraite et sauvegardée sous {output_image}.")
-        return output_image
-    except Exception as e:
-        print(f"❌ ERREUR : {e}")
+    # Filter data for the specified entity
+    entity_df = df[df['entity'] == entity_name]
+
+    if entity_df.empty:
+        print(f"No data found for the entity: {entity_name}")
         return None
 
-def crop_qr_code_zone(image_path, crop_x=50, crop_y=50, crop_width=300, crop_height=300):
-    """
-    Recadre uniquement la zone du 2D-Doc (QR Code) en haut à gauche.
-    Ajustez les coordonnées selon la position exacte.
-    """
-    print("🔹 Recadrage de la zone contenant le 2D-Doc...")
-    image = cv2.imread(image_path, cv2.IMREAD_GRAYSCALE)
+    # Prepare a results DataFrame
+    result_df = pd.DataFrame(columns=['Question', 'Response', 'Percentage'])
 
-    if image is None:
-        print("❌ Impossible de charger l'image.")
-        return None
+    # Calculate percentages for each question of interest
+    for question, response_list in dico.items():
+        if question in df.columns:
+            value_counts = entity_df[question].value_counts(normalize=True) * 100
+            for response in response_list:
+                percentage = value_counts.get(response, 0)
+                result_df = result_df.append({
+                    'Question': question,
+                    'Response': response,
+                    'Percentage': percentage
+                }, ignore_index=True)
 
-    # Définir la région où se trouve le 2D-Doc (ajustez les valeurs si nécessaire)
-    qr_code_region = image[crop_y:crop_y + crop_height, crop_x:crop_x + crop_width]
+    # Pivot the data for better visualization
+    pivot_df = result_df.pivot(index='Question', columns='Response', values='Percentage').fillna(0)
 
-    # Sauvegarder pour vérifier visuellement
-    cropped_image_path = "cropped_qrcode.png"
-    cv2.imwrite(cropped_image_path, qr_code_region)
-    print(f"✅ Zone du 2D-Doc extraite et sauvegardée sous {cropped_image_path}.")
+    # Reorder columns based on the response order in the dictionary
+    pivot_df = pivot_df[[response for question in dico.keys() for response in dico[question] if response in pivot_df.columns]]
 
-    return cropped_image_path
+    # Plot a heatmap to visualize percentages with a gradient
+    plt.figure(figsize=(12, 8))
+    sns.heatmap(pivot_df, annot=True, fmt=".1f", cmap="RdYlGn", cbar_kws={'label': 'Percentage (%)'}, linewidths=0.5)
+    plt.title(f"Distribution of Responses for Entity: {entity_name}")
+    plt.xlabel("Responses")
+    plt.ylabel("Questions")
+    plt.tight_layout()
+    plt.show()
 
-def read_2ddoc_from_image(image_path):
-    """
-    Détecte et lit un 2D-Doc dans une image recadrée.
-    """
-    print("🔹 Lecture du 2D-Doc à partir de l'image...")
-    image = cv2.imread(image_path, cv2.IMREAD_GRAYSCALE)
-
-    if image is None:
-        print("❌ Impossible de charger l'image.")
-        return None
-
-    # Appliquer un prétraitement pour améliorer la lisibilité
-    _, image_bin = cv2.threshold(image, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
-
-    # Scanner le DataMatrix (2D-Doc)
-    print("🔹 Détection du 2D-Doc en cours...")
-    decoded_data = decode(image_bin)
-
-    if not decoded_data:
-        print("❌ AUCUN 2D-Doc détecté dans l'image.")
-        return None
-
-    # Extraire les données
-    qr_text = decoded_data[0].data.decode("utf-8")
-    print("\n📄 **Données extraites du 2D-Doc :**\n")
-    print(qr_text)
-
-    return qr_text
-
-# 📌 Exécuter avec votre PDF
-pdf_path = "chemin/vers/mon_fichier.pdf"  # Remplacez par le chemin de votre PDF
-full_image_path = extract_first_page_as_image(pdf_path)
-
-if full_image_path:
-    cropped_image_path = crop_qr_code_zone(full_image_path, crop_x=50, crop_y=50, crop_width=300, crop_height=300)
-    if cropped_image_path:
-        read_2ddoc_from_image(cropped_image_path)
+    return result_df
