@@ -4,8 +4,8 @@ import seaborn as sns
 
 def analyze_easypoc_responses(df, entity_name, dico):
     """
-    Analyzes EasyPOC survey responses for a specific entity, focusing only on questions defined in the dictionary.
-    Outputs a DataFrame with percentages and a gradient-colored heatmap.
+    Analyzes EasyPOC survey responses for a specific entity, focusing on questions defined in the dictionary.
+    The column "Questions" contains question names, and "Responses" contains the answers.
 
     Arguments:
     df -- DataFrame containing the EasyPOC survey responses.
@@ -15,29 +15,38 @@ def analyze_easypoc_responses(df, entity_name, dico):
     Returns:
     A DataFrame containing percentages for each response and a heatmap visualization.
     """
-    # Filter data for the specified entity
+    # Filter the DataFrame for the specified entity
     entity_df = df[df['entity'] == entity_name]
 
     if entity_df.empty:
         print(f"No data found for the entity: {entity_name}")
         return None
 
-    # Prepare a results DataFrame
+    # Prepare a DataFrame to store results
     result_df = pd.DataFrame(columns=['Question', 'Response', 'Percentage'])
 
-    # Calculate percentages for each question of interest
+    # Loop through the dictionary to compute percentages for each question
     for question, response_list in dico.items():
-        if question in df.columns:
-            value_counts = entity_df[question].value_counts(normalize=True) * 100
-            for response in response_list:
-                percentage = value_counts.get(response, 0)
-                result_df = result_df.append({
-                    'Question': question,
-                    'Response': response,
-                    'Percentage': percentage
-                }, ignore_index=True)
+        # Filter rows for the current question
+        question_df = entity_df[entity_df['Questions'] == question]
 
-    # Pivot the data for better visualization
+        if question_df.empty:
+            print(f"No responses found for question: {question}")
+            continue
+
+        # Count responses and normalize to percentages
+        value_counts = question_df['Responses'].value_counts(normalize=True) * 100
+
+        # Add data to the result DataFrame
+        for response in response_list:
+            percentage = value_counts.get(response, 0)
+            result_df = result_df.append({
+                'Question': question,
+                'Response': response,
+                'Percentage': percentage
+            }, ignore_index=True)
+
+    # Pivot the result DataFrame for better visualization
     pivot_df = result_df.pivot(index='Question', columns='Response', values='Percentage').fillna(0)
 
     # Reorder columns based on the response order in the dictionary
