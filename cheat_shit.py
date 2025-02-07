@@ -5,12 +5,12 @@ import numpy as np
 def analyze_easypoc_responses(df, entity_name, dico):
     """
     Analyzes EasyPOC survey responses for a specific entity and visualizes results with vertical bars.
-    Only responses present in the dictionary are included in the percentages, which are normalized to 100%.
+    Colors are inverted based on the reversed order of answers in the dictionary.
 
     Arguments:
     df -- DataFrame containing EasyPOC survey responses.
     entity_name -- Name of the entity to analyze.
-    dico -- Dictionary with questions of interest as keys and possible answers (ordered from most negative to most positive).
+    dico -- Dictionary with questions of interest as keys and possible answers (ordered from most positive to most negative).
 
     Returns:
     A vertical bar chart visualizing response distributions and a DataFrame of percentages.
@@ -27,6 +27,9 @@ def analyze_easypoc_responses(df, entity_name, dico):
 
     # Process each question
     for question, answer_list in dico.items():
+        # Reverse the answer list to invert the gradient
+        reversed_answer_list = answer_list[::-1]
+
         # Filter data for the specific question
         question_df = entity_df[entity_df['question'] == question]
 
@@ -34,20 +37,20 @@ def analyze_easypoc_responses(df, entity_name, dico):
             print(f"No answers found for question: {question}")
             continue
 
-        # Filter the answers based on the dictionary
-        filtered_df = question_df[question_df['answer'].isin(answer_list)]
+        # Filter the answers based on the reversed dictionary
+        filtered_df = question_df[question_df['answer'].isin(reversed_answer_list)]
 
         # Count the answers and normalize to percentages
         value_counts = filtered_df['answer'].value_counts()
         total_count = value_counts.sum()
-        percentages = [((value_counts.get(answer, 0) / total_count) * 100) for answer in answer_list]
+        percentages = [((value_counts.get(answer, 0) / total_count) * 100) for answer in reversed_answer_list]
 
         # Add to the result DataFrame
         result_df = result_df.append(pd.DataFrame({
-            'question': [question] * len(answer_list),
-            'answer': answer_list,
+            'question': [question] * len(reversed_answer_list),
+            'answer': reversed_answer_list,
             'percentage': percentages,
-            'color': np.linspace(0, 1, len(answer_list))  # Gradient from red to green
+            'color': np.linspace(0, 1, len(reversed_answer_list))  # Gradient from green to red
         }), ignore_index=True)
 
     # Create a vertical bar chart
@@ -61,7 +64,7 @@ def analyze_easypoc_responses(df, entity_name, dico):
                 x=i, 
                 height=row['percentage'], 
                 bottom=bottom, 
-                color=plt.cm.RdYlGn(row['color']), 
+                color=plt.cm.RdYlGn(row['color']),  # Adjusted gradient
                 edgecolor='black', 
                 width=0.8
             )
