@@ -5,12 +5,13 @@ import numpy as np
 def analyze_easypoc_responses(df, entity_name, dico):
     """
     Analyzes EasyPOC survey responses for a specific entity and visualizes results with vertical bars.
-    Colors are inverted based on the reversed order of answers in the dictionary.
+    Uses the question short name from the dictionary for the x-axis labels.
 
     Arguments:
     df -- DataFrame containing EasyPOC survey responses.
     entity_name -- Name of the entity to analyze.
-    dico -- Dictionary with questions of interest as keys and possible answers (ordered from most positive to most negative).
+    dico -- Dictionary with questions of interest as keys. Each value is a tuple:
+            (short_name, [list of possible answers in order from most negative to most positive]).
 
     Returns:
     A vertical bar chart visualizing response distributions and a DataFrame of percentages.
@@ -26,7 +27,7 @@ def analyze_easypoc_responses(df, entity_name, dico):
     result_df = pd.DataFrame()
 
     # Process each question
-    for question, answer_list in dico.items():
+    for question, (short_name, answer_list) in dico.items():
         # Reverse the answer list to invert the gradient
         reversed_answer_list = answer_list[::-1]
 
@@ -37,7 +38,7 @@ def analyze_easypoc_responses(df, entity_name, dico):
             print(f"No answers found for question: {question}")
             continue
 
-        # Filter the answers based on the reversed dictionary
+        # Filter the answers based on the dictionary
         filtered_df = question_df[question_df['answer'].isin(reversed_answer_list)]
 
         # Count the answers and normalize to percentages
@@ -47,7 +48,7 @@ def analyze_easypoc_responses(df, entity_name, dico):
 
         # Add to the result DataFrame
         result_df = result_df.append(pd.DataFrame({
-            'question': [question] * len(reversed_answer_list),
+            'question': [short_name] * len(reversed_answer_list),
             'answer': reversed_answer_list,
             'percentage': percentages,
             'color': np.linspace(0, 1, len(reversed_answer_list))  # Gradient from green to red
