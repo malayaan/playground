@@ -4,8 +4,8 @@ import numpy as np
 
 def analyze_easypoc_responses(df, entity_name, dico):
     """
-    Analyzes EasyPOC survey responses for a specific entity and visualizes results with questions on the x-axis
-    and percentages on the y-axis, using color gradients for positive (green) to negative (red) responses.
+    Analyzes EasyPOC survey responses for a specific entity and visualizes results with vertical bars.
+    Each question has a continuous bar segmented by percentage categories, with a gradient from red to green.
 
     Arguments:
     df -- DataFrame containing EasyPOC survey responses.
@@ -13,7 +13,7 @@ def analyze_easypoc_responses(df, entity_name, dico):
     dico -- Dictionary with questions of interest as keys and possible responses (ordered from most negative to most positive).
 
     Returns:
-    A bar plot visualizing response distributions and a DataFrame of percentages.
+    A vertical bar chart visualizing response distributions and a DataFrame of percentages.
     """
     # Filter the DataFrame for the specified entity
     entity_df = df[df['entity'] == entity_name]
@@ -47,25 +47,28 @@ def analyze_easypoc_responses(df, entity_name, dico):
         }), ignore_index=True)
 
     # Pivot for visualization
-    pivot_df = result_df.pivot(index='response', columns='question', values='percentage')
-
-    # Plotting
     questions = result_df['question'].unique()
-    plt.figure(figsize=(12, 6))
-    for i, question in enumerate(questions):
-        percentages = result_df[result_df['question'] == question]['percentage']
-        color_map = plt.cm.RdYlGn(np.linspace(0, 1, len(percentages)))
-        plt.bar(
-            [i] * len(percentages), 
-            percentages, 
-            color=color_map,
-            edgecolor='black', 
-            width=0.8, 
-            align='center',
-            bottom=percentages.cumsum().shift(fill_value=0) - percentages
-        )
 
+    # Create a vertical bar chart
+    plt.figure(figsize=(10, 6))
+    for i, question in enumerate(questions):
+        data = result_df[result_df['question'] == question]
+        bottom = 0
+        for j, row in data.iterrows():
+            plt.bar(
+                x=i, 
+                height=row['percentage'], 
+                bottom=bottom, 
+                color=plt.cm.RdYlGn(row['color']), 
+                edgecolor='black', 
+                width=0.8
+            )
+            bottom += row['percentage']  # Increment the bottom for stacking
+
+    # Set x-axis and y-axis labels
     plt.xticks(range(len(questions)), questions, rotation=45, ha='right')
+    plt.yticks(range(0, 101, 10))
+    plt.ylim(0, 100)
     plt.ylabel('Percentage (%)')
     plt.title(f'Distribution of Responses for Entity: {entity_name}')
     plt.tight_layout()
