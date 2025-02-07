@@ -1,19 +1,19 @@
 import pandas as pd
 import matplotlib.pyplot as plt
-import seaborn as sns
+import numpy as np
 
 def analyze_easypoc_responses(df, entity_name, dico):
     """
-    Analyzes EasyPOC survey responses for a specific entity, focusing on questions defined in the dictionary.
-    The column "Questions" contains question names, and "Responses" contains the answers.
+    Analyzes EasyPOC survey responses for a specific entity and visualizes results with questions on the x-axis
+    and percentages on the y-axis, using color gradients for positive (green) to negative (red) responses.
 
     Arguments:
-    df -- DataFrame containing the EasyPOC survey responses.
+    df -- DataFrame containing EasyPOC survey responses.
     entity_name -- Name of the entity to analyze.
-    dico -- Dictionary with questions of interest as keys and possible answers (from most positive to most negative) as values.
+    dico -- Dictionary with questions of interest as keys and possible responses (ordered from most negative to most positive).
 
     Returns:
-    A DataFrame containing percentages for each response and a heatmap visualization.
+    A bar plot visualizing response distributions and a DataFrame of percentages.
     """
     # Filter the DataFrame for the specified entity
     entity_df = df[df['entity'] == entity_name]
@@ -22,42 +22,52 @@ def analyze_easypoc_responses(df, entity_name, dico):
         print(f"No data found for the entity: {entity_name}")
         return None
 
-    # Prepare a DataFrame to store results
-    result_df = pd.DataFrame(columns=['Question', 'Response', 'Percentage'])
+    # Prepare a DataFrame to store percentages
+    result_df = pd.DataFrame()
 
-    # Loop through the dictionary to compute percentages for each question
+    # Process each question
     for question, response_list in dico.items():
-        # Filter rows for the current question
-        question_df = entity_df[entity_df['Questions'] == question]
+        # Filter data for the specific question
+        question_df = entity_df[entity_df['question'] == question]
 
         if question_df.empty:
             print(f"No responses found for question: {question}")
             continue
 
-        # Count responses and normalize to percentages
-        value_counts = question_df['Responses'].value_counts(normalize=True) * 100
+        # Count the responses and normalize to percentages
+        value_counts = question_df['response'].value_counts(normalize=True) * 100
+        percentages = [value_counts.get(response, 0) for response in response_list]
 
-        # Add data to the result DataFrame
-        for response in response_list:
-            percentage = value_counts.get(response, 0)
-            result_df = result_df.append({
-                'Question': question,
-                'Response': response,
-                'Percentage': percentage
-            }, ignore_index=True)
+        # Add to the result DataFrame
+        result_df = result_df.append(pd.DataFrame({
+            'question': [question] * len(response_list),
+            'response': response_list,
+            'percentage': percentages,
+            'color': np.linspace(0, 1, len(response_list))  # Gradient from red to green
+        }), ignore_index=True)
 
-    # Pivot the result DataFrame for better visualization
-    pivot_df = result_df.pivot(index='Question', columns='Response', values='Percentage').fillna(0)
+    # Pivot for visualization
+    pivot_df = result_df.pivot(index='response', columns='question', values='percentage')
 
-    # Reorder columns based on the response order in the dictionary
-    pivot_df = pivot_df[[response for question in dico.keys() for response in dico[question] if response in pivot_df.columns]]
+    # Plotting
+    questions = result_df['question'].unique()
+    plt.figure(figsize=(12, 6))
+    for i, question in enumerate(questions):
+        percentages = result_df[result_df['question'] == question]['percentage']
+        color_map = plt.cm.RdYlGn(np.linspace(0, 1, len(percentages)))
+        plt.bar(
+            [i] * len(percentages), 
+            percentages, 
+            color=color_map,
+            edgecolor='black', 
+            width=0.8, 
+            align='center',
+            bottom=percentages.cumsum().shift(fill_value=0) - percentages
+        )
 
-    # Plot a heatmap to visualize percentages with a gradient
-    plt.figure(figsize=(12, 8))
-    sns.heatmap(pivot_df, annot=True, fmt=".1f", cmap="RdYlGn", cbar_kws={'label': 'Percentage (%)'}, linewidths=0.5)
-    plt.title(f"Distribution of Responses for Entity: {entity_name}")
-    plt.xlabel("Responses")
-    plt.ylabel("Questions")
+    plt.xticks(range(len(questions)), questions, rotation=45, ha='right')
+    plt.ylabel('Percentage (%)')
+    plt.title(f'Distribution of Responses for Entity: {entity_name}')
     plt.tight_layout()
     plt.show()
 
