@@ -10,7 +10,7 @@ def get_business_line_by_audit_team(df, audit_team_column, business_line_column,
     audit_team -- The audit/inspection team to filter on.
 
     Returns:
-    business_lines -- A set of unique second-level (or unique) elements in the business line hierarchy.
+    business_lines -- A list of unique second-level (or unique) elements in the business line hierarchy.
     """
     business_lines = set()
     
@@ -35,5 +35,8 @@ def get_business_line_by_audit_team(df, audit_team_column, business_line_column,
         elif len(elements) > 1:
             # If multiple elements, add the second element
             business_lines.add(elements[1].strip())
+
+    # Convert to a list and remove empty strings if any
+    business_lines = list(filter(None, business_lines))
 
     return business_lines
