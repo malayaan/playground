@@ -1,42 +1,59 @@
-def get_business_line_by_audit_team(df, audit_team_column, business_line_column, audit_team):
+def calculate_entity_comparison_df(df, audit_team_column, business_line_column, question, dico, audit_team):
     """
-    Retrieves the list of second elements (or unique elements if only one exists) 
-    in the "Main Business Line" column for a given audit/inspection team.
+    Calculates a comparison DataFrame for multiple audited entities answering a specific question.
 
     Arguments:
     df -- DataFrame containing the data.
-    audit_team_column -- Name of the column containing the audit/inspection teams.
-    business_line_column -- Name of the column containing the business lines.
-    audit_team -- The audit/inspection team to filter on.
+    audit_team_column -- Name of the column containing audit/inspection teams.
+    business_line_column -- Name of the column containing the audited business lines.
+    question -- The specific question to analyze.
+    dico -- Dictionary where each key is a question, and each value is a tuple:
+            (short_name, [list of possible answers in order from most negative to most positive]).
+    audit_team -- The audit/inspection team to determine the scope of audited entities.
 
     Returns:
-    business_lines -- A list of unique second-level (or unique) elements in the business line hierarchy.
+    result_df -- A DataFrame containing entity, answer, percentage, and color gradient.
     """
-    business_lines = set()
+    # Ensure the question exists in the dictionary
+    if question not in dico:
+        raise ValueError(f"Question '{question}' is not defined in the dictionary.")
     
-    # Filter rows where the audit team matches
-    filtered_df = df[df[audit_team_column].str.contains(
-        rf"(^{audit_team}$)|(^|/){audit_team}(/|$)",  # Robust regex for audit team matching
-        regex=True, na=False
-    )]
+    short_name, answer_list = dico[question]
+    reversed_answer_list = answer_list[::-1]  # Reverse for gradient (green to red)
 
-    # Extract and process the business line elements
-    for business_line in filtered_df[business_line_column]:
-        if pd.isna(business_line) or business_line.strip() == "":
-            # Skip empty or NaN values
+    # Get the list of entities audited by the given audit team
+    audited_entities = get_business_line_by_audit_team(df, audit_team_column, business_line_column, audit_team)
+
+    if not audited_entities:
+        print(f"No audited entities found for audit team '{audit_team}'.")
+        return None
+
+    # Prepare a DataFrame to store the results
+    result_df = pd.DataFrame()
+
+    # Process each audited entity
+    for entity in audited_entities:
+        # Filter the DataFrame for the current entity and question
+        entity_df = df[(df[business_line_column] == entity) & (df['question'] == question)]
+
+        if entity_df.empty:
+            print(f"No answers found for entity '{entity}' and question '{question}'.")
             continue
 
-        # Split the business line into parts
-        elements = business_line.split("/")
-        
-        if len(elements) == 1:
-            # If only one element, add it as is
-            business_lines.add(elements[0].strip())
-        elif len(elements) > 1:
-            # If multiple elements, add the second element
-            business_lines.add(elements[1].strip())
+        # Filter answers based on the dictionary
+        filtered_df = entity_df[entity_df['answer'].isin(reversed_answer_list)]
 
-    # Convert to a list and remove empty strings if any
-    business_lines = list(filter(None, business_lines))
+        # Count answers and normalize to percentages
+        value_counts = filtered_df['answer'].value_counts()
+        total_count = value_counts.sum()
+        percentages = [((value_counts.get(answer, 0) / total_count) * 100) for answer in reversed_answer_list]
 
-    return business_lines
+        # Add to the result DataFrame
+        result_df = result_df.append(pd.DataFrame({
+            'bar': [entity] * len(reversed_answer_list),  # Use entity names in 'bar' column
+            'answer': reversed_answer_list,
+            'percentage': percentages,
+            'color': np.linspace(0, 1, len(reversed_answer_list))  # Gradient from green to red
+        }), ignore_index=True)
+
+    return result_df
