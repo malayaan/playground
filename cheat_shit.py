@@ -1,15 +1,15 @@
-def calculate_entity_comparison_df(df, audit_team_column, business_line_column, question, dico, audit_team):
+def calculate_entity_comparison_df(df, question, dico, audit_team, audit_team_column="MainAuditTeam", business_line_column="MainBusinessLine"):
     """
     Calculates a comparison DataFrame for multiple audited entities answering a specific question.
 
     Arguments:
     df -- DataFrame containing the data.
-    audit_team_column -- Name of the column containing audit/inspection teams.
-    business_line_column -- Name of the column containing the audited business lines.
     question -- The specific question to analyze.
     dico -- Dictionary where each key is a question, and each value is a tuple:
             (short_name, [list of possible answers in order from most negative to most positive]).
     audit_team -- The audit/inspection team to determine the scope of audited entities.
+    audit_team_column -- Name of the column containing audit/inspection teams.
+    business_line_column -- Name of the column containing the audited business lines.
 
     Returns:
     result_df -- A DataFrame containing entity, answer, percentage, and color gradient.
@@ -33,15 +33,15 @@ def calculate_entity_comparison_df(df, audit_team_column, business_line_column, 
 
     # Process each audited entity
     for entity in audited_entities:
-        # Filter the DataFrame for the current entity and question
-        entity_df = df[(df[business_line_column] == entity) & (df['question'] == question)]
+        # Use filter_by_category to filter for the current entity
+        entity_df = filter_by_category(df, business_line_column, entity)
 
         if entity_df.empty:
             print(f"No answers found for entity '{entity}' and question '{question}'.")
             continue
 
-        # Filter answers based on the dictionary
-        filtered_df = entity_df[entity_df['answer'].isin(reversed_answer_list)]
+        # Filter the question and answers based on the dictionary
+        filtered_df = entity_df[(entity_df['question'] == question) & (entity_df['answer'].isin(reversed_answer_list))]
 
         # Count answers and normalize to percentages
         value_counts = filtered_df['answer'].value_counts()
