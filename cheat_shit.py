@@ -18,7 +18,10 @@ def filter_by_category(df, column_name, category):
     # Filter out rows where the column is empty or contains NaN
     valid_df = df[df[column_name].notna() & (df[column_name].str.strip() != "")]
     
-    # Apply the category filtering
-    filtered_df = valid_df[valid_df[column_name].str.contains(f"(^|/){category}(/|$)", regex=True)]
+    # Apply the category filtering with the updated RegEx
+    filtered_df = valid_df[valid_df[column_name].str.contains(
+        rf"(^{category}$)|(^|/){category}(/|$)",  # Updated RegEx
+        regex=True
+    )]
     
     return filtered_df
