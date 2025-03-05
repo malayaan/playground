@@ -1,4 +1,4 @@
-Voici une version modifiée de la fonction qui enveloppe la vérification du format (et d’autres tests) dans un bloc try/except, afin de lever une exception si le fichier ne respecte pas les critères attendus. Cela permet de récupérer une erreur comme dans le code d’origine.
+Voici un exemple de code qui reprend la structure “try / except” avec des continue pour chaque exception, afin de imiter le fonctionnement du code d’origine. On applique en plus un nettoyage du canal droit via noisereduce :
 
 import os
 import numpy as np
@@ -10,123 +10,140 @@ def extract_audio_channel_and_clean(audio_files, path_filter_list=None, min_dura
     """
     Extrait le canal 'adviser' (canal droit) d'un fichier audio stéréo,
     applique une réduction de bruit via noisereduce, et exporte le résultat.
-    
-    Les tests sur l'extension, la stéréo, la durée et la séparation des canaux
-    sont faits via des try/except qui lèvent une erreur en cas de problème,
-    de façon similaire au code d'origine.
-    
-    Paramètres :
-    -----------
-    audio_files : list
-        Liste de chemins vers les fichiers audio (wav ou mp3).
-    path_filter_list : list
-        Liste de mots/chaînes à filtrer dans le chemin du fichier.
-    min_duration : float
-        Durée minimale (en secondes) en dessous de laquelle le fichier est ignoré.
-    
-    Retourne :
-    ---------
-    missed_dict : dict
-        Dictionnaire {audio_file: "raison"} pour les fichiers ignorés ou en erreur.
+
+    On gère les erreurs avec des except + continue, de façon similaire à l'exemple d'origine.
     """
-    
+
     if path_filter_list is None:
         path_filter_list = []
 
     missed_dict = {}
 
     for audio_file in audio_files:
+        # -- Étape 1 : Filtrer le chemin s'il contient un mot interdit --
+        if any(filtre in audio_file for filtre in path_filter_list):
+            print(f"[SKIP] {audio_file} (filtré par path_filter_list)")
+            continue
+
+        # -- Étape 2 : Vérifier l'extension --
+        ext = os.path.splitext(audio_file)[1].lower()
+        if ext not in [".wav", ".mp3"]:
+            print(f"[SKIP] {audio_file} (extension non prise en charge)")
+            missed_dict[audio_file] = "unsupported extension"
+            continue
+
         try:
-            # 1) Vérifier si le chemin contient un mot filtrant
-            if any(filtre in audio_file for filtre in path_filter_list):
-                print(f"[SKIP] {audio_file} (filtré par path_filter_list)")
-                continue
-
-            # 2) Vérification de l'extension
-            ext = os.path.splitext(audio_file)[1].lower()
-            if ext not in [".wav", ".mp3"]:
-                raise ValueError("unsupported extension")
-
-            # 3) Charger le fichier audio
+            # -- Étape 3 : Charger le fichier audio --
             if ext == ".wav":
                 track = AudioSegment.from_file(audio_file, format="wav")
             else:
                 track = AudioSegment.from_file(audio_file, format="mp3")
 
-            # 4) Vérifier que l'audio est stéréo
+            # -- Étape 4 : Vérifier la stéréo --
             if track.channels != 2:
+                # On lève une ValueError pour gérer ça dans un except distinct
                 raise ValueError("not stereo")
 
-            # 5) Vérifier la durée minimale
+            # -- Étape 5 : Vérifier la durée minimale --
             duration_sec = len(track) / 1000.0
             if duration_sec < min_duration:
                 raise ValueError("too short")
 
-            # 6) Séparer les canaux stéréo en deux pistes mono
+            # -- Étape 6 : Séparer les canaux stéréo --
             channels = track.split_to_mono()
             if len(channels) < 2:
                 raise ValueError("split error")
-            # Hypothèse : canal gauche = channels[0], canal droit = channels[1]
+
+            # Canal adviser = canal droit (index 1)
             adviser_channel = channels[1]
 
-            # 7) Convertir le canal en tableau NumPy en float32
+            # -- Étape 7 : Réduction de bruit --
+            # Convertir en numpy float32 pour noisereduce
             samples = np.array(adviser_channel.get_array_of_samples()).astype(np.float32)
-
-            # 8) Réduire le bruit avec noisereduce
             reduced_noise = nr.reduce_noise(
                 y=samples,
-                sr=adviser_channel.frame_rate  # ex: 44100 ou 16000
+                sr=adviser_channel.frame_rate
             )
 
-            # 9) Reconvertir le signal en int16 pour recréer un AudioSegment
+            # -- Étape 8 : Recréer un AudioSegment à partir du signal nettoyé --
             reduced_noise_int16 = np.int16(reduced_noise)
             cleaned_segment = AudioSegment(
                 reduced_noise_int16.tobytes(),
                 frame_rate=adviser_channel.frame_rate,
-                sample_width=2,  # int16 = 2 octets
-                channels=1       # on reste en mono
+                sample_width=2,  # 16 bits
+                channels=1
             )
 
-            # (Optionnel) Normaliser le volume
+            # (Optionnel) Normalisation
             # from pydub import effects
             # cleaned_segment = effects.normalize(cleaned_segment)
 
-            # 10) Exporter le canal nettoyé
+            # -- Étape 9 : Exporter le canal nettoyé --
             output_file = os.path.splitext(audio_file)[0] + "_adviser_cleaned.wav"
             cleaned_segment.export(output_file, format="wav")
             print(f"[OK] Canal adviser nettoyé et exporté : {output_file}")
 
         except CouldntDecodeError:
+            # Cas d'erreur de décodage (fichier corrompu, etc.)
             print(f"[ERREUR] Impossible de décoder {audio_file}")
             missed_dict[audio_file] = "decoding error"
-        except Exception as e:
+            continue
+
+        except ValueError as e:
+            # Cas d'erreur pour "not stereo", "too short", "split error", etc.
             print(f"[ERREUR] {audio_file} : {e}")
             missed_dict[audio_file] = str(e)
+            continue
+
+        except Exception as e:
+            # Toute autre erreur imprévue
+            print(f"[ERREUR] {audio_file} : {e}")
+            missed_dict[audio_file] = str(e)
+            continue
 
     return missed_dict
 
 Explications
 
-Test de format et autres vérifications
-Pour chaque fichier, on vérifie dans un bloc try/except :
+1. Bloc try/except :
 
-Si le chemin contient un mot à filtrer.
+Tout le cœur du traitement (chargement, vérifications, réduction de bruit, export) est dans un seul bloc try.
 
-Si l'extension est supportée (sinon, on lève une exception ValueError).
+Les exceptions sont gérées séparément :
 
-Si le fichier est décodable et en stéréo (sinon, on lève une exception).
+CouldntDecodeError : erreur de décodage audio.
 
-Si la durée est suffisante.
+ValueError : on lève nous-mêmes cette exception pour les cas « not stereo », « too short », etc.
 
-Si la séparation en deux canaux est possible.
-
-
-Traitement et réduction de bruit
-Le canal « adviser » (ici, le canal droit, channels[1]) est converti en tableau NumPy pour appliquer noisereduce, puis reconverti en AudioSegment.
-
-Gestion des erreurs
-Les exceptions sont capturées et un message d’erreur est affiché, tout en enregistrant le fichier problématique dans le dictionnaire missed_dict.
+Exception : tout le reste.
 
 
-Cette structure vous permet d’avoir un contrôle fin sur les erreurs, similaire à votre code d’origine.
+Dans chaque bloc except, on enregistre le fichier fautif dans missed_dict[audio_file] = "raison" puis on fait un continue pour passer au fichier suivant.
+
+
+
+2. Structure “inspirée du code d’origine” :
+
+On reprend l’idée de faire des continue après avoir enregistré l’erreur (ou le skip) dans un dictionnaire.
+
+On a un “if extension not in [...] : skip + continue” avant même le try, comme dans beaucoup de scripts originaux qui trient vite le format.
+
+
+
+3. Réduction de bruit :
+
+On utilise noisereduce.reduce_noise(...) avec le canal droit converti en NumPy.
+
+On reconstitue ensuite un AudioSegment mono.
+
+
+
+4. Export :
+
+On exporte sous la forme fichier_adviser_cleaned.wav.
+
+
+
+
+Cette approche combine donc la structure d’erreurs (try/except + continue) que vous souhaitiez conserver, et la logique de réduction de bruit noisereduce.
 
