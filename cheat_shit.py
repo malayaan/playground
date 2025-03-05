@@ -1,112 +1,107 @@
-Pour un nettoyage audio (réduction de bruit, amélioration de la qualité) en Python sans utiliser de modèle externe compliqué, vous pouvez essayer l’approche suivante :
-
-1. Charger l’audio via pydub.
-
-
-2. Convertir en tableau NumPy pour appliquer un traitement.
-
-
-3. Utiliser une librairie de réduction de bruit (par exemple noisereduce), qui emploie un algorithme de type « spectral gating » (plus simple qu’un réseau de neurones, mais déjà efficace).
-
-
-4. Reconstruire un AudioSegment à partir du signal nettoyé.
-
-
-5. (Optionnel) Appliquer une normalisation du volume.
-
-
-
-Voici un exemple de code :
-
 import os
 import numpy as np
 from pydub import AudioSegment
 from pydub.exceptions import CouldntDecodeError
 import noisereduce as nr
 
-def clean_audio(input_file, output_file):
+def extract_audio_channel_and_clean(audio_files, 
+                                    path_filter_list=None, 
+                                    min_duration=2):
     """
-    Réduit le bruit d'un fichier audio et exporte le résultat.
-    Utilise pydub + noisereduce (spectral gating).
+    Extrait le canal 'adviser' (canal droit) d'un fichier audio stéréo,
+    applique une réduction de bruit via noisereduce, et exporte le résultat.
+
+    Paramètres :
+    -----------
+    audio_files : list
+        Liste de chemins vers les fichiers audio (wav ou mp3).
+    path_filter_list : list
+        Liste de mots/chaînes. Si l'un de ces mots est présent dans le chemin du fichier,
+        on ignore le fichier.
+    min_duration : float
+        Durée minimale (en secondes) en dessous de laquelle on ignore le fichier.
+
+    Retourne :
+    ---------
+    missed_dict : dict
+        Dictionnaire {audio_file: "raison"} pour les fichiers ignorés ou en erreur.
     """
-    try:
-        # 1) Charger l'audio (wav/mp3/...)
-        audio = AudioSegment.from_file(input_file)
-        
-        # 2) (Optionnel) convertir en mono
-        #    Cela facilite parfois la réduction de bruit.
-        audio = audio.set_channels(1)
 
-        # 3) Extraire les échantillons sous forme de tableau NumPy
-        #    pydub renvoie des int16 (ou int32, selon le format). 
-        #    On les convertit en float32 pour l'algo noisereduce.
-        samples = np.array(audio.get_array_of_samples()).astype(np.float32)
+    if path_filter_list is None:
+        path_filter_list = []
 
-        # 4) Appliquer la réduction de bruit
-        #    noisereduce réduit le bruit de fond sur le signal
-        reduced_noise = nr.reduce_noise(y=samples, sr=audio.frame_rate)
+    missed_dict = {}
 
-        # 5) Convertir le résultat en int16 (pour recréer un AudioSegment)
-        reduced_noise_int16 = np.int16(reduced_noise)
+    for audio_file in audio_files:
+        # 1) Vérifier si le chemin contient un mot filtrant
+        if any(filtre in audio_file for filtre in path_filter_list):
+            print(f"[SKIP] {audio_file} (filtré par path_filter_list)")
+            continue
 
-        # 6) Reconstruire un AudioSegment
-        cleaned_segment = AudioSegment(
-            reduced_noise_int16.tobytes(), 
-            frame_rate=audio.frame_rate,
-            sample_width=2,      # 16 bits = 2 octets
-            channels=1
-        )
+        # 2) Vérifier l'extension
+        ext = os.path.splitext(audio_file)[1].lower()
+        if ext not in [".wav", ".mp3"]:
+            print(f"[SKIP] {audio_file} (extension non prise en charge)")
+            missed_dict[audio_file] = "unsupported extension"
+            continue
 
-        # 7) (Optionnel) normaliser le volume
-        #    from pydub import effects
-        #    cleaned_segment = effects.normalize(cleaned_segment)
+        try:
+            # 3) Charger le fichier audio
+            if ext == ".wav":
+                track = AudioSegment.from_file(audio_file, format="wav")
+            else:
+                track = AudioSegment.from_file(audio_file, format="mp3")
 
-        # 8) Exporter le résultat
-        cleaned_segment.export(output_file, format="wav")
-        print(f"[OK] Audio nettoyé exporté : {output_file}")
+            # 4) Vérifier que l'audio est stéréo
+            if track.channels != 2:
+                print(f"[SKIP] {audio_file} (pas stéréo)")
+                missed_dict[audio_file] = "not stereo"
+                continue
 
-    except CouldntDecodeError:
-        print(f"[ERREUR] Impossible de décoder {input_file}")
-    except Exception as e:
-        print(f"[ERREUR] {input_file} : {e}")
+            # 5) Vérifier la durée
+            duration_sec = len(track) / 1000.0
+            if duration_sec < min_duration:
+                print(f"[SKIP] {audio_file} (durée {duration_sec:.1f}s < {min_duration}s)")
+                missed_dict[audio_file] = "too short"
+                continue
 
-# Exemple d'utilisation :
-# clean_audio("mon_fichier_stereo.wav", "mon_fichier_cleaned.wav")
+            # 6) Séparer les canaux stéréo en deux pistes mono
+            channels = track.split_to_mono()
+            # Hypothèse : canal gauche = channels[0], canal droit = channels[1]
+            adviser_channel = channels[1]
 
-Installation de noisereduce
+            # 7) Convertir en numpy float32 pour noisereduce
+            samples = np.array(adviser_channel.get_array_of_samples()).astype(np.float32)
 
-Assurez-vous d’installer la librairie :
+            # 8) Réduire le bruit avec noisereduce
+            reduced_noise = nr.reduce_noise(
+                y=samples,
+                sr=adviser_channel.frame_rate  # le sample rate (ex: 44100 ou 16000)
+            )
 
-pip install noisereduce
+            # 9) Reconstruire un AudioSegment à partir du signal nettoyé
+            reduced_noise_int16 = np.int16(reduced_noise)  # repasse en int16
+            cleaned_segment = AudioSegment(
+                reduced_noise_int16.tobytes(),
+                frame_rate=adviser_channel.frame_rate,
+                sample_width=2,  # int16 = 2 octets
+                channels=1       # on reste en mono
+            )
 
-Points importants
+            # (Optionnel) Normaliser le volume
+            # from pydub import effects
+            # cleaned_segment = effects.normalize(cleaned_segment)
 
-1. Réduction de bruit basée sur la « spectral gating » : c’est une méthode assez simple et rapide, qui convient bien à beaucoup de cas de figure.
+            # 10) Exporter le canal nettoyé
+            output_file = os.path.splitext(audio_file)[0] + "_adviser_cleaned.wav"
+            cleaned_segment.export(output_file, format="wav")
+            print(f"[OK] Canal adviser nettoyé et exporté : {output_file}")
 
+        except CouldntDecodeError:
+            print(f"[ERREUR] Impossible de décoder {audio_file}")
+            missed_dict[audio_file] = "decoding error"
+        except Exception as e:
+            print(f"[ERREUR] {audio_file} : {e}")
+            missed_dict[audio_file] = str(e)
 
-2. Mono vs. Stéréo :
-
-Pour simplifier, on convertit souvent en mono avant d’appliquer la réduction de bruit.
-
-Si vous voulez garder la stéréo, vous pouvez traiter chaque canal séparément :
-
-# split_to_mono() renvoie [canal_gauche, canal_droit]
-left, right = audio.split_to_mono()
-# Convertir chacun en NumPy, réduire le bruit, puis recombiner
-
-
-
-3. Normalisation : pydub.effects.normalize() peut aider à uniformiser le volume après la réduction de bruit.
-
-
-4. Qualité de l’algorithme :
-
-noisereduce donne des résultats corrects pour du bruit de fond constant (ventilation, statique, etc.).
-
-Pour des bruits plus complexes (voix multiples, bruits impulsionnels), il faudra peut-être des algorithmes plus poussés (par exemple des modèles deep learning type RNNoise, Demucs, etc.), mais c’est plus lourd à mettre en place.
-
-
-
-
-En résumé, ce code vous permet de faire un nettoyage basique de vos pistes audio en Python, sans dépendre d’un modèle externe compliqué comme cb.rnnn.
-
+    return missed_dict
