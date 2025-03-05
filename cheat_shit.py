@@ -1,59 +1,131 @@
-def calculate_entity_comparison_df(df, question, dico, audit_team, audit_team_column="MainAuditTeam", business_line_column="MainBusinessLine"):
+Voici un exemple de fonction qui extrait la piste “adviser” (ou tout autre canal que vous souhaitez) d’un fichier audio stéréo, sans faire appel à un modèle externe (cb.rnnn). On se base exclusivement sur pydub et on supprime toute référence au modèle :
+
+import os
+from pydub import AudioSegment
+from pydub.exceptions import CouldntDecodeError
+
+def extract_audio_channel(audio_files, 
+                          path_filter_list=None, 
+                          min_duration=2):
     """
-    Calculates a comparison DataFrame for multiple audited entities answering a specific question.
+    Extrait le canal d'un fichier audio stéréo (par ex. 'adviser' vs 'user'),
+    en vérifiant la durée minimale et en gérant les erreurs éventuelles.
 
-    Arguments:
-    df -- DataFrame containing the data.
-    question -- The specific question to analyze.
-    dico -- Dictionary where each key is a question, and each value is a tuple:
-            (short_name, [list of possible answers in order from most negative to most positive]).
-    audit_team -- The audit/inspection team to determine the scope of audited entities.
-    audit_team_column -- Name of the column containing audit/inspection teams.
-    business_line_column -- Name of the column containing the audited business lines.
+    Paramètres :
+    -----------
+    audio_files : list
+        Liste de chemins vers les fichiers audio (wav ou mp3).
+    path_filter_list : list
+        Liste de mots/chaînes. Si l'un de ces mots est présent dans le chemin du fichier,
+        on ignore le fichier.
+    min_duration : float
+        Durée minimale (en secondes) en dessous de laquelle on ignore le fichier.
 
-    Returns:
-    result_df -- A DataFrame containing entity, answer, percentage, and color gradient.
+    Retourne :
+    ---------
+    missed_dict : dict
+        Dictionnaire {audio_file: "raison"} pour les fichiers ignorés ou en erreur.
     """
-    # Ensure the question exists in the dictionary
-    if question not in dico:
-        raise ValueError(f"Question '{question}' is not defined in the dictionary.")
-    
-    short_name, answer_list = dico[question]
-    reversed_answer_list = answer_list[::-1]  # Reverse for gradient (green to red)
 
-    # Extract audited entities directly from the audit_team_column
-    df['audited_entity'] = df[audit_team_column].str.split("/", expand=True)[0]
+    if path_filter_list is None:
+        path_filter_list = []
 
-    # Filter the DataFrame to only include rows for the specified audit team
-    scoped_df = df[df['audited_entity'] == audit_team]
+    missed_dict = {}
 
-    if scoped_df.empty:
-        print(f"No audited entities found for audit team '{audit_team}'.")
-        return None
-
-    # Prepare a DataFrame to store the results
-    result_df = pd.DataFrame()
-
-    # Group by business lines and calculate percentages
-    for entity, group in scoped_df.groupby(business_line_column):
-        # Filter for the specific question and answers
-        filtered_group = group[(group['question'] == question) & (group['answer'].isin(reversed_answer_list))]
-        
-        if filtered_group.empty:
-            print(f"No answers found for entity '{entity}' and question '{question}'.")
+    for audio_file in audio_files:
+        # 1) Vérifier si le chemin contient un mot filtrant
+        if any(filtre in audio_file for filtre in path_filter_list):
+            print(f"[SKIP] {audio_file} (filtré par path_filter_list)")
             continue
 
-        # Count answers and normalize to percentages
-        value_counts = filtered_group['answer'].value_counts()
-        total_count = value_counts.sum()
-        percentages = [((value_counts.get(answer, 0) / total_count) * 100) for answer in reversed_answer_list]
+        # 2) Vérifier l'extension
+        ext = os.path.splitext(audio_file)[1].lower()
+        if ext not in [".wav", ".mp3"]:
+            print(f"[SKIP] {audio_file} (extension non prise en charge)")
+            missed_dict[audio_file] = "unsupported extension"
+            continue
 
-        # Append results for the current entity
-        result_df = result_df.append(pd.DataFrame({
-            'bar': [entity] * len(reversed_answer_list),
-            'answer': reversed_answer_list,
-            'percentage': percentages,
-            'color': np.linspace(0, 1, len(reversed_answer_list))
-        }), ignore_index=True)
+        try:
+            # 3) Charger le fichier audio
+            if ext == ".wav":
+                track = AudioSegment.from_file(audio_file, format="wav")
+            else:
+                track = AudioSegment.from_file(audio_file, format="mp3")
 
-    return result_df
+            # 4) Vérifier que l'audio est stéréo
+            if track.channels != 2:
+                print(f"[SKIP] {audio_file} (pas stéréo)")
+                missed_dict[audio_file] = "not stereo"
+                continue
+
+            # 5) Vérifier la durée
+            duration_sec = len(track) / 1000.0
+            if duration_sec < min_duration:
+                print(f"[SKIP] {audio_file} (durée {duration_sec:.1f}s < {min_duration}s)")
+                missed_dict[audio_file] = "too short"
+                continue
+
+            # 6) Séparer les canaux
+            #    split_to_mono() renvoie une liste de pistes mono [canal_gauche, canal_droit]
+            channels = track.split_to_mono()
+            if len(channels) < 2:
+                print(f"[SKIP] {audio_file} (impossible de séparer 2 canaux)")
+                missed_dict[audio_file] = "split error"
+                continue
+
+            # Exemple : canal 0 = user, canal 1 = adviser
+            adviser_response = channels[1]
+
+            # [Optionnel] Appliquer un "power law" ou un gain 
+            # adviser_response = adviser_response ** 2
+            # ou par exemple adviser_response = adviser_response.apply_gain(5)
+
+            # 7) Exporter le canal "adviser" dans un nouveau fichier
+            output_file = os.path.splitext(audio_file)[0] + "_adviser.wav"
+            adviser_response.export(output_file, format="wav")
+            print(f"[OK] Canal adviser extrait dans : {output_file}")
+
+        except CouldntDecodeError:
+            print(f"[ERREUR] Impossible de décoder {audio_file}")
+            missed_dict[audio_file] = "decoding error"
+        except Exception as e:
+            print(f"[ERREUR] {audio_file} : {e}")
+            missed_dict[audio_file] = str(e)
+
+    return missed_dict
+
+Explications principales
+
+1. Chargement : On utilise AudioSegment.from_file(...) en spécifiant le format ("wav" ou "mp3").
+
+
+2. Contrôles :
+
+On saute les fichiers qui ne sont pas en .wav ou .mp3.
+
+On vérifie que la piste est bien stéréo (2 canaux).
+
+On vérifie que la durée minimale est respectée.
+
+
+
+3. Extraction du canal :
+
+split_to_mono() renvoie un tableau de pistes mono. Sur un fichier stéréo classique, on obtient [canal_gauche, canal_droit].
+
+Vous pouvez choisir quel canal garder : channels[0] ou channels[1].
+
+
+
+4. (Optionnel) Traitement du volume :
+
+adviser_response = adviser_response ** 2 applique un exponentiel de la forme signal^2 (puissance). Cela peut modifier radicalement le volume et la dynamique du signal.
+
+adviser_response.apply_gain(5) augmente simplement de +5 dB.
+
+
+
+5. Export
+
+
+
