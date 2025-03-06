@@ -38,10 +38,10 @@ def extract_text_from_pdfs(pdf_folder, img_folder):
 
             if pdf_type == "native_pdf":
                 text = extract_text(pdf_path).strip()
-                results.append({"file": pdf_file, "page": None, "text": text, "quality_flag": pdf_type})
 
             else:  # Process scanned PDFs
                 pdf = pdfium.PdfDocument(pdf_path)
+                text_list = []
                 
                 for i in range(len(pdf)):
                     img = pdf[i].render().to_pil()
@@ -49,9 +49,12 @@ def extract_text_from_pdfs(pdf_folder, img_folder):
                     img.save(img_path, "JPEG")
 
                     processed_img = preprocess_image(img)
-                    text = pytesseract.image_to_string(processed_img, lang="fra").strip()
+                    page_text = pytesseract.image_to_string(processed_img, lang="fra").strip()
+                    text_list.append(page_text)
+                
+                text = "\n".join(text_list)  # Merge all pages into one string
 
-                    results.append({"file": pdf_file, "page": i, "text": text, "quality_flag": pdf_type})
+            results.append({"file": pdf_file, "text": text, "quality_flag": pdf_type})
     
     return pd.DataFrame(results)
 
