@@ -1,4 +1,4 @@
-Below is the updated script with a much simpler enhancement function. This version only converts the image to grayscale and applies a basic histogram equalization to boost contrast without overly altering the original image.
+Below is a very minimal preprocessing approach: no thresholding, no histogram equalization, no blurring—just a straightforward grayscale conversion. This should avoid turning your document into black blocks while still improving OCR performance compared to color images.
 
 
 ---
@@ -24,9 +24,9 @@ def detect_pdf_type(pdf_path):
     return "native_pdf" if len(text) > 30 else "scanned_pdf"
 
 def enhance_image(image):
+    # Convert to grayscale ONLY (no thresholding, no equalization, no blur)
     gray = cv2.cvtColor(np.array(image), cv2.COLOR_RGB2GRAY)
-    enhanced = cv2.equalizeHist(gray)
-    return enhanced
+    return gray
 
 def extract_text_from_pdfs(pdf_folder, img_folder):
     results = []
@@ -42,12 +42,17 @@ def extract_text_from_pdfs(pdf_folder, img_folder):
                 pdf = pdfium.PdfDocument(pdf_path)
                 text_list = []
                 for i in range(len(pdf)):
-                    img = pdf[i].render(scale=2).to_pil()  # higher resolution rendering
+                    # Render at higher resolution for better OCR
+                    img = pdf[i].render(scale=2).to_pil()
                     img_path = os.path.join(img_folder, f"{os.path.splitext(pdf_file)[0]}_{i}.jpg")
                     img.save(img_path, "JPEG")
+
                     processed_img = enhance_image(img)
-                    page_text = pytesseract.image_to_string(processed_img, lang="fra", config="--oem 3 --psm 6").strip()
+                    page_text = pytesseract.image_to_string(
+                        processed_img, lang="fra", config="--oem 3 --psm 6"
+                    ).strip()
                     text_list.append(page_text)
+                
                 text = "\n".join(text_list)
             
             results.append({"file": pdf_file, "text": text, "quality_flag": pdf_type})
@@ -58,8 +63,14 @@ df_text = extract_text_from_pdfs(PDF_FOLDER, IMG_FOLDER)
 df_text.to_csv("extracted_text.csv", index=False)
 print(df_text.head())
 
+Key Points:
 
----
+Grayscale Only: Prevents over-processing that can lead to black blocks.
 
-This version only applies a simple grayscale conversion and histogram equalization via cv2.equalizeHist to slightly boost the contrast. The base image is preserved as much as possible for OCR. Let me know if this works better for you!
+scale=2: Renders pages at double resolution to improve OCR accuracy.
+
+Tesseract Config: Uses --oem 3 (LSTM engine) and --psm 6 (block of text).
+
+
+If you need slightly more contrast, you can add light histogram equalization or minimal blur, but start with this plain grayscale approach first. Let me know how it works!
 
