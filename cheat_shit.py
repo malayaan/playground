@@ -1,3 +1,8 @@
+Below is the updated script with a much simpler enhancement function. This version only converts the image to grayscale and applies a basic histogram equalization to boost contrast without overly altering the original image.
+
+
+---
+
 import os
 import cv2
 import pytesseract
@@ -10,10 +15,8 @@ import numpy as np
 # Set Tesseract path (Windows only)
 pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
 
-# Paths
 PDF_FOLDER = r"V:\SGCIB\FR\IGAD-AUD-RPI-BDT-MISS-2025\001 SGRF Credits consommations\6 - Travaux\DATA\part_ged"
 IMG_FOLDER = r"V:\SGCIB\FR\IGAD-AUD-RPI-BDT-MISS-2025\001 SGRF Credits consommations\6 - Travaux\DATA\GED_Images"
-
 os.makedirs(IMG_FOLDER, exist_ok=True)
 
 def detect_pdf_type(pdf_path):
@@ -21,13 +24,8 @@ def detect_pdf_type(pdf_path):
     return "native_pdf" if len(text) > 30 else "scanned_pdf"
 
 def enhance_image(image):
-    # Convert to grayscale
     gray = cv2.cvtColor(np.array(image), cv2.COLOR_RGB2GRAY)
-    # Apply CLAHE for contrast enhancement
-    clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8, 8))
-    enhanced = clahe.apply(gray)
-    # Apply a slight median blur to reduce noise without losing detail
-    enhanced = cv2.medianBlur(enhanced, 3)
+    enhanced = cv2.equalizeHist(gray)
     return enhanced
 
 def extract_text_from_pdfs(pdf_folder, img_folder):
@@ -37,14 +35,14 @@ def extract_text_from_pdfs(pdf_folder, img_folder):
         if pdf_file.endswith(".pdf"):
             pdf_path = os.path.join(pdf_folder, pdf_file)
             pdf_type = detect_pdf_type(pdf_path)
-
+            
             if pdf_type == "native_pdf":
                 text = extract_text(pdf_path).strip()
             else:
                 pdf = pdfium.PdfDocument(pdf_path)
                 text_list = []
                 for i in range(len(pdf)):
-                    img = pdf[i].render(scale=2).to_pil()  # Higher resolution
+                    img = pdf[i].render(scale=2).to_pil()  # higher resolution rendering
                     img_path = os.path.join(img_folder, f"{os.path.splitext(pdf_file)[0]}_{i}.jpg")
                     img.save(img_path, "JPEG")
                     processed_img = enhance_image(img)
@@ -58,5 +56,10 @@ def extract_text_from_pdfs(pdf_folder, img_folder):
 
 df_text = extract_text_from_pdfs(PDF_FOLDER, IMG_FOLDER)
 df_text.to_csv("extracted_text.csv", index=False)
-
 print(df_text.head())
+
+
+---
+
+This version only applies a simple grayscale conversion and histogram equalization via cv2.equalizeHist to slightly boost the contrast. The base image is preserved as much as possible for OCR. Let me know if this works better for you!
+
