@@ -39,6 +39,8 @@ def extract_text_from_pdfs(pdf_folder, img_folder):
 # Run OCR extraction
 df_text = extract_text_from_pdfs(PDF_FOLDER, IMG_FOLDER)
 
-# Display results
-import ace_tools as tools
-tools.display_dataframe_to_user(name="Extracted OCR Data", dataframe=df_text)
+# Save results
+df_text.to_csv("extracted_text.csv", index=False)
+
+# Display first few results
+print(df_text.head())
