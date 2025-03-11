@@ -1,30 +1,36 @@
-# Fonction améliorée pour trouver les meilleures correspondances
-def find_best_matches_optimized(name1_list, name2_list, top_n=3):
+import re
+
+# Liste des mots-clés à supprimer (suffixes d'entreprise)
+suffixes = ["SA", "Inc", "Ltd", "Group", "Corporation", "Company", "Holdings", "PLC", "NV", "AG", "LLC", "Co", "Limited", "SE", "SAS"]
+
+# Fonction pour nettoyer les noms d'entreprise
+def clean_name(name):
+    words = name.split()
+    words = [word for word in words if word not in suffixes]  # Supprimer les suffixes
+    return " ".join(words)
+
+# Appliquer le nettoyage
+df_name1_extended["Cleaned_Name1"] = df_name1_extended["Name1"].apply(clean_name)
+df_name2_extended["Cleaned_Name2"] = df_name2_extended["Name2"].apply(clean_name)
+
+# Fonction améliorée avec plusieurs scores
+def find_best_matches_advanced(name1_list, name2_list, top_n=3):
     matches = []
 
     for name in name1_list:
-        # Comparer avec plusieurs scores pour une meilleure précision
-        best_matches = process.extract(name, name2_list, scorer=fuzz.partial_ratio, limit=top_n)
-        
+        best_matches = process.extract(name, name2_list, scorer=fuzz.WRatio, limit=top_n)  # WRatio combine plusieurs méthodes
         for match in best_matches:
-            matches.append((name, match[0], match[1]))  # (Nom de Name1, Nom de Name2, Score)
+            matches.append((name, match[0], match[1]))  # (Nom original, Meilleure correspondance, Score)
 
     # Création du DataFrame des résultats
     result_df = pd.DataFrame(matches, columns=["Name1", "Name2", "Score"])
     return result_df
 
-# Ajout d'un test avec "Accor" vs "Accor SA"
-df_name1_extended = pd.DataFrame({"Name1": ["Boeing", "Airbus", "Lockheed Martin", "Dassault", "Accor"]})
-df_name2_extended = pd.DataFrame({"Name2": ["Boeing SA", "Airbus Group", "Lockheed", "Dassault Aviation",
-                                            "Boeing Industries", "EADS", "Airbus Defence", "Accor SA", "Accor Hotels"]})
-
-# Conversion en listes
-name1_list_extended = df_name1_extended["Name1"].tolist()
-name2_list_extended = df_name2_extended["Name2"].tolist()
-
-# Exécuter la fonction améliorée
-result_df_optimized = find_best_matches_optimized(name1_list_extended, name2_list_extended)
+# Exécuter avec les noms nettoyés
+result_df_advanced = find_best_matches_advanced(
+    df_name1_extended["Cleaned_Name1"].tolist(), 
+    df_name2_extended["Cleaned_Name2"].tolist()
+)
 
 # Afficher le tableau
-import ace_tools as tools
-tools.display_dataframe_to_user(name="Improved Matching Names", dataframe=result_df_optimized)
+tools.display_dataframe_to_user(name="Advanced Matching Names", dataframe=result_df_advanced)
