@@ -1,36 +1,26 @@
-import re
+# Fonction améliorée prenant en entrée deux listes
+def find_best_matches_from_lists(list1, list2, top_n=3):
+    # Nettoyage des noms dans les listes
+    cleaned_list1 = [clean_name(name) for name in list1]
+    cleaned_list2 = [clean_name(name) for name in list2]
 
-# Liste des mots-clés à supprimer (suffixes d'entreprise)
-suffixes = ["SA", "Inc", "Ltd", "Group", "Corporation", "Company", "Holdings", "PLC", "NV", "AG", "LLC", "Co", "Limited", "SE", "SAS"]
-
-# Fonction pour nettoyer les noms d'entreprise
-def clean_name(name):
-    words = name.split()
-    words = [word for word in words if word not in suffixes]  # Supprimer les suffixes
-    return " ".join(words)
-
-# Appliquer le nettoyage
-df_name1_extended["Cleaned_Name1"] = df_name1_extended["Name1"].apply(clean_name)
-df_name2_extended["Cleaned_Name2"] = df_name2_extended["Name2"].apply(clean_name)
-
-# Fonction améliorée avec plusieurs scores
-def find_best_matches_advanced(name1_list, name2_list, top_n=3):
     matches = []
 
-    for name in name1_list:
-        best_matches = process.extract(name, name2_list, scorer=fuzz.WRatio, limit=top_n)  # WRatio combine plusieurs méthodes
+    for name in cleaned_list1:
+        best_matches = process.extract(name, cleaned_list2, scorer=fuzz.WRatio, limit=top_n)  # WRatio combine plusieurs méthodes
         for match in best_matches:
             matches.append((name, match[0], match[1]))  # (Nom original, Meilleure correspondance, Score)
 
     # Création du DataFrame des résultats
-    result_df = pd.DataFrame(matches, columns=["Name1", "Name2", "Score"])
+    result_df = pd.DataFrame(matches, columns=["Liste1", "Liste2", "Score"])
     return result_df
 
-# Exécuter avec les noms nettoyés
-result_df_advanced = find_best_matches_advanced(
-    df_name1_extended["Cleaned_Name1"].tolist(), 
-    df_name2_extended["Cleaned_Name2"].tolist()
-)
+# Test avec des listes d'exemple
+liste1 = ["Boeing", "Airbus", "Lockheed Martin", "Dassault", "Accor"]
+liste2 = ["Boeing SA", "Airbus Group", "Lockheed", "Dassault Aviation", "Boeing Industries", "EADS", "Airbus Defence", "Accor SA", "Accor Hotels"]
+
+# Appliquer la fonction
+result_df_lists = find_best_matches_from_lists(liste1, liste2)
 
 # Afficher le tableau
-tools.display_dataframe_to_user(name="Advanced Matching Names", dataframe=result_df_advanced)
+tools.display_dataframe_to_user(name="Matching Results from Lists", dataframe=result_df_lists)
