@@ -1,47 +1,36 @@
-# Liste élargie des mots à supprimer (suffixes et termes génériques)
-stopwords = {
-    "sa", "inc", "ltd", "group", "corporation", "company", "holdings", "plc", "nv", "ag", "llc", "co", "limited",
-    "se", "sas", "corp", "international", "industries", "enterprise", "solutions", "systems", "services"
-}
+import pandas as pd
 
-# Fonction de nettoyage avancé des noms
-def clean_name_advanced(name):
-    if not isinstance(name, str):
-        return ""
+# Fonction pour sélectionner le meilleur match
+def select_best_match(df):
+    best_matches = []
 
-    # Suppression des caractères spéciaux et mise en minuscule
-    name = re.sub(r"[^a-zA-Z0-9\s]", "", name).lower()
+    # Grouper par "Liste1" pour trouver le meilleur match pour chaque élément
+    for name1, group in df.groupby("Liste1"):
+        # Trouver le meilleur score
+        max_score = group["Score"].max()
+        best_candidates = group[group["Score"] == max_score]
 
-    # Suppression des mots inutiles
-    words = name.split()
-    words = [word for word in words if word not in stopwords and len(word) > 2]  # On garde les mots significatifs
+        if len(best_candidates) == 1:
+            # Si un seul match a le meilleur score, on le garde
+            best_match = best_candidates.iloc[0]
+        else:
+            # Si plusieurs ont le même score, on choisit celui avec le plus de lettres en commun
+            best_candidates["Common_Letters"] = best_candidates.apply(
+                lambda row: len(set(row["Liste1"]) & set(row["Liste2"])), axis=1
+            )
+            best_match = best_candidates.loc[best_candidates["Common_Letters"].idxmax()]
 
-    return " ".join(words)
+        best_matches.append(best_match)
 
-# Fonction avancée pour trouver les meilleurs correspondances
-def find_best_matches_robust(list1, list2, top_n=3):
-    # Nettoyage des noms
-    cleaned_list1 = [clean_name_advanced(name) for name in list1]
-    cleaned_list2 = [clean_name_advanced(name) for name in list2]
+    # Créer un nouveau DataFrame avec les meilleurs résultats
+    best_df = pd.DataFrame(best_matches).drop(columns=["Common_Letters"], errors="ignore")
+    return best_df
 
-    matches = []
+# Appliquer la sélection des meilleurs matchs sur ton DataFrame existant
+df_best_match = select_best_match(df)
 
-    for orig_name, clean_name in zip(list1, cleaned_list1):
-        best_matches = process.extract(clean_name, cleaned_list2, scorer=fuzz.WRatio, limit=top_n)
-        for match in best_matches:
-            matches.append((orig_name, match[0], match[1]))  # (Nom original, Meilleure correspondance, Score)
+# Afficher le résultat final
+print(df_best_match)
 
-    # Création du DataFrame des résultats
-    result_df = pd.DataFrame(matches, columns=["Liste1", "Liste2", "Score"])
-    return result_df
-
-# Test avec des listes d'exemple
-liste1_test = ["Boeing", "Airbus", "Lockheed Martin", "Dassault", "Accor", "IBM Corporation", "Amazon Inc."]
-liste2_test = ["Boeing SA", "Airbus Group", "Lockheed", "Dassault Aviation", "Boeing Industries", "EADS", "Airbus Defence", 
-               "Accor SA", "Accor Hotels", "IBM", "Amazon.com", "Microsoft Corporation"]
-
-# Appliquer la fonction améliorée
-result_df_robust = find_best_matches_robust(liste1_test, liste2_test)
-
-# Afficher le tableau
-tools.display_dataframe_to_user(name="Robust Matching Results", dataframe=result_df_robust)
+# Sauvegarder en Excel (si besoin)
+df_best_match.to_excel("best_matching_results.xlsx", index=False)
