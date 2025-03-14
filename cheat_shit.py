@@ -1,36 +1,125 @@
-import pandas as pd
+import os
+import numpy as np
+from pydub import AudioSegment
+from pydub.exceptions import CouldntDecodeError
+import noisereduce as nr
 
-# Fonction pour sélectionner le meilleur match
-def select_best_match(df):
-    best_matches = []
+def extract_audio_channel(
+    audio_files,
+    channel_to_extract="adviser",
+    path_filter_list=None,
+    min_duration=2,
+    log_info=print
+):
+    """
+    Extrait un canal (par défaut 'adviser' = canal droit) d'un fichier audio stéréo,
+    applique une réduction de bruit via noisereduce, et exporte le résultat.
+    Gère les erreurs avec des except + continue, et consigne les infos via log_info.
 
-    # Grouper par "Liste1" pour trouver le meilleur match pour chaque élément
-    for name1, group in df.groupby("Liste1"):
-        # Trouver le meilleur score
-        max_score = group["Score"].max()
-        best_candidates = group[group["Score"] == max_score]
+    Paramètres :
+    -----------
+    audio_files : list of str
+        Liste de chemins vers les fichiers audio (wav ou mp3).
+    channel_to_extract : str
+        Nom symbolique du canal à extraire. 'adviser' => canal droit (index 1),
+        'user' => canal gauche (index 0), etc.
+    path_filter_list : list of str
+        Liste de mots/chaînes à filtrer dans le chemin du fichier.
+    min_duration : float
+        Durée minimale (en secondes) en dessous de laquelle on ignore le fichier.
+    log_info : callable
+        Fonction de logging (ex: print, logger.info). Reçoit un seul argument (message).
 
-        if len(best_candidates) == 1:
-            # Si un seul match a le meilleur score, on le garde
-            best_match = best_candidates.iloc[0]
-        else:
-            # Si plusieurs ont le même score, on choisit celui avec le plus de lettres en commun
-            best_candidates["Common_Letters"] = best_candidates.apply(
-                lambda row: len(set(row["Liste1"]) & set(row["Liste2"])), axis=1
+    Retourne :
+    ---------
+    missed_dict : dict
+        Dictionnaire { audio_file : "raison" } pour les fichiers ignorés ou en erreur.
+    """
+
+    if path_filter_list is None:
+        path_filter_list = []
+
+    missed_dict = {}
+
+    for audio_file in audio_files:
+        # 1) Vérifier si le chemin contient un mot filtrant
+        if any(filtre in audio_file for filtre in path_filter_list):
+            log_info(f"[SKIP] {audio_file} (filtré par path_filter_list)")
+            continue
+
+        # 2) Vérifier l'extension
+        ext = os.path.splitext(audio_file)[1].lower()
+        if ext not in [".wav", ".mp3"]:
+            log_info(f"[SKIP] {audio_file} (extension non prise en charge : {ext})")
+            missed_dict[audio_file] = "unsupported extension"
+            continue
+
+        try:
+            # 3) Charger le fichier audio
+            if ext == ".wav":
+                track = AudioSegment.from_file(audio_file, format="wav")
+            else:
+                track = AudioSegment.from_file(audio_file, format="mp3")
+
+            # 4) Vérifier que l'audio est stéréo
+            if track.channels != 2:
+                raise ValueError("not stereo")
+
+            # 5) Vérifier la durée minimale
+            duration_sec = len(track) / 1000.0
+            if duration_sec < min_duration:
+                raise ValueError("too short")
+
+            # 6) Séparer les canaux stéréo
+            channels = track.split_to_mono()
+            if len(channels) < 2:
+                raise ValueError("split error")
+
+            # Sélection du canal (adviser = canal droit = index 1)
+            if channel_to_extract.lower() == "adviser":
+                selected_channel = channels[1]
+            else:
+                # Par exemple "user" => canal gauche
+                selected_channel = channels[0]
+
+            # 7) Réduction de bruit via noisereduce
+            samples = np.array(selected_channel.get_array_of_samples()).astype(np.float32)
+            reduced_noise = nr.reduce_noise(y=samples, sr=selected_channel.frame_rate)
+
+            # 8) Reconstruire un AudioSegment
+            reduced_noise_int16 = np.int16(reduced_noise)
+            cleaned_segment = AudioSegment(
+                reduced_noise_int16.tobytes(),
+                frame_rate=selected_channel.frame_rate,
+                sample_width=2,  # 16 bits
+                channels=1       # On reste en mono
             )
-            best_match = best_candidates.loc[best_candidates["Common_Letters"].idxmax()]
 
-        best_matches.append(best_match)
+            # (Optionnel) Normalisation ou autres traitements...
+            # from pydub import effects
+            # cleaned_segment = effects.normalize(cleaned_segment)
 
-    # Créer un nouveau DataFrame avec les meilleurs résultats
-    best_df = pd.DataFrame(best_matches).drop(columns=["Common_Letters"], errors="ignore")
-    return best_df
+            # 9) Exporter le fichier nettoyé
+            base, _ = os.path.splitext(audio_file)
+            output_file = f"{base}_{channel_to_extract}_cleaned.wav"
+            cleaned_segment.export(output_file, format="wav")
+            log_info(f"[OK] {channel_to_extract} channel nettoyé -> {output_file}")
 
-# Appliquer la sélection des meilleurs matchs sur ton DataFrame existant
-df_best_match = select_best_match(df)
+        except CouldntDecodeError:
+            log_info(f"[ERROR] Could not decode {audio_file} => skipping")
+            missed_dict[audio_file] = "decoding error"
+            continue
 
-# Afficher le résultat final
-print(df_best_match)
+        except ValueError as e:
+            # Gère "not stereo", "too short", "split error", etc.
+            log_info(f"[ERROR] {audio_file} => {e}, skipping")
+            missed_dict[audio_file] = str(e)
+            continue
 
-# Sauvegarder en Excel (si besoin)
-df_best_match.to_excel("best_matching_results.xlsx", index=False)
+        except Exception as e:
+            # Toute autre erreur imprévue
+            log_info(f"[ERROR] {audio_file} => {e}, skipping")
+            missed_dict[audio_file] = str(e)
+            continue
+
+    return missed_dict
