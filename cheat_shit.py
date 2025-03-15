@@ -1,65 +1,55 @@
-Si tu as supprimé FFmpeg, mais que le chemin apparaît encore, il se peut que :
+🔥 GG ! FFmpeg est maintenant installé et fonctionnel ! 🎉
 
-1. Le chemin soit toujours enregistré dans le $PATH, même si le fichier n'existe plus.
-
-
-2. Un cache de which ou du shell garde une ancienne référence.
-
-
+Maintenant que ffmpeg -version fonctionne, pydub devrait aussi pouvoir l'utiliser correctement.
 
 
 ---
 
-📌 Vérifier si le fichier FFmpeg existe vraiment
+📌 Vérification avec Pydub
 
-Pour t’assurer que le fichier n’est plus là, essaie :
+Pour être sûr que pydub trouve bien FFmpeg, lance ce petit test en Python :
 
-ls -l /home/a730878/tools/python/bin/ffmpeg
-ls -l /home/a730878/bin/ffmpeg
-ls -l /usr/local/bin/ffmpeg
-ls -l /usr/bin/ffmpeg
+from pydub.utils import which
+print(which("ffmpeg"))
+print(which("ffprobe"))
 
-Si l’un des fichiers existe encore, supprime-le avec :
-
-rm -f /chemin/vers/ffmpeg
+Si ça renvoie un chemin correct (/chemin/vers/ffmpeg), tout est bon.
 
 
 ---
 
-📌 Nettoyer le $PATH et le cache
+📌 Si Pydub ne trouve pas FFmpeg
 
-Si which ffmpeg affiche encore un chemin inexistant, il faut nettoyer :
+Si which("ffmpeg") ne renvoie rien, indique manuellement le chemin :
 
-1. Supprimer FFmpeg du PATH :
+from pydub import AudioSegment
+from pydub.utils import which
 
-export PATH=$(echo $PATH | sed -e 's|:/home/a730878/tools/python/bin||g')
+AudioSegment.converter = "/chemin/vers/ffmpeg-n6.1-latest-linux64-lgpl-6.1/bin/ffmpeg"
+AudioSegment.ffprobe = "/chemin/vers/ffmpeg-n6.1-latest-linux64-lgpl-6.1/bin/ffprobe"
 
-
-2. Vérifier si le PATH est bien mis à jour :
-
-echo $PATH
-
-
-3. Nettoyer le cache du shell :
-
-hash -r
-
-
+(Remplace /chemin/vers/... par ton vrai chemin.)
 
 
 ---
 
-📌 Vérifier que FFmpeg n’existe plus
+📌 Dernière étape : Tester l'extraction audio
 
-Après tout ça, reteste :
+Si tout est bon, teste un fichier audio :
 
-which ffmpeg
-ffmpeg -version
+from pydub import AudioSegment
 
-Si aucun chemin n’est trouvé, alors FFmpeg est bien supprimé.
+audio = AudioSegment.from_file("/chemin/vers/un_fichier.mp3", format="mp3")
+print(f"Durée : {len(audio) / 1000:.2f} secondes")
+
+Si ça marche, ton installation est 100% opérationnelle ! 🚀
 
 
 ---
 
-🚀 Maintenant, tu peux installer proprement la nouvelle version de FFmpeg !
+✅ FFmpeg installé proprement
+✅ Pydub peut le détecter
+✅ Tu es prêt à traiter tes fichiers audio !
+
+Dis-moi si tout est bon maintenant ! 🔥
 
