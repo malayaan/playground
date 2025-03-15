@@ -1,19 +1,14 @@
-Voici une version synthétique de ta fonction sans path_filter_list, log_info, et play_audio. Elle est plus courte et garde uniquement l’essentiel : extraire un canal, nettoyer avec noisereduce, et exporter.
-
-
----
-
-📌 Version simplifiée
-
 import os
 import numpy as np
-import pygame
 from pydub import AudioSegment
 from pydub.exceptions import CouldntDecodeError
 import noisereduce as nr
 
-def extract_audio_channel(audio_files, channel_to_extract="adviser", min_duration=2):
+def extract_audio_channel(audio_files, saving_path, min_audio_duration=2, channel_to_extract="adviser"):
     missed_dict = {}
+
+    if not os.path.exists(saving_path):
+        os.makedirs(saving_path)
 
     for audio_file in audio_files:
         ext = os.path.splitext(audio_file)[1].lower()
@@ -25,8 +20,7 @@ def extract_audio_channel(audio_files, channel_to_extract="adviser", min_duratio
             track = AudioSegment.from_file(audio_file, format=ext[1:])
             if track.channels != 2:
                 raise ValueError("not stereo")
-
-            if len(track) / 1000.0 < min_duration:
+            if len(track) / 1000.0 < min_audio_duration:
                 raise ValueError("too short")
 
             channels = track.split_to_mono()
@@ -45,7 +39,7 @@ def extract_audio_channel(audio_files, channel_to_extract="adviser", min_duratio
                 channels=1
             )
 
-            output_file = f"{os.path.splitext(audio_file)[0]}_{channel_to_extract}_cleaned.wav"
+            output_file = os.path.join(saving_path, f"{os.path.splitext(os.path.basename(audio_file))[0]}_{channel_to_extract}_cleaned.wav")
             cleaned_segment.export(output_file, format="wav")
 
         except (CouldntDecodeError, ValueError) as e:
@@ -53,26 +47,3 @@ def extract_audio_channel(audio_files, channel_to_extract="adviser", min_duratio
             continue
 
     return missed_dict
-
-
----
-
-📌 Changements et optimisations
-
-✅ Suppression de log_info → Plus de print(), les erreurs sont juste stockées dans missed_dict.
-✅ Suppression de path_filter_list → Tous les fichiers sont traités, pas de filtrage en amont.
-✅ Suppression de play_audio → La fonction ne joue plus l’audio extrait.
-✅ Structure compacte et lisible → Toutes les étapes essentielles sont là, sans redondance.
-
-
----
-
-📌 Comment l'utiliser ?
-
-extract_audio_channel(["/chemin/vers/audio.mp3"])
-
-
----
-
-🚀 C'est maintenant ultra-simple et efficace !
-
