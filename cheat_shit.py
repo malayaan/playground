@@ -1,49 +1,91 @@
-import os
-import numpy as np
+Voici un petit script minimaliste qui prend un fichier MP3, sépare les canaux gauche et droit, et les joue un après l’autre avec pygame.mixer.
+
+
+---
+
+📌 Installation requise
+
+pip install pygame pydub
+
+
+---
+
+📌 Code rapide pour tester
+
+import pygame
 from pydub import AudioSegment
-from pydub.exceptions import CouldntDecodeError
-import noisereduce as nr
 
-def extract_audio_channel(audio_files, saving_path, min_audio_duration=2, channel_to_extract="adviser"):
-    missed_dict = {}
+def play_audio(file_path):
+    pygame.mixer.init()
+    pygame.mixer.music.load(file_path)
+    pygame.mixer.music.play()
+    input(f"Lecture de {file_path}... Appuie sur Entrée pour continuer.")
+    pygame.mixer.music.stop()
 
-    if not os.path.exists(saving_path):
-        os.makedirs(saving_path)
+def split_and_play(mp3_path):
+    # Charger l'audio
+    track = AudioSegment.from_file(mp3_path, format="mp3")
 
-    for audio_file in audio_files:
-        ext = os.path.splitext(audio_file)[1].lower()
-        if ext not in [".wav", ".mp3"]:
-            missed_dict[audio_file] = "unsupported extension"
-            continue
+    # Vérifier que l'audio est bien en stéréo
+    if track.channels != 2:
+        print("Erreur : le fichier n'est pas stéréo.")
+        return
 
-        try:
-            track = AudioSegment.from_file(audio_file, format=ext[1:])
-            if track.channels != 2:
-                raise ValueError("not stereo")
-            if len(track) / 1000.0 < min_audio_duration:
-                raise ValueError("too short")
+    # Séparer les canaux
+    left_channel, right_channel = track.split_to_mono()
 
-            channels = track.split_to_mono()
-            if len(channels) < 2:
-                raise ValueError("split error")
+    # Sauvegarder temporairement chaque canal
+    left_path = "left_channel.wav"
+    right_path = "right_channel.wav"
 
-            selected_channel = channels[1] if channel_to_extract.lower() == "adviser" else channels[0]
+    left_channel.export(left_path, format="wav")
+    right_channel.export(right_path, format="wav")
 
-            samples = np.array(selected_channel.get_array_of_samples()).astype(np.float32)
-            reduced_noise = nr.reduce_noise(y=samples, sr=selected_channel.frame_rate)
+    # Jouer le canal gauche
+    print("Lecture du canal GAUCHE...")
+    play_audio(left_path)
 
-            cleaned_segment = AudioSegment(
-                np.int16(reduced_noise).tobytes(),
-                frame_rate=selected_channel.frame_rate,
-                sample_width=2,
-                channels=1
-            )
+    # Jouer le canal droit
+    print("Lecture du canal DROIT...")
+    play_audio(right_path)
 
-            output_file = os.path.join(saving_path, f"{os.path.splitext(os.path.basename(audio_file))[0]}_{channel_to_extract}_cleaned.wav")
-            cleaned_segment.export(output_file, format="wav")
+# Exemple d'utilisation
+mp3_path = "/chemin/vers/ton_fichier.mp3"  # Remplace par ton fichier
+split_and_play(mp3_path)
 
-        except (CouldntDecodeError, ValueError) as e:
-            missed_dict[audio_file] = str(e)
-            continue
 
-    return missed_dict
+---
+
+📌 Explication
+
+1. Charge le MP3 avec pydub.
+
+
+2. Vérifie qu’il est bien en stéréo.
+
+
+3. Sépare les canaux gauche et droit (split_to_mono()).
+
+
+4. Sauvegarde chaque canal temporairement en WAV.
+
+
+5. Joue chaque canal avec pygame.mixer.
+
+
+6. Attends l’entrée utilisateur avant de passer au canal suivant.
+
+
+
+
+---
+
+📌 Exécution
+
+split_and_play("/chemin/vers/ton_fichier.mp3")
+
+
+---
+
+🚀 Maintenant, tu peux entendre chaque canal séparément en un seul essai rapide !
+
