@@ -1,1 +1,1 @@
-tar -tvf cudnn-linux-x86_64-9.8.0.87_cuda12-archive.tar.xz
+tar -xvf cudnn-linux-x86_64-9.8.0.87_cuda12-archive.tar.xz --ignore-zeros
