@@ -1,1 +1,1 @@
-python -c "import torch; print(torch.backends.cudnn.version())"
+ls -lh cudnn-linux-x86_64-9.8.0.87_cuda12-archive.tar.xz
