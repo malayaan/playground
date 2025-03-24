@@ -1,18 +1,19 @@
-Voici une version ultra-courte :
-
-Mission SGRF : Crédits immobiliers pro – 12 Md€ d’encours.
-Objectif : Vérifier la prise en compte des risques climatiques dans l’octroi, le suivi et les sûretés.
-
-Data :
-
-Géorisques / NAMR pour expos ESG.
-
-CPM / IDCM : analyse des outils d’octroi.
-
-Deals manqués et parcours dossier à reconstruire.
-
-Éventuel process mining (LOM) et text mining sur motifs de refus.
+Parfait, voici une version encore plus courte, intégrant la remarque sur l’échelle financière :
 
 
-Focus : Risques climatiques, sûretés, logique d’octroi.
+---
+
+Trois pistes data ont été identifiées, avec un impact limité par la taille actuelle des flux (quelques dizaines de millions d’euros) mais utiles pour structurer les bases :
+
+Cartographie des wallets et flux blockchain : identifier les opérations non documentées et poser un cadre d’audit continu.
+
+Analyse des gas fees : repérer les pertes d’efficacité et proposer des optimisations simples sur les frais de transaction.
+
+Rejeu des règles KYT : tester la couverture réelle des scénarios anti-blanchiment configurés dans Chainalysis.
+
+
+
+---
+
+Tu veux que je te le mette aussi en version "mail d’après réunion" ou note interne ?
 
