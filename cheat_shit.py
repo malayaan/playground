@@ -1,1 +1,2 @@
-(1) détection d’anomalies dans les valorisations de collatéraux via les données LoanIQ et expertises, (2) vérification automatique des clauses obligatoires dans les documents juridiques et rapports d’expertise (revalorisation, conflit d’intérêt…) par NLP, et (3) recalcul de l’intensité carbone du portefeuille immobilier via CRREM pour challenger la qualité des données NZBA. L’enjeu porte sur plus de 20 Md€ d’actifs.
+Une analyse rapide des appels prévente via une blacklist de termes sensibles a permis d’identifier une dizaine de cas intéressants. L’approche reste perfectible mais montre un bon potentiel.
+
