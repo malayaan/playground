@@ -1,10 +1,33 @@
-Analyse NLP et Scoring
+Voici une rédaction claire, directe et synthétique pour tes sections Limitations et Findings :
 
-La méthodologie d’analyse repose sur trois traitements automatisés complémentaires.
 
-Identification des réclamations : Nous avons utilisé un modèle NLP basé sur la similarité sémantique (seuil fixé à 0,8) couplé à une analyse du sentiment négatif (seuil 0,5). Cette approche détecte automatiquement les réclamations non identifiées ou mal classées dans les données SAV actuelles.
+---
 
-Détection fine des thématiques (Topic modeling) : Un modèle NLP automatisé permet d’identifier les sujets principaux évoqués par les clients (assurances, intérêts, gestion documentaire, etc.). Cette approche améliore directement la connaissance des besoins réels des clients.
+Limitations
 
-Monitoring opérationnel : Nous avons automatisé la détection de signaux faibles clés : temps d’attente excessifs, comportements inappropriés (via une liste noire d’expressions sensibles), et « moments de vie » client qui représentent des opportunités commerciales à saisir. Ces analyses fournissent des leviers concrets pour optimiser la gestion opérationnelle du SAV.
+La qualité des transcriptions (Faster Whisper) reste variable sur certains audios (bruit, accent, débit rapide), réduisant la précision des analyses NLP.
+
+Le Topic modeling identifie clairement les thèmes sur seulement environ un tiers des appels analysés.
+
+L’analyse des comportements sensibles repose sur une liste restreinte d’expressions (blacklist), laissant potentiellement passer certains cas.
+
+L’identification automatique des opportunités commerciales ne garantit pas systématiquement leur conversion effective.
+
+
+
+---
+
+Findings
+
+Réclamations clients mal catégorisées :
+92 % des réclamations officiellement classées se révèlent mal catégorisées, avec 2 862 appels identifiés automatiquement comme des réclamations potentielles non détectées.
+
+Mauvaise connaissance des thématiques d’appel :
+Principaux thèmes sous-exploités (assurance, intérêts, gestion documentaire), indiquant des opportunités inexploitées de formation et d’action commerciale.
+
+Faible pilotage opérationnel du SAV :
+Détection automatique de 205 appels (2,5%) avec des attentes excessives. Identification d’une dizaine de cas de comportements inappropriés non détectés (expressions sensibles). 9 % des appels présentent des opportunités commerciales inexploitées (« moments de vie »).
+
+
+Ces constats montrent clairement les marges de progrès disponibles pour renforcer efficacement le monitoring du SAV Franfinance.
 
