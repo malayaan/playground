@@ -1,33 +1,43 @@
-Voici une rédaction claire, directe et synthétique pour tes sections Limitations et Findings :
+Voici ta partie rédigée clairement, prête à intégrer, avec les données chiffrées et une intégration possible d'un graphique :
 
 
 ---
 
-Limitations
+Mauvaise connaissance des thématiques d’appels
 
-La qualité des transcriptions (Faster Whisper) reste variable sur certains audios (bruit, accent, débit rapide), réduisant la précision des analyses NLP.
+Le modèle de Topic Modeling utilisé a permis d’identifier des structures pertinentes et des thématiques explicites sur environ un tiers des appels analysés. Cette approche consiste à regrouper automatiquement les appels contenant des contenus sémantiquement similaires, révélant ainsi les motifs récurrents d’appels clients.
 
-Le Topic modeling identifie clairement les thèmes sur seulement environ un tiers des appels analysés.
+Les principaux thèmes identifiés sont :
 
-L’analyse des comportements sensibles repose sur une liste restreinte d’expressions (blacklist), laissant potentiellement passer certains cas.
+Simulation d’intérêts et taux réels : 1797 appels
 
-L’identification automatique des opportunités commerciales ne garantit pas systématiquement leur conversion effective.
+Assurances et problèmes médicaux : 1175 appels
 
+Gestion documentaire et changements administratifs : 1067 appels
 
+Services financiers et bancaires : 976 appels
 
----
+Communication et support client : 935 appels
 
-Findings
+Financement projets personnels et immobiliers : 182 appels
 
-Réclamations clients mal catégorisées :
-92 % des réclamations officiellement classées se révèlent mal catégorisées, avec 2 862 appels identifiés automatiquement comme des réclamations potentielles non détectées.
+Problèmes techniques et planification : 156 appels
 
-Mauvaise connaissance des thématiques d’appel :
-Principaux thèmes sous-exploités (assurance, intérêts, gestion documentaire), indiquant des opportunités inexploitées de formation et d’action commerciale.
-
-Faible pilotage opérationnel du SAV :
-Détection automatique de 205 appels (2,5%) avec des attentes excessives. Identification d’une dizaine de cas de comportements inappropriés non détectés (expressions sensibles). 9 % des appels présentent des opportunités commerciales inexploitées (« moments de vie »).
+Fiscalité et impôts : 42 appels
 
 
-Ces constats montrent clairement les marges de progrès disponibles pour renforcer efficacement le monitoring du SAV Franfinance.
+(Insérer ici un graphique illustrant ces proportions pour visualisation immédiate.)
+
+Ces résultats soulignent plusieurs opportunités concrètes pour Franfinance :
+
+Amélioration de la connaissance client : En analysant finement les motifs récurrents, Franfinance pourrait mieux anticiper les besoins des clients, ajuster ses offres et augmenter la satisfaction globale.
+
+Optimisation de l’expérience client : Un pilotage précis des thèmes récurrents permettrait d’identifier rapidement les irritants clients et de réagir de manière proactive.
+
+Meilleure formation des conseillers : Cibler les formations sur les thématiques fréquentes ou sensibles, afin d’améliorer la qualité du conseil et du support apportés.
+
+
+Mise en perspective avec l'analyse des réclamations, cette approche permettrait aussi un monitoring fin des thèmes générant le plus de réclamations et une identification ciblée des prescripteurs associés à des problématiques récurrentes.
+
+La généralisation de cette démarche au sein de l’activité Franfinance pourrait ainsi constituer un réel game-changer, transformant durablement la relation client.
 
