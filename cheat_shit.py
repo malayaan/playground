@@ -1,43 +1,14 @@
-Voici ta partie rédigée clairement, prête à intégrer, avec les données chiffrées et une intégration possible d'un graphique :
+D'accord, je vais simplifier et rendre le texte plus direct, sans reformuler ou enjoliver.
 
 
 ---
 
-Mauvaise connaissance des thématiques d’appels
+Détection des moments d’attente :
+Parmi les appels de plus de 5 minutes (8182 au total), on a identifié 205 appels où l’attente représentait 70 % de la durée. 15 % de ces appels étaient encore plus problématiques, avec plus de 50 % de temps d’attente ou de silence. Ces chiffres montrent qu’il est possible de réduire les temps morts en intervenant plus rapidement sur ce type d’appels.
 
-Le modèle de Topic Modeling utilisé a permis d’identifier des structures pertinentes et des thématiques explicites sur environ un tiers des appels analysés. Cette approche consiste à regrouper automatiquement les appels contenant des contenus sémantiquement similaires, révélant ainsi les motifs récurrents d’appels clients.
+Détection des comportements inappropriés :
+En appliquant une blacklist de termes sensibles, on a repéré une dizaine de cas en 5 mois. La plupart sont peu graves, mais trois cas ressortent comme problématiques, avec des expressions comme “assurance obligatoire” ou des termes inappropriés. Identifier ces comportements permet de corriger les écarts avant qu’ils ne deviennent gênants.
 
-Les principaux thèmes identifiés sont :
-
-Simulation d’intérêts et taux réels : 1797 appels
-
-Assurances et problèmes médicaux : 1175 appels
-
-Gestion documentaire et changements administratifs : 1067 appels
-
-Services financiers et bancaires : 976 appels
-
-Communication et support client : 935 appels
-
-Financement projets personnels et immobiliers : 182 appels
-
-Problèmes techniques et planification : 156 appels
-
-Fiscalité et impôts : 42 appels
-
-
-(Insérer ici un graphique illustrant ces proportions pour visualisation immédiate.)
-
-Ces résultats soulignent plusieurs opportunités concrètes pour Franfinance :
-
-Amélioration de la connaissance client : En analysant finement les motifs récurrents, Franfinance pourrait mieux anticiper les besoins des clients, ajuster ses offres et augmenter la satisfaction globale.
-
-Optimisation de l’expérience client : Un pilotage précis des thèmes récurrents permettrait d’identifier rapidement les irritants clients et de réagir de manière proactive.
-
-Meilleure formation des conseillers : Cibler les formations sur les thématiques fréquentes ou sensibles, afin d’améliorer la qualité du conseil et du support apportés.
-
-
-Mise en perspective avec l'analyse des réclamations, cette approche permettrait aussi un monitoring fin des thèmes générant le plus de réclamations et une identification ciblée des prescripteurs associés à des problématiques récurrentes.
-
-La généralisation de cette démarche au sein de l’activité Franfinance pourrait ainsi constituer un réel game-changer, transformant durablement la relation client.
+Détection d’opportunités de rebond commercial :
+9 % des appels présentent des “moments de vie” significatifs. Sur cet échantillon, 58 % pourraient réellement mener à une opportunité commerciale. Cela ouvre la voie à un suivi plus proactif et ciblé des interactions clients pour développer de nouvelles offres.
 
