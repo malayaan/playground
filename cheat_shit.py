@@ -1,20 +1,71 @@
-Voici une introduction très courte, directe et claire :
+Voici une rédaction structurée, synthétique et claire avec les trois grandes catégories demandées et des bullet points faciles à copier-coller directement dans ton document :
 
 
 ---
 
-Introduction – DataWorks : Analyse des Audios SAV (Franfinance)
+Contexte
 
-Ce DataWorks présente l’analyse automatique des 23 000 appels du SAV Franfinance (octobre 2024 - mars 2025). Objectif : améliorer le pilotage SAV en identifiant mieux les réclamations clients, les thématiques fréquentes et les points faibles du suivi opérationnel.
+Analyse menée dans le cadre de l’audit sur les crédits à la consommation (Franfinance).
 
-Synthèse des travaux réalisés :
+Activité auditée : Service Après-Vente (SAV), canal principal de relation et réclamation client.
 
-Identification des réclamations : 92% de réclamations mal catégorisées (risque réputationnel/opérationnel).
+Actuellement : pilotage SAV limité à une réécoute manuelle (5 appels/conseiller/mois).
 
-Analyse des thématiques : identification fine des sujets clés (assurances, gestion documentaire…) pour améliorer la connaissance client (risque commercial).
-
-Optimisation du monitoring SAV : détection d'attentes excessives (205 appels), comportements inappropriés (10 cas), et opportunités commerciales inexploitées (9% des appels).
+Faiblesse actuelle : classification imprécise des réclamations, connaissance insuffisante des échanges, manque de suivi opérationnel.
 
 
-Ce document détaille ces analyses et présente les recommandations pour renforcer durablement le suivi du SAV Franfinance.
+Objectifs
+
+Renforcer la qualité du pilotage SAV grâce à une approche data automatisée.
+
+Identifier précisément les réclamations mal catégorisées et les thématiques clés abordées par les clients.
+
+Détecter les points d’amélioration du monitoring opérationnel : attentes excessives, comportements conseillers, opportunités commerciales inexploitées.
+
+
+Données
+
+Description :
+
+23 000 audios d’appels clients-conseillers du SAV.
+
+Métadonnées associées (durée appel, ID conseiller, prescripteur éventuel).
+
+
+Source :
+
+Plateforme SAV Odigo (outil interne Franfinance).
+
+
+Access method :
+
+Extraction manuelle depuis Odigo (format audio brut).
+
+
+Scope :
+
+Totalité des appels entrants au SAV Franfinance traités sur la période auditée.
+
+
+Période :
+
+Octobre 2024 à mars 2025 (5 mois d’activité).
+
+
+Usage :
+
+Analyse automatique des réclamations (NLP, speech-to-text).
+
+Identification fine des thématiques (Topic modeling NLP).
+
+Détection des signaux faibles (attente excessive, comportements sensibles, rebonds commerciaux possibles).
+
+
+Data quality :
+
+Qualité globale bonne : audios exploitables à 100%, données riches.
+
+Quelques limites : qualité variable des transcriptions automatiques, identification thématique effective sur environ 1/3 des appels.
+
+
 
