@@ -1,15 +1,20 @@
-Voici une introduction concise, directe et structurée pour ton DataWorks. Elle est rédigée en style simple et clair, sans jargon inutile, pour être immédiatement exploitable :
+Voici une introduction très courte, directe et claire :
 
 
 ---
 
 Introduction – DataWorks : Analyse des Audios SAV (Franfinance)
 
-Ce DataWorks présente l’approche d’analyse des audios du service client de Franfinance, menée dans le cadre de la mission d’audit sur les crédits à la consommation. L’objectif était de renforcer la qualité du pilotage SAV en exploitant directement les données issues des appels client.
+Ce DataWorks présente l’analyse automatique des 23 000 appels du SAV Franfinance (octobre 2024 - mars 2025). Objectif : améliorer le pilotage SAV en identifiant mieux les réclamations clients, les thématiques fréquentes et les points faibles du suivi opérationnel.
 
-La mission s’est appuyée sur l’analyse automatique des 23 000 audios extraits manuellement depuis la plateforme Odigo (période d’octobre 2024 à mars 2025). Cette démarche data-driven visait à identifier clairement les points faibles du suivi client actuel, en particulier sur la classification des réclamations, les thématiques récurrentes et le comportement des conseillers.
+Synthèse des travaux réalisés :
 
-Voici un résumé synthétique des travaux effectués :
+Identification des réclamations : 92% de réclamations mal catégorisées (risque réputationnel/opérationnel).
 
-Ce document expose en détail les méthodes utilisées, les résultats obtenus, ainsi que les recommandations concrètes pour renforcer le pilotage de l’activité crédit à la consommation de Franfinance.
+Analyse des thématiques : identification fine des sujets clés (assurances, gestion documentaire…) pour améliorer la connaissance client (risque commercial).
+
+Optimisation du monitoring SAV : détection d'attentes excessives (205 appels), comportements inappropriés (10 cas), et opportunités commerciales inexploitées (9% des appels).
+
+
+Ce document détaille ces analyses et présente les recommandations pour renforcer durablement le suivi du SAV Franfinance.
 
