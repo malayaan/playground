@@ -1,13 +1,11 @@
-Très bien, voici une version plus rédigée, formelle mais toujours concise, avec un ton clairement orienté audit :
+Merci pour la précision ! Voici une version plus complète et structurée, qui rappelle brièvement la méthode tout en introduisant clairement le graphique :
 
 
 ---
 
-Perspectives
+Afin d’estimer le temps consacré à la sécurisation en début d’appel, une analyse a été menée à partir des transcriptions générées automatiquement. L’objectif était d’identifier les moments où le conseiller ou le client évoquent des éléments d’identification (téléphone, code postal, etc.).
 
-Plusieurs dimensions complémentaires pourraient faire l’objet d’analyses ultérieures. L’approche n’a pas couvert le respect des scripts commerciaux, ni la formulation du conseil apporté par les conseillers. L’identification automatique des prescripteurs à risque n’a pas été approfondie, bien qu’elle constitue un levier clair de pilotage.
+La méthodologie s’est appuyée sur une détection de mots-clés sensibles dans les deux premières prises de parole du conseiller et du client. Les phrases contenant ces mots ont été isolées, puis leur durée estimée à partir du nombre de mots prononcés, en appliquant une vitesse de parole moyenne de 160 mots par minute. Ce traitement a permis de retenir 8 744 appels dans lesquels la phase de sécurisation est détectable de manière fiable.
 
-Par ailleurs, l’analyse des appels récurrents (à partir des métadonnées) pourrait permettre de mieux détecter les situations complexes ou les fragilités clients. De même, les demandes de réaménagement hors crédit, non traitées ici, constituent un signal faible à investiguer.
-
-Enfin, l’analyse des transcriptions ouvre des perspectives opérationnelles, notamment sur la réduction du temps passé à certaines étapes standardisées, comme la phase de sécurisation client. Des premiers éléments quantitatifs suggèrent un potentiel d’optimisation significatif, qui pourrait avoir un impact direct sur l’efficacité du traitement des appels.
+Le graphique ci-dessous présente la distribution estimée du temps passé à sécuriser un appel. Il met en évidence la variabilité des durées observées et permet d’identifier des appels particulièrement longs, qui pourraient faire l’objet d’une optimisation ciblée.
 
