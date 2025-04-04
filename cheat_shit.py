@@ -1,11 +1,12 @@
-Merci pour la précision ! Voici une version plus complète et structurée, qui rappelle brièvement la méthode tout en introduisant clairement le graphique :
+Parfait, voici un paragraphe qui introduit le graphe et pose clairement la perspective d’optimisation via un répondeur automatique, en gardant un ton pro et synthétique :
 
 
 ---
 
-Afin d’estimer le temps consacré à la sécurisation en début d’appel, une analyse a été menée à partir des transcriptions générées automatiquement. L’objectif était d’identifier les moments où le conseiller ou le client évoquent des éléments d’identification (téléphone, code postal, etc.).
+L’analyse a permis d’estimer que la phase de sécurisation en début d’appel représente en moyenne 52 secondes par interaction. Cette durée a été calculée en détectant les mots-clés liés à la vérification d’identité dans les premières phrases des transcriptions, puis en estimant le temps de parole associé.
+Au total, 8 744 appels exploitables ont été identifiés sur la période.
 
-La méthodologie s’est appuyée sur une détection de mots-clés sensibles dans les deux premières prises de parole du conseiller et du client. Les phrases contenant ces mots ont été isolées, puis leur durée estimée à partir du nombre de mots prononcés, en appliquant une vitesse de parole moyenne de 160 mots par minute. Ce traitement a permis de retenir 8 744 appels dans lesquels la phase de sécurisation est détectable de manière fiable.
-
-Le graphique ci-dessous présente la distribution estimée du temps passé à sécuriser un appel. Il met en évidence la variabilité des durées observées et permet d’identifier des appels particulièrement longs, qui pourraient faire l’objet d’une optimisation ciblée.
+Le graphique ci-dessous illustre la distribution des durées estimées passées sur cette phase.
+Ces résultats ouvrent une piste concrète : la mise en place d’un répondeur automatique en amont des appels, permettant au client de s’authentifier avant d’être mis en relation avec un conseiller.
+À l’échelle de l’entreprise, cela représenterait un gain de temps significatif, mesurable en jours-homme économisés chaque mois.
 
