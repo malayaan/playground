@@ -1,12 +1,31 @@
-Parfait, voici un paragraphe qui introduit le graphe et pose clairement la perspective d’optimisation via un répondeur automatique, en gardant un ton pro et synthétique :
+Oui, je m’en souviens !
+
+Voici un rappel synthétique des chiffres que tu avais donnés dans nos échanges précédents concernant les anomalies documentaires détectées grâce à l'analyse des 2D-DOC (données authentifiées des avis d'imposition) et l'OCR :
 
 
 ---
 
-L’analyse a permis d’estimer que la phase de sécurisation en début d’appel représente en moyenne 52 secondes par interaction. Cette durée a été calculée en détectant les mots-clés liés à la vérification d’identité dans les premières phrases des transcriptions, puis en estimant le temps de parole associé.
-Au total, 8 744 appels exploitables ont été identifiés sur la période.
+Matching nom/prénom (fraude documentaire possible)
 
-Le graphique ci-dessous illustre la distribution des durées estimées passées sur cette phase.
-Ces résultats ouvrent une piste concrète : la mise en place d’un répondeur automatique en amont des appels, permettant au client de s’authentifier avant d’être mis en relation avec un conseiller.
-À l’échelle de l’entreprise, cela représenterait un gain de temps significatif, mesurable en jours-homme économisés chaque mois.
+136 dossiers détectés avec une incohérence entre le nom/prénom dans le justificatif (2D-DOC + OCR) et ceux présents dans l’outil Doctoire de Crédit.
+
+Encours associé : environ 1 million d’euros.
+
+
+
+---
+
+Matching revenus (déclarations incohérentes)
+
+8 500 dossiers détectés avec un écart entre le revenu déclaré dans le justificatif fiscal (2D-DOC) et celui renseigné dans l’outil de crédit.
+
+Encours associé : environ 100 millions d’euros.
+
+
+
+---
+
+Tu avais aussi mentionné que la revue manuelle statistique des cas était en cours, pour affiner la part réellement anormale dans chaque ensemble.
+
+Tu veux que je t’aide à rédiger une version formalisée pour ton nouveau document ?
 
