@@ -1,31 +1,101 @@
-Oui, je m’en souviens !
+Parfait ! Voici 5 questions de réactivation pour le début de la 2ᵉ journée, avec des extraits de code autour de :
 
-Voici un rappel synthétique des chiffres que tu avais donnés dans nos échanges précédents concernant les anomalies documentaires détectées grâce à l'analyse des 2D-DOC (données authentifiées des avis d'imposition) et l'OCR :
+merge
 
+apply
 
----
+regex
 
-Matching nom/prénom (fraude documentaire possible)
+data analysis simple (stats / groupby)
 
-136 dossiers détectés avec une incohérence entre le nom/prénom dans le justificatif (2D-DOC + OCR) et ceux présents dans l’outil Doctoire de Crédit.
-
-Encours associé : environ 1 million d’euros.
-
+Et un peu de logique conditionnelle
 
 
----
-
-Matching revenus (déclarations incohérentes)
-
-8 500 dossiers détectés avec un écart entre le revenu déclaré dans le justificatif fiscal (2D-DOC) et celui renseigné dans l’outil de crédit.
-
-Encours associé : environ 100 millions d’euros.
-
+Format : “Que retourne ce code ?” ou “Explique ce que fait ce code”. Tous les exemples sont courts et directement interprétables par des gens qui ont vu la journée 1.
 
 
 ---
 
-Tu avais aussi mentionné que la revue manuelle statistique des cas était en cours, pour affiner la part réellement anormale dans chaque ensemble.
+1. Merge (jointure)
 
-Tu veux que je t’aide à rédiger une version formalisée pour ton nouveau document ?
+df1 = pd.DataFrame({"id": [1, 2], "nom": ["Alice", "Bob"]})
+df2 = pd.DataFrame({"id": [2, 3], "score": [88, 75]})
+print(pd.merge(df1, df2, on="id", how="inner"))
+
+Question : Que va afficher ce code ?
+
+> Réponse : Une ligne avec id = 2, nom = "Bob", score = 88 (car inner garde uniquement les id communs)
+
+
+
+
+---
+
+2. apply() avec une fonction simple
+
+df = pd.DataFrame({"age": [20, 30, 40]})
+df["age_cat"] = df["age"].apply(lambda x: "jeune" if x < 35 else "vieux")
+print(df["age_cat"])
+
+Question : Que contient la colonne age_cat ?
+
+> Réponse : ["jeune", "jeune", "vieux"]
+
+
+
+
+---
+
+3. Regex avec str.contains()
+
+df = pd.DataFrame({"email": ["alice@mail.com", "bob@sg.fr", "contact@banque.fr"]})
+print(df[df["email"].str.contains(".*@.*\.fr")])
+
+Question : Quelles lignes seront gardées ?
+
+> Réponse : Les emails se terminant par .fr : bob@sg.fr et contact@banque.fr
+
+
+
+
+---
+
+4. Groupby + mean
+
+df = pd.DataFrame({"job": ["admin", "admin", "student"], "age": [30, 40, 22]})
+print(df.groupby("job")["age"].mean())
+
+Question : Que retourne ce code ?
+
+> Réponse :
+
+
+
+job
+admin     35.0
+student   22.0
+Name: age, dtype: float64
+
+
+---
+
+5. apply() avec row (axis=1)
+
+df = pd.DataFrame({"nom": ["Alice", "Bob"], "score": [80, 90]})
+def bonus(row):
+    return row["score"] + 5 if row["nom"] == "Alice" else row["score"]
+
+df["score_bonus"] = df.apply(bonus, axis=1)
+print(df["score_bonus"])
+
+Question : Quelles sont les valeurs de score_bonus ?
+
+> Réponse : [85, 90] (Alice reçoit +5)
+
+
+
+
+---
+
+Souhaites-tu un format PDF imprimable, slides, ou une version type quiz collectif avec réponse à l’oral ? Je peux te le préparer tout de suite.
 
