@@ -1,4 +1,1 @@
-Qualité des données audio
-
-Les audios Odigo sont globalement clairs et exploitables. La transcription est fiable sur la majorité des appels, malgré quelques limites sur les noms propres et certains accents. La qualité est suffisante pour les analyses menées.
-
+Ces résultats permettent d’isoler les cas les plus longs et d’orienter des actions concrètes d’optimisation ou d’automatisation
