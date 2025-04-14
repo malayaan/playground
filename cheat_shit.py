@@ -1,38 +1,31 @@
-Voici un tableau rédigé en format texte simple, clair et structuré, pour intégrer directement dans ton document :
+Voici ce que tu peux mettre pour les deux colonnes Usage et Data quality, dans le même ton pro, simple et audit-compatible :
 
 
 ---
 
-Données utilisées
+I-Conso – Données octroi de crédit
 
-1. I-Conso – Données octroi de crédit
+Usage :
+Vérification des revenus et charges déclarés, identification des statuts de crédit, détection des impayés.
 
-Description : Données issues de l’outil d’instruction des crédits à la consommation.
-
-Source : Extraction du datalake SGRF.
-
-Accès : Requête SQL encadrée par la cellule data.
-
-Contenu clé : Identité client, revenus déclarés, charges saisies, statut du crédit, présence d’impayés.
-
-Période couverte : Juin à décembre 2024.
-
-
-2. GED – Fonds documentaire (avis d’imposition)
-
-Description : Documents justificatifs archivés dans le cadre des demandes de crédit.
-
-Source : GED (LGDocuments).
-
-Accès : Extraction manuelle puis traitement automatique via 2D-DOC et OCR.
-
-Contenu clé : Avis d’imposition (revenu fiscal de référence, identité), format PDF.
-
-Période couverte : Juin à décembre 2024.
+Data quality :
+Données structurées, bien standardisées, mais erreurs de saisie ponctuelles (ex. salaires annuels saisis en mensuel).
 
 
 
 ---
 
-Tu veux que je te le reformule aussi en tableau markdown ou juste ce format texte clair suffit ?
+GED – Fonds documentaire (avis d’imposition)
+
+Usage :
+Extraction automatique des revenus et de l’identité via OCR et lecture des 2D-DOC pour comparaison avec les données I-Conso.
+
+Data quality :
+Documents parfois non lisibles. Taux de lecture réussi des 2D-DOC : 68 %. OCR fiable mais sensible à la qualité du scan.
+
+
+
+---
+
+Souhaites-tu que je t’unifie tout ça dans un tableau final texte ?
 
