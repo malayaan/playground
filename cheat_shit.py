@@ -19,7 +19,7 @@ Un client entre en crise sous l'effet direct (transactions) ou indirect (corrél
 
 %%
 
-import numpy as np import pandas as pd import networkx as nx import matplotlib.pyplot as plt import seaborn as sns
+import numpy as np import pandas as pd import networkx as nx import matplotlib.pyplot as plt import seaborn as sns import time from IPython.display import clear_output
 
 %% [markdown]
 
@@ -72,7 +72,7 @@ Le modèle repose sur un nombre de cycles de propagation simulés, chacun évalu
 
 %%
 
-def simulate_crisis(transactions, df_corr, secteurs, initial_sector, initial_crisis_pct, propagation_rounds=3): clients = pd.unique(transactions[['source_id', 'target_id']].values.ravel()) client_sectors = {}
+def simulate_crisis_and_return_nodes(transactions, df_corr, secteurs, initial_sector, initial_crisis_pct, propagation_rounds=3): clients = pd.unique(transactions[['source_id', 'target_id']].values.ravel()) client_sectors = {}
 
 for _, row in transactions.iterrows():
     if row["source_sector"]:
@@ -100,46 +100,29 @@ for _ in range(propagation_rounds):
 
     crisis_clients.update(new_crisis_clients)
 
-return len(crisis_clients) / len(clients)
+return crisis_clients, client_sectors
 
 %% [markdown]
 
 """
 
-4. Analyse des résultats
+4. Affichage dynamique de la propagation
 
-Nous simulons la crise pour différentes proportions initiales de clients du secteur automobile en crise, puis nous analysons la proportion finale du groupe affectée par la crise. Cela permet de visualiser un éventuel point de bascule à partir duquel la crise devient systémique. """
+Nous affichons de manière dynamique l’évolution de la propagation d’une crise sectorielle à différents niveaux d’activation initiale du secteur automobile. Chaque état est visible quelques secondes, permettant d’apprécier la contagion progressive dans le réseau. """
 
 %%
 
-initial_pcts = np.linspace(0.05, 0.5, 10) final_affected_pcts = [simulate_crisis(transactions, df_corr, secteurs, "Automobile", pct) for pct in initial_pcts]
+G = nx.Graph() for _, row in transactions.iterrows(): G.add_node(row["source_id"]) G.add_node(row["target_id"]) poids = row["amount"] / 1000 if row["source_sector"] in secteurs and row["target_sector"] in secteurs: poids *= df_corr.loc[row["source_sector"], row["target_sector"]] G.add_edge(row["source_id"], row["target_id"], weight=poids)
 
-plt.figure(figsize=(10, 6)) plt.plot(initial_pcts * 100, np.array(final_affected_pcts) * 100, marker='o') plt.xlabel('Pourcentage initial du secteur Automobile en crise (%)') plt.ylabel('Pourcentage final du groupe affecté (%)') plt.title('Propagation de la crise en fonction du secteur automobile initialement affecté') plt.grid(True) plt.show()
+pos = nx.spring_layout(G, k=0.15, seed=42)
 
-%% [markdown]
+delays = np.linspace(2, 10, 10) initial_pcts = np.linspace(0.05, 0.5, 10)
 
-"""
+for i, pct in enumerate(initial_pcts): crisis_nodes, client_sectors = simulate_crisis_and_return_nodes(transactions, df_corr, secteurs, "Automobile", pct) node_colors = ['red' if node in crisis_nodes else 'lightgrey' for node in G.nodes()]
 
-5. Limites et perspectives
-
-Limites :
-
-Transactions externes manquantes (sous-estimation des liens réels).
-
-Simplification des interactions économiques complexes à de simples transactions.
-
-L'effet aléatoire est arbitraire et pourrait être amélioré par une étude approfondie.
-
-
-Perspectives :
-
-Compléter par des données externes (Banque de France, INSEE).
-
-Ajuster la matrice de corrélation avec des analyses sectorielles réelles.
-
-Affiner la modélisation de l'incertitude et des mécanismes de propagation.
-
-Étendre l’analyse à d'autres secteurs pour établir une cartographie comparative des effets systémiques potentiels. """
-
-
+plt.figure(figsize=(10, 6))
+nx.draw(G, pos, node_color=node_colors, edge_color='lightgrey', node_size=15, alpha=0.6)
+plt.title(f"Propagation - {int(pct * 100)}% initialement en crise (Automobile)")
+plt.show()
+time.sleep(delays[i])
 
