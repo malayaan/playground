@@ -1,77 +1,44 @@
-FRS Audio Analysis – Repository
+import numpy as np import pandas as pd import networkx as nx import matplotlib.pyplot as plt import seaborn as sns
 
-Ce repository regroupe le travail réalisé pour la mission d'analyse audio du Service Après-Vente (SAV) Franfinance dans le cadre de l'audit FRS. L'objectif est d'utiliser les données audio issues des appels clients pour identifier des opportunités d'amélioration du pilotage du SAV.
+Définition des secteurs
 
-Structure du Repository
+secteurs = ["Automobile", "BTP", "Énergie", "Transport", "Distribution", "Tech", "Finance"]
 
-1. conf
+Création matrice de corrélation intersectorielle fictive
 
-Contient les paramètres de configuration des différentes pipelines Kedro.
+np.random.seed(42) corr_matrix = np.random.uniform(low=0.1, high=1.0, size=(len(secteurs), len(secteurs))) np.fill_diagonal(corr_matrix, 1) corr_matrix = (corr_matrix + corr_matrix.T) / 2 df_corr = pd.DataFrame(corr_matrix, index=secteurs, columns=secteurs)
 
-2. data
+Base fictive de transactions
 
-Dossier central regroupant l'ensemble des données nécessaires à l'analyse :
+nb_transactions = 2000 transactions = pd.DataFrame({ "source_id": np.random.randint(1, 500, nb_transactions), "target_id": np.random.randint(501, 1000, nb_transactions), "amount": np.round(np.random.uniform(100, 50000, nb_transactions), 2), "source_internal": np.random.choice([True, False], nb_transactions, p=[0.7, 0.3]), "target_internal": np.random.choice([True, False], nb_transactions, p=[0.7, 0.3]), })
 
-audio_data : Audios bruts issus d'Odigo (appels SAV).
+transactions["source_sector"] = np.where(transactions["source_internal"], np.random.choice(secteurs, nb_transactions), None)
 
-data_mission : Outils métier et fichiers d'interaction avec auditeurs/audités.
+transactions["target_sector"] = np.where(transactions["target_internal"], np.random.choice(secteurs, nb_transactions), None)
 
-embedding : Modèles d'embedding NLP.
+Construction du graphe pondéré
 
-saved_model : Modèles sauvegardés pour réutilisation directe.
+G = nx.Graph()
 
-transcription_data : Transcriptions générées et traitées par les pipelines Kedro.
+Ajout des nœuds
 
+for idx, row in transactions.iterrows(): G.add_node(row["source_id"], sector=row["source_sector"]) G.add_node(row["target_id"], sector=row["target_sector"])
 
-3. notebooks
+Ajout des liens avec vérification explicite des secteurs
 
-Notebooks principaux pour les analyses spécifiques :
+for idx, row in transactions.iterrows(): poids = row["amount"] / 1000 if row["source_sector"] in secteurs and row["target_sector"] in secteurs: poids *= df_corr.loc[row["source_sector"], row["target_sector"]] G.add_edge(row["source_id"], row["target_id"], weight=poids)
 
-Liens avec les données utilisées par Mathéo
+Visualisation des résultats
 
-Topic modeling et analyses NLP
+fig, axes = plt.subplots(1, 2, figsize=(20, 8))
 
-Production des graphiques et des CSV finaux pour les livrables aux audités
+Matrice de corrélation
 
+sns.heatmap(df_corr, annot=True, cmap="coolwarm", ax=axes[0]) axes[0].set_title('Matrice de Corrélation Intersectorielle')
 
-4. src
+Graphe simplifié
 
-Pipelines Kedro structurés par étape de traitement :
+pos = nx.spring_layout(G, k=0.15, seed=42) nx.draw(G, pos, ax=axes[1], node_size=10, edge_color='grey', alpha=0.5) axes[1].set_title('Graphe des Transactions Pondérées')
 
-audio_processing : Prétraitement et traitement des fichiers audio.
-
-audio_retranscription : Transcription des audios en texte.
-
-sentiment_analysis : Analyse automatique du sentiment des échanges.
-
-
-Installation
-
-Cloner le repo
-
-Installer les dépendances via le fichier requirements.txt
-
-
-pip install -r requirements.txt
-
-Usage
-
-Les pipelines Kedro sont exécutés via les commandes standards Kedro :
-
-kedro run --pipeline=<pipeline_name>
-
-Exemple :
-
-kedro run --pipeline=audio_retranscription
-
-Les résultats finaux sont principalement disponibles dans le dossier data/transcription_data et générés par les notebooks associés.
-
-Contributions
-
-Ce projet est principalement maintenu par l'équipe audit FRS. Pour toute question ou contribution, contactez directement l'équipe projet.
-
-
----
-
-Ce README vise à faciliter la prise en main rapide du projet et à assurer une bonne compréhension des données, outils et livrables disponibles.
+plt.tight_layout() plt.show()
 
