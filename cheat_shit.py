@@ -2,127 +2,88 @@
 
 """
 
-Analyse de la propagation d'une crise sectorielle à la Société Générale
+Analyse dynamique des corrélations intersectorielles
 
-Ce notebook présente une méthodologie concrète pour simuler et analyser la propagation potentielle d'une crise initiée dans un secteur spécifique (ici, le secteur automobile) au sein du portefeuille client de la Société Générale. L'objectif est d'identifier à partir de quel seuil initial une crise locale peut potentiellement devenir systémique à travers différents secteurs économiques interconnectés.
+Ce notebook a pour objectif d'étudier les corrélations entre les performances des différents secteurs économiques à partir d'indices sectoriels européens (STOXX Europe 600). L'idée est de produire :
 
-Hypothèses principales :
+Une matrice de corrélation sur l'ensemble de la période (ex. 2010–2024)
 
-Chaque client appartient à un secteur économique clairement identifié.
+Des matrices de corrélations glissantes pour visualiser l'évolution des dépendances sectorielles dans le temps
 
-Les interactions entre clients sont représentées par des transactions financières.
 
-Une matrice de corrélation intersectorielle est utilisée pour modéliser les liens économiques positifs et négatifs.
-
-Un client entre en crise sous l'effet direct (transactions) ou indirect (corrélation sectorielle) d'autres clients déjà en crise. """
-
+Cela permet notamment de détecter des périodes de synchronisation (crises, cycles) ou de divergence structurelle. """
 
 %%
 
-import numpy as np import pandas as pd import networkx as nx import matplotlib.pyplot as plt import seaborn as sns import time from IPython.display import clear_output
+import yfinance as yf import pandas as pd import matplotlib.pyplot as plt import seaborn as sns
 
 %% [markdown]
 
 """
 
-1. Génération des données fictives et matrice de corrélation sectorielle
+1. Chargement des données sectorielles STOXX Europe 600
 
-La matrice de corrélation contient des valeurs positives et négatives, reflétant ainsi la réalité économique : certains secteurs bénéficient de la baisse d'autres secteurs. """
+On télécharge les données depuis Yahoo Finance pour une quinzaine de secteurs, depuis 2010 si possible. """
 
 %%
 
-secteurs = ["Automobile", "BTP", "Énergie", "Transport", "Distribution", "Tech", "Finance"]
+symbols = { 'Automobile': '^STOXXAP', 'Construction': '^STOXXOP', 'Matériaux': '^STOXXPP', 'Industrie': '^STOXXNP', 'Énergie': '^STOXXEP', 'Finances': '^STOXXFP', 'Immobilier': '^STOXX86P', 'Santé': '^STOXXDP', 'Technologie': '^STOXX8P', 'Télécoms': '^STOXXKP', 'Services publics': '^STOXX6P', 'Conso discrétionnaire': '^STOXXQP', 'Conso de base': '^STOXX3P', 'Médias': '^STOXXMP', 'Voyages & Loisirs': '^STOXXTP' }
 
-np.random.seed(42) corr_matrix = np.random.uniform(-1, 1, (len(secteurs), len(secteurs))) np.fill_diagonal(corr_matrix, 1) corr_matrix = (corr_matrix + corr_matrix.T) / 2
+%%
 
-df_corr = pd.DataFrame(corr_matrix, index=secteurs, columns=secteurs)
-
-plt.figure(figsize=(8, 6)) sns.heatmap(df_corr, annot=True, cmap="coolwarm") plt.title('Matrice de Corrélation Intersectorielle') plt.show()
+raw_data = yf.download(list(symbols.values()), start="2010-01-01", end="2024-12-31")['Adj Close'] data = raw_data.rename(columns={v: k for k, v in symbols.items()}) data = data.dropna(axis=1, how='any')  # retire les colonnes incomplètes
 
 %% [markdown]
 
 """
 
-2. Création du réseau de transactions
+2. Visualisation de la matrice de corrélation globale (2010–2024)
 
-Nous simulons 2000 transactions entre clients internes et externes à la Société Générale. Les clients internes ont un secteur connu, les externes ont une origine ou destination inconnue (secteur indéterminé). """
+"""
 
 %%
 
-nb_transactions = 2000 transactions = pd.DataFrame({ "source_id": np.random.randint(1, 500, nb_transactions), "target_id": np.random.randint(501, 1000, nb_transactions), "amount": np.round(np.random.uniform(100, 50000, nb_transactions), 2), "source_internal": np.random.choice([True, False], nb_transactions, p=[0.7, 0.3]), "target_internal": np.random.choice([True, False], nb_transactions, p=[0.7, 0.3]), })
+weekly_returns = data.resample('W').last().pct_change().dropna() corr_matrix_full = weekly_returns.corr()
 
-transactions["source_sector"] = np.where(transactions["source_internal"], np.random.choice(secteurs, nb_transactions), None) transactions["target_sector"] = np.where(transactions["target_internal"], np.random.choice(secteurs, nb_transactions), None)
+plt.figure(figsize=(14, 10)) sns.heatmap(corr_matrix_full, annot=True, cmap='coolwarm', center=0) plt.title("Matrice de corrélation intersectorielle (2010–2024)") plt.show()
 
 %% [markdown]
 
 """
 
-3. Simulation de la propagation d'une crise
+3. Corrélations glissantes dans le temps (exemple : Automobile vs Énergie)
 
-Nous définissons une fonction claire qui simule la propagation d'une crise initialisée dans le secteur automobile. La propagation dépend :
-
-Des transactions entre clients
-
-Des corrélations intersectorielles
-
-D'un facteur aléatoire modéré pour simuler l'incertitude réelle
-
-
-Le modèle repose sur un nombre de cycles de propagation simulés, chacun évaluant les effets d'une propagation indirecte ou d'un choc corrélé. """
+"""
 
 %%
 
-def simulate_crisis_and_return_nodes(transactions, df_corr, secteurs, initial_sector, initial_crisis_pct, propagation_rounds=3): clients = pd.unique(transactions[['source_id', 'target_id']].values.ravel()) client_sectors = {}
+rolling_corr = weekly_returns['Automobile'].rolling(52).corr(weekly_returns['Énergie'])
 
-for _, row in transactions.iterrows():
-    if row["source_sector"]:
-        client_sectors[row["source_id"]] = row["source_sector"]
-    if row["target_sector"]:
-        client_sectors[row["target_id"]] = row["target_sector"]
-
-crisis_clients = set(np.random.choice(
-    [client for client, sector in client_sectors.items() if sector == initial_sector],
-    size=int(len([c for c in client_sectors.values() if c == initial_sector]) * initial_crisis_pct),
-    replace=False
-))
-
-for _ in range(propagation_rounds):
-    new_crisis_clients = set()
-    for _, row in transactions.iterrows():
-        if row["source_id"] in crisis_clients and row["target_id"] not in crisis_clients:
-            sector_source = client_sectors.get(row["source_id"])
-            sector_target = client_sectors.get(row["target_id"])
-            correlation = df_corr.loc[sector_source, sector_target] if sector_source and sector_target else 0
-
-            proba_crisis = 0.1 + (0.4 * correlation) + np.random.uniform(-0.05, 0.05)
-            if proba_crisis > 0.2:
-                new_crisis_clients.add(row["target_id"])
-
-    crisis_clients.update(new_crisis_clients)
-
-return crisis_clients, client_sectors
+plt.figure(figsize=(12, 5)) rolling_corr.plot() plt.title("Corrélation glissante (1 an) – Automobile vs Énergie") plt.ylabel("Corrélation") plt.grid(True) plt.show()
 
 %% [markdown]
 
 """
 
-4. Affichage dynamique de la propagation
+4. Construction d'une série de matrices de corrélation annuelles
 
-Nous affichons de manière dynamique l’évolution de la propagation d’une crise sectorielle à différents niveaux d’activation initiale du secteur automobile. Chaque état est visible quelques secondes, permettant d’apprécier la contagion progressive dans le réseau. """
+Permet de voir l'évolution structurelle des corrélations intersectorielles année par année. """
 
 %%
 
-G = nx.Graph() for _, row in transactions.iterrows(): G.add_node(row["source_id"]) G.add_node(row["target_id"]) poids = row["amount"] / 1000 if row["source_sector"] in secteurs and row["target_sector"] in secteurs: poids *= df_corr.loc[row["source_sector"], row["target_sector"]] G.add_edge(row["source_id"], row["target_id"], weight=poids)
+matrices = {} for year in range(2012, 2024): yearly = weekly_returns[str(year)] corr = yearly.corr() matrices[year] = corr
 
-pos = nx.spring_layout(G, k=0.15, seed=42)
+%% [markdown]
 
-delays = np.linspace(2, 10, 10) initial_pcts = np.linspace(0.05, 0.5, 10)
+"""
 
-for i, pct in enumerate(initial_pcts): crisis_nodes, client_sectors = simulate_crisis_and_return_nodes(transactions, df_corr, secteurs, "Automobile", pct) node_colors = ['red' if node in crisis_nodes else 'lightgrey' for node in G.nodes()]
+5. Visualisation d'exemples d'années clés (ex : Covid, inflation, guerre en Ukraine)
 
-plt.figure(figsize=(10, 6))
-nx.draw(G, pos, node_color=node_colors, edge_color='lightgrey', node_size=15, alpha=0.6)
-plt.title(f"Propagation - {int(pct * 100)}% initialement en crise (Automobile)")
-plt.show()
-time.sleep(delays[i])
+"""
+
+%%
+
+fig, axes = plt.subplots(2, 2, figsize=(16, 12)) years_to_plot = [2019, 2020, 2022, 2023] for ax, year in zip(axes.flat, years_to_plot): sns.heatmap(matrices[year], ax=ax, cmap='coolwarm', center=0, annot=False) ax.set_title(f"Corrélations intersectorielles – {year}")
+
+plt.tight_layout() plt.show()
 
