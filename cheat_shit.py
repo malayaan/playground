@@ -8,9 +8,13 @@ etf_symbols = {
     'Automobile': 'EXV1.DE',
     'Banques': 'EXH1.DE',
     'Services Financiers': 'EXH2.DE',
-    'Santé': 'EXH3.DE',
-    'Industrie': 'EXH4.DE',
-    'Technologie': 'EXH5.DE'
+    'Alimentation & Boissons': 'EXH3.DE',
+    'Santé': 'EXH4.DE',
+    'Assurances': 'EXH5.DE',
+    'Biens Industriels': 'EXH6.DE',
+    'Pétrole & Gaz': 'EXH7.DE',
+    'Distribution': 'EXH8.DE',
+    'Services Publics': 'EXH9.DE'
 }
 
 # Téléchargement des données
@@ -24,7 +28,7 @@ weekly_returns = data.resample('W').last().pct_change().dropna()
 corr_matrix = weekly_returns.corr()
 
 # Affichage de la heatmap
-plt.figure(figsize=(10, 8))
+plt.figure(figsize=(12, 10))
 sns.heatmap(corr_matrix, annot=True, cmap='coolwarm', center=0)
 plt.title("Matrice de corrélation intersectorielle basée sur les ETF (2010–2024)")
 plt.show()
