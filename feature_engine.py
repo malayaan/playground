@@ -1,67 +1,126 @@
-import pandas as pd
-from sklearn.ensemble import IsolationForest
-from sklearn.preprocessing import StandardScaler
-import matplotlib.pyplot as plt
+import plotly.graph_objects as go
 
-# Exemple :
-# Supposons que nous ayons un DataFrame `df` qui contient déjà les données.
-# Les colonnes choisies sont un exemple. Adaptez en fonction de vos données réelles.
-# "montant", "duree", "taux" sont des variables numériques.
-# "indicateur_regle1", "indicateur_regle2" sont des booléens issus des contrôles actuels.
-# Dans le cadre réel, remplacez par les features pertinentes disponibles.
+# ------------------------------------------------------
+# 1) Définir les montants et calculer le "reste cumulé"
+# ------------------------------------------------------
 
-# Sélection des features pertinentes
-relevant_features = ["montant", "duree", "taux", "indicateur_regle1", "indicateur_regle2"]
+# Entrées
+salaire = 2756
+copine = 465
+ticket_restaurant = 110  # flux direct vers "Bouffe"
 
-# Extraction des données
-X = df[relevant_features].copy()
+# Sorties depuis le compte courant (hors reste cumulé)
+cc_to_av = 1300        # Assurance Vie
+cc_to_livret = 340   # Livret A
+cc_to_pea = 0          # PEA
+cc_to_bouffe = 90     # Bouffe
+cc_to_loisir = 500  # Loisir
+cc_to_loyer = 910      # Loyer
+cc_to_charges = 30+7+9 # Charges fixes (EDF, Internet, etc.)
 
-# Convertir les indicateurs booléens en entiers (0/1) si nécessaire
-bool_cols = ["indicateur_regle1", "indicateur_regle2"]
-for col in bool_cols:
-    X[col] = X[col].astype(int)
+# Calcul de la somme des entrées du compte courant
+cc_input = salaire + copine  # Ticket Restaurant ne passe pas par le CC
 
-# Normalisation/Standardisation des données pour éviter les problèmes d'échelle
-scaler = StandardScaler()
-X_scaled = scaler.fit_transform(X)
+# Calcul de la somme des sorties (sauf "reste cumulé")
+cc_output_except_reste = (
+    cc_to_av
+    + cc_to_livret
+    + cc_to_pea
+    + cc_to_bouffe
+    + cc_to_loisir
+    + cc_to_loyer
+    + cc_to_charges
+)
 
-# Paramétrage de l'Isolation Forest
-# On définit un taux de contamination un peu élevé (5% ici), compte tenu de la faible qualité globale
-contamination_rate = 0.05
-iso_forest = IsolationForest(n_estimators=100, contamination=contamination_rate, random_state=42)
+# Reste cumulé = Entrées CC - Sorties CC
+reste_cumule = cc_input - cc_output_except_reste
 
-# Entraînement du modèle sur l'ensemble des données
-iso_forest.fit(X_scaled)
+# ------------------------------------------------------
+# 2) Créer les labels du Sankey
+# ------------------------------------------------------
+labels = [
+    "Salaire",               # 0
+    "Participation Copine",  # 1
+    "Ticket Restaurant",     # 2
+    "Compte Courant",        # 3
+    "Assurance Vie",         # 4
+    "Livret A",              # 5
+    "PEA",                   # 6
+    "Bouffe",       # 7
+    "Loisir",             # 8
+    "Loyer",                 # 9
+    "Charges fixes",         # 10
+    "Reste cumulé"           # 11
+]
 
-# Récupération des scores d'anomalie
-# decision_function renvoie un score : plus il est faible, plus l'observation est considérée anormale
-anomaly_scores = iso_forest.decision_function(X_scaled)
+# ------------------------------------------------------
+# 3) Définir les flux (source -> target) et leur valeur
+# ------------------------------------------------------
+sources = [
+    0,  # Salaire           -> Compte Courant
+    1,  # Copine            -> Compte Courant
+    2,  # Ticket Restaurant -> Bouffe (flux direct hors CC)
 
-# Prédiction finale (-1 = anomalie, 1 = normal)
-anomalies = iso_forest.predict(X_scaled)
+    3,  # Compte Courant -> Assurance Vie
+    3,  # Compte Courant -> Livret A
+    3,  # Compte Courant -> PEA
+    3,  # Compte Courant -> Bouffe
+    3,  # Compte Courant -> Loisir
+    3,  # Compte Courant -> Loyer
+    3,  # Compte Courant -> Charges fixes
+    3,  # Compte Courant -> Reste cumulé
+]
 
-# Ajout des résultats au DataFrame original
-df["anomaly_score"] = anomaly_scores
-df["anomaly_label"] = anomalies
+targets = [
+    3,  # Salaire           -> CC
+    3,  # Copine            -> CC
+    7,  # Ticket Restaurant -> Bouffe
 
-# Tri des données par score d'anomalie (ascending=True pour avoir les plus anormales en haut)
-df_sorted = df.sort_values(by="anomaly_score", ascending=True)
+    4,  # CC -> Assurance Vie
+    5,  # CC -> Livret A
+    6,  # CC -> PEA
+    7,  # CC -> Bouffe
+    8,  # CC -> Loisir
+    9,  # CC -> Loyer
+    10, # CC -> Charges fixes
+    11  # CC -> Reste cumulé
+]
 
-# Sélection d'un échantillon des cas les plus extrêmes pour inspection manuelle
-top_anomalies = df_sorted.head(10)
-print("Exemples d'anomalies les plus marquées :")
-print(top_anomalies[relevant_features + ["anomaly_score", "anomaly_label"]])
+values = [
+    salaire,
+    copine,
+    ticket_restaurant,
 
-# Visualisation de la distribution des scores d'anomalie (optionnel)
-plt.hist(df["anomaly_score"], bins=50)
-plt.title("Distribution des scores d'anomalie")
-plt.xlabel("Score d'anomalie")
-plt.ylabel("Fréquence")
-plt.show()
+    cc_to_av,
+    cc_to_livret,
+    cc_to_pea,
+    cc_to_bouffe,
+    cc_to_loisir,
+    cc_to_loyer,
+    cc_to_charges,
+    reste_cumule
+]
 
-# Étapes suivantes :
-# - Présenter au métier quelques-unes de ces anomalies (top_anomalies) pour un retour qualitatif.
-# - Vérifier si ces anomalies correspondent à des problèmes connus (montants incohérents, champs manquants, etc.).
-# - Ajuster si besoin le paramètre 'contamination' ou tester d'autres algorithmes (LOF, DBSCAN).
-# - Une fois la métrique globale (pondération métiers) disponible, utiliser celle-ci pour filtrer
-#   ou prioriser les anomalies détectées et ainsi améliorer la pertinence de la détection.
+# ------------------------------------------------------
+# 4) Construire et afficher le Sankey
+# ------------------------------------------------------
+fig = go.Figure(data=[go.Sankey(
+    node=dict(
+        pad=15,
+        thickness=20,
+        line=dict(color="black", width=0.5),
+        label=labels
+    ),
+    link=dict(
+        source=sources,
+        target=targets,
+        value=values
+    )
+)])
+
+fig.update_layout(
+    title_text="Flux des dépenses (avec reste cumulé dynamique)",
+    font_size=14
+)
+
+fig.show()
