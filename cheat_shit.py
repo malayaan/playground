@@ -1,71 +1,41 @@
-import requests
 import pandas as pd
 import matplotlib.pyplot as plt
-import time
 
-# Dictionnaire des indices sectoriels avec leurs symboles
-sector_indices = {
-    "Technologie": "^IXT",
-    "Énergie": "^GSPE",
-    "Matériaux": "^IXB",
-    "Industrie": "^IXI",
-    "Services financiers": "^IXM",
-    "Santé": "^HCX",
-    "Consommation discrétionnaire": "^IXY",
-    "Consommation de base": "^IXR",
-    "Services de communication": "^IXC",
-    "Services publics": "^IXU",
-    "Immobilier": "^IXRE"
+# Load the data (extracted manually from the graph)
+data = {
+    "Manufacturer": [
+        "BMW", "Ford", "Hyundai", "Kia", "Mercedes-Benz", 
+        "Renault-Nissan-Mitsubishi", "Stellantis", "Toyota", 
+        "Volkswagen", "Volvo", "Fleet average"
+    ],
+    "2023_CO2": [104, 94, 94, 94, 109, 111, 105, 109, 120, 70, 94],
+    "2025_Target": [119, 119, 104, 104, 109, 109, 105, 105, 120, 90, 107],
+    "Reduction": [-13, -21, -10, -10, 0, -2, 0, -4, -21, -30, -12]  # Expressed as %
 }
 
-period_days = 6 * 365  # 6 ans
-interval = "1d"
-end_time = int(time.time())
-start_time = end_time - (period_days * 24 * 60 * 60)
-headers = {"User-Agent": "Mozilla/5.0"}
+df = pd.DataFrame(data)
 
-all_dfs = []
+# Plot
+fig, ax = plt.subplots(figsize=(12, 6))
 
-for sector, symbol in sector_indices.items():
-    try:
-        url = f"https://query1.finance.yahoo.com/v8/finance/chart/{symbol}?period1={start_time}&period2={end_time}&interval={interval}"
-        response = requests.get(url, headers=headers)
-        data = response.json()
+bars = ax.bar(df["Manufacturer"], df["2025_Target"], label='2025 Target', color='#1f77b4')
+bars2 = ax.bar(df["Manufacturer"], df["2023_CO2"], label='2023 CO₂', color='#ff7f0e')
 
-        timestamps = data['chart']['result'][0]['timestamp']
-        closes = data['chart']['result'][0]['indicators']['quote'][0]['close']
-        df = pd.DataFrame({
-            "Date": pd.to_datetime(timestamps, unit='s'),
-            sector: closes
-        }).set_index("Date")
-        returns = df[sector].pct_change()
-        perf = (1 + returns).cumprod()
-        perf = perf / perf.dropna().iloc[0]
-        df[sector] = perf
-        all_dfs.append(df)
+# Draw labels and arrows for the reductions
+for idx, (x, y2023, y2025, reduction) in enumerate(zip(df["Manufacturer"], df["2023_CO2"], df["2025_Target"], df["Reduction"])):
+    ax.text(idx, max(y2023, y2025) + 2, f'{y2025}', ha='center', va='bottom', fontsize=9)
+    ax.text(idx, y2023 - 5, f'{y2023}', ha='center', va='top', fontsize=9)
+    ax.annotate(f'{reduction}%', xy=(idx, y2025), xytext=(idx, y2023),
+                arrowprops=dict(facecolor='gray', arrowstyle='->'),
+                ha='center', fontsize=8)
 
-    except Exception as e:
-        print(f"❌ Erreur pour {sector} ({symbol}): {e}")
+# Aesthetics
+ax.set_ylabel('Estimated CO₂ performance (g/km)')
+ax.set_title("2025 Manufacturer CO₂ targets versus 2023 fleet performance")
+ax.legend()
 
-# Fusion
-if all_dfs:
-    combined_df = pd.concat(all_dfs, axis=1).dropna()
+plt.xticks(rotation=45)
+plt.tight_layout()
+plt.grid(axis='y', linestyle='--', alpha=0.7)
 
-    # Calcul de la moyenne
-    combined_df["Moyenne"] = combined_df.mean(axis=1)
-
-    # Affichage
-    plt.figure(figsize=(14, 8))
-    for col in combined_df.columns:
-        if col == "Moyenne":
-            plt.plot(combined_df.index, combined_df[col], label=col, linewidth=2.5, linestyle='--', color='black')
-        else:
-            plt.plot(combined_df.index, combined_df[col], label=col)
-
-    plt.title("Performance comparée des indices sectoriels")
-    plt.xlabel("Date")
-    plt.ylabel("Performance (base 1)")
-    plt.legend()
-    plt.grid()
-    plt.tight_layout()
-    plt.show()
+plt.show()
