@@ -1,41 +1,19 @@
 import pandas as pd
-import matplotlib.pyplot as plt
 
-# Load the data (extracted manually from the graph)
 data = {
-    "Manufacturer": [
-        "BMW", "Ford", "Hyundai", "Kia", "Mercedes-Benz", 
-        "Renault-Nissan-Mitsubishi", "Stellantis", "Toyota", 
-        "Volkswagen", "Volvo", "Fleet average"
-    ],
-    "2023_CO2": [104, 94, 94, 94, 109, 111, 105, 109, 120, 70, 94],
-    "2025_Target": [119, 119, 104, 104, 109, 109, 105, 105, 120, 90, 107],
-    "Reduction": [-13, -21, -10, -10, 0, -2, 0, -4, -21, -30, -12]  # Expressed as %
+    'Pays': ['China', 'Europe', 'US', 'Canada', 'Japan', 'India',
+             'South Korea', 'Australia', 'Southeast Asia', 'Brazil', 'Rest of World'],
+    '2020': [1.5, 1, 0.7, 0.1, 0.2, 0.2, 0.1, 0.05, 0.05, 0.05, 0.1],
+    '2021': [3, 2, 1.2, 0.2, 0.3, 0.3, 0.2, 0.1, 0.1, 0.1, 0.2],
+    '2022': [5, 3, 2, 0.3, 0.5, 0.5, 0.3, 0.2, 0.2, 0.15, 0.3],
+    '2023': [8, 4, 3, 0.4, 0.8, 0.7, 0.4, 0.3, 0.3, 0.2, 0.4],
+    '2024': [11, 5, 4, 0.5, 1, 0.9, 0.6, 0.4, 0.4, 0.3, 0.5],
+    '2025': [13, 6, 5, 0.6, 1.2, 1.2, 0.8, 0.5, 0.5, 0.4, 0.6],
+    '2026': [15, 7, 6, 0.7, 1.5, 1.5, 1, 0.6, 0.6, 0.5, 0.7],
+    '2027': [17, 8, 6.5, 0.8, 1.7, 1.8, 1.2, 0.7, 0.7, 0.6, 0.8],
+    '2028': [18.5, 9, 7, 0.9, 2, 2, 1.4, 0.8, 0.8, 0.7, 0.9],
+    '2029': [19.5, 10, 7.5, 1, 2.2, 2.2, 1.6, 0.9, 0.9, 0.8, 1],
+    '2030': [20, 11, 8, 1.1, 2.5, 2.5, 1.8, 1, 1, 0.9, 1.2]
 }
 
-df = pd.DataFrame(data)
-
-# Plot
-fig, ax = plt.subplots(figsize=(12, 6))
-
-bars = ax.bar(df["Manufacturer"], df["2025_Target"], label='2025 Target', color='#1f77b4')
-bars2 = ax.bar(df["Manufacturer"], df["2023_CO2"], label='2023 CO₂', color='#ff7f0e')
-
-# Draw labels and arrows for the reductions
-for idx, (x, y2023, y2025, reduction) in enumerate(zip(df["Manufacturer"], df["2023_CO2"], df["2025_Target"], df["Reduction"])):
-    ax.text(idx, max(y2023, y2025) + 2, f'{y2025}', ha='center', va='bottom', fontsize=9)
-    ax.text(idx, y2023 - 5, f'{y2023}', ha='center', va='top', fontsize=9)
-    ax.annotate(f'{reduction}%', xy=(idx, y2025), xytext=(idx, y2023),
-                arrowprops=dict(facecolor='gray', arrowstyle='->'),
-                ha='center', fontsize=8)
-
-# Aesthetics
-ax.set_ylabel('Estimated CO₂ performance (g/km)')
-ax.set_title("2025 Manufacturer CO₂ targets versus 2023 fleet performance")
-ax.legend()
-
-plt.xticks(rotation=45)
-plt.tight_layout()
-plt.grid(axis='y', linestyle='--', alpha=0.7)
-
-plt.show()
+df_ev = pd.DataFrame(data)
