@@ -1,19 +1,42 @@
-import pandas as pd
+Voici une description concise et précise de ton approche avec les données utilisées et leurs limites :
 
-data = {
-    'Pays': ['China', 'Europe', 'US', 'Canada', 'Japan', 'India',
-             'South Korea', 'Australia', 'Southeast Asia', 'Brazil', 'Rest of World'],
-    '2020': [1.5, 1, 0.7, 0.1, 0.2, 0.2, 0.1, 0.05, 0.05, 0.05, 0.1],
-    '2021': [3, 2, 1.2, 0.2, 0.3, 0.3, 0.2, 0.1, 0.1, 0.1, 0.2],
-    '2022': [5, 3, 2, 0.3, 0.5, 0.5, 0.3, 0.2, 0.2, 0.15, 0.3],
-    '2023': [8, 4, 3, 0.4, 0.8, 0.7, 0.4, 0.3, 0.3, 0.2, 0.4],
-    '2024': [11, 5, 4, 0.5, 1, 0.9, 0.6, 0.4, 0.4, 0.3, 0.5],
-    '2025': [13, 6, 5, 0.6, 1.2, 1.2, 0.8, 0.5, 0.5, 0.4, 0.6],
-    '2026': [15, 7, 6, 0.7, 1.5, 1.5, 1, 0.6, 0.6, 0.5, 0.7],
-    '2027': [17, 8, 6.5, 0.8, 1.7, 1.8, 1.2, 0.7, 0.7, 0.6, 0.8],
-    '2028': [18.5, 9, 7, 0.9, 2, 2, 1.4, 0.8, 0.8, 0.7, 0.9],
-    '2029': [19.5, 10, 7.5, 1, 2.2, 2.2, 1.6, 0.9, 0.9, 0.8, 1],
-    '2030': [20, 11, 8, 1.1, 2.5, 2.5, 1.8, 1, 1, 0.9, 1.2]
-}
+Description de l’approche :
+« Quantifier par une approche data l’impact du secteur automobile sur les autres secteurs (aspect impactant) et inversement sa sensibilité aux autres secteurs (aspect sensible), en utilisant principalement les flux financiers internes à la SG, enrichis de matrices sectorielles (titrisation) et d’analyses manuelles pour les grands clients. »
 
-df_ev = pd.DataFrame(data)
+
+---
+
+Dataset envisagé :
+
+Flux internes SG
+
+Émetteur : secteur connu
+
+Receveur : secteur inconnu (si externe à SG)
+
+Pays destinataire : connu ou déduit par IBAN/SWIFT
+
+
+Matrices de corrélation secteur (Titrisation)
+
+Corrélations historiques existantes sur défauts ou encours
+
+
+Grands clients (manuel)
+
+CA ventilé par secteur pour gros clients automobiles
+
+
+
+
+---
+
+Limites majeures :
+
+Pas de visibilité sectorielle sur le receveur externe des flux financiers
+
+Corrélations externes ne traduisant pas forcément la réalité interne à SG
+
+Approche manuelle uniquement applicable à quelques gros clients (non scalable)
+
+
