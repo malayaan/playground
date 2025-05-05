@@ -1,2 +1,2 @@
-Cette approche permet de quantifier l'exposition géographique du secteur automobile, offrant une gestion de risque plus ciblée et une optimisation des portefeuilles.
+Cette approche analyse l'impact des chocs financiers sur le secteur automobile, en se concentrant sur les périodes de crise économique (par exemple, crise de 2008, guerre commerciale de Trump). Elle évalue la corrélation entre les secteurs pendant ces périodes, avec un focus sur la vulnérabilité du secteur automobile. L'objectif est de mesurer l'impact des crises sur les rendements sectoriels et d'identifier les risques d’exposition associés pour la Société Générale.
 
