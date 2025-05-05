@@ -1,42 +1,36 @@
-Voici une description concise et précise de ton approche avec les données utilisées et leurs limites :
-
-Description de l’approche :
-« Quantifier par une approche data l’impact du secteur automobile sur les autres secteurs (aspect impactant) et inversement sa sensibilité aux autres secteurs (aspect sensible), en utilisant principalement les flux financiers internes à la SG, enrichis de matrices sectorielles (titrisation) et d’analyses manuelles pour les grands clients. »
+Voici une reformulation synthétique et efficace :
 
 
 ---
 
-Dataset envisagé :
+Description enrichie de l’approche proposée (version courte) :
 
-Flux internes SG
+« Utiliser une approche data-driven pour mesurer l’impact et la sensibilité croisée du secteur automobile avec les autres secteurs économiques au sein de la Société Générale. »
 
-Émetteur : secteur connu
+Sources des données :
 
-Receveur : secteur inconnu (si externe à SG)
+Flux internes SG : identification du secteur émetteur (limite : secteur receveur externe inconnu).
 
-Pays destinataire : connu ou déduit par IBAN/SWIFT
+Matrices existantes (Titrisation) : corrélations historiques sectorielles.
 
-
-Matrices de corrélation secteur (Titrisation)
-
-Corrélations historiques existantes sur défauts ou encours
+Analyse manuelle grands clients : répartition sectorielle du CA.
 
 
-Grands clients (manuel)
+Approche complémentaire (Ayvens leasing) :
 
-CA ventilé par secteur pour gros clients automobiles
+Données de financement des concessionnaires pour évaluer la qualité de leur gestion.
+
+Clustering des véhicules financés (caractéristiques, valeur résiduelle).
+
+Étude du potentiel d’un modèle BtoBtoC (revente directe consommateurs).
 
 
+Limites clés :
 
+Connaissance limitée du secteur externe dans les flux financiers.
 
----
+Représentativité variable des corrélations sectorielles historiques.
 
-Limites majeures :
-
-Pas de visibilité sectorielle sur le receveur externe des flux financiers
-
-Corrélations externes ne traduisant pas forcément la réalité interne à SG
-
-Approche manuelle uniquement applicable à quelques gros clients (non scalable)
+Difficulté opérationnelle du modèle BtoBtoC (logistique, marketing).
 
 
