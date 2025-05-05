@@ -1,36 +1,11 @@
-Voici une reformulation synthétique et efficace :
+Context: Defining the Automotive Sector and Identifying Exposure
 
+The objective is to clearly define the scope of the automotive sector within Société Générale and assess the bank's exposure to it. This involves not only identifying the primary actors in the automotive value chain but also understanding the financial flows related to these sectors, particularly as they relate to geographical markets. The analysis will focus on:
 
----
+Identifying key actors: This includes automakers, parts manufacturers, dealerships, leasing companies, and the entire automotive value chain.
 
-Description enrichie de l’approche proposée (version courte) :
+Defining the sector’s scope: The focus will be on automotive financing, leasing, parts manufacturing, and all related activities across regions.
 
-« Utiliser une approche data-driven pour mesurer l’impact et la sensibilité croisée du secteur automobile avec les autres secteurs économiques au sein de la Société Générale. »
-
-Sources des données :
-
-Flux internes SG : identification du secteur émetteur (limite : secteur receveur externe inconnu).
-
-Matrices existantes (Titrisation) : corrélations historiques sectorielles.
-
-Analyse manuelle grands clients : répartition sectorielle du CA.
-
-
-Approche complémentaire (Ayvens leasing) :
-
-Données de financement des concessionnaires pour évaluer la qualité de leur gestion.
-
-Clustering des véhicules financés (caractéristiques, valeur résiduelle).
-
-Étude du potentiel d’un modèle BtoBtoC (revente directe consommateurs).
-
-
-Limites clés :
-
-Connaissance limitée du secteur externe dans les flux financiers.
-
-Représentativité variable des corrélations sectorielles historiques.
-
-Difficulté opérationnelle du modèle BtoBtoC (logistique, marketing).
+Identifying financial flows: Understanding financial flows emanating from these sectors to various geographical regions, including loans, investments, and leasing operations that contribute to exposure.
 
 
