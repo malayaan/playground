@@ -1,2 +1,2 @@
-L’approche data consiste à identifier les flux de trésorerie émis par le secteur automobile vers différentes régions, afin de mesurer l'exposition géographique de la Société Générale et évaluer les risques associés à l'EAD (exposition au défaut) en fonction de ces flux.
+Cette approche permet de quantifier l'exposition géographique du secteur automobile, offrant une gestion de risque plus ciblée et une optimisation des portefeuilles.
 
