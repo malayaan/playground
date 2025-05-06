@@ -1,4 +1,6 @@
-Voici une retranscription propre et corrigée de tes notes issues de l’entretien avec Benjamin Borras, sans ajout de contenu :
+Benjamin Borras est Pricing Director au sein de l’équipe Corporate Risk & Compliance – Risk chez Ayvens. Il est responsable du pilotage des valeurs résiduelles (VR) pour l’ensemble des pays, en lien avec les équipes locales et les contraintes de risk management du groupe.
+
+
 
 
 ---
