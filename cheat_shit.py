@@ -1,13 +1,61 @@
-Contexte – Approche 2
+Méthodologie (étapes) et livrables – version bullet points
 
-La mission d’inspection doit évaluer dans quelle mesure le secteur automobile, et les secteurs qui lui sont liés, amplifient ou subissent les secousses des marchés mondiaux lors de journées de volatilité extrême. En se concentrant uniquement sur ces « stress days » — rares mais déterminants pour les pertes annuelles — nous voulons :
+Étape 1 – Sélection des journées de stress
 
-Comparer la réaction du secteur automobile à celle du marché global.
+Flag un « crisis day » chaque fois que |Δ MSCI ACWI| > 2 × volatilité mobile (90 jours).
 
-Hiérarchiser les autres secteurs qui décrochent le plus quand l’auto vacille.
-
-Relier ces baisses à leurs déclencheurs macro (annonce Fed, choc matières premières, publications de résultats, etc.).
+La liste de ces dates constitue le jeu d’observation.
 
 
-Cette lecture ciblée offrira aux décideurs SG une vision claire des journées critiques, de la vulnérabilité relative de l’automobile et des facteurs conjoncturels qui propagent le risque au portefeuille.
+Étape 2 – Construction du jeu de données stress
+
+Pour chaque date retenue :
+• variation journalière (%) de tous les secteurs (GICS niveau 1) ;
+• variation journalière (%) des entreprises du panel (top-capi + grands clients SG) ;
+• indicateurs déclencheurs (surprise Fed/BCE, choc pétrole, publication de résultats, VIX, etc.).
+
+
+
+---
+
+Rendus « niveau secteur »
+
+Matrice inter-sectorielle : corrélations des variations sectorielles sur l’ensemble des crisis days (heat-map).
+
+Vue secteur individuelle : pour chaque branche, drawdown moyen et ranking de volatilité relative.
+
+Modèle prédictif sectoriel : gradient boosting qui prédit la variation % d’un secteur à partir des indicateurs macro.
+
+Variable importance : SHAP pour déterminer les facteurs déclencheurs dominants de chaque move sectoriel.
+
+
+
+---
+
+Rendus « niveau entreprise »
+
+Matrice inter-companies : corrélations des variations des titres du panel sur les crisis days (heat-map).
+
+Vue “compagnie” : pour chaque titre, drawdown moyen, volatilité relative vs ACWI, sensibilité sectorielle.
+
+Corrélations titre-indicateurs : coefficients entre variation % d’un titre et chaque facteur macro.
+
+Modèle prédictif entreprise : gradient boosting (par titre ou global) pour estimer le move % de l’action.
+
+Variable importance par titre : SHAP pour classer les déclencheurs clés de la réaction boursière d’une entreprise.
+
+
+
+---
+
+Livrables finaux
+
+Deux heat-maps (secteurs et entreprises) pour visualiser les corrélations en stress.
+
+Un dashboard interactif “compagnie” récapitulant drawdowns et sensibilités.
+
+Modèles XGBoost + rapports SHAP (secteurs et titres).
+
+Note synthèse : secteurs/clients les plus sensibles, facteurs déclencheurs majeurs, recommandations de stress-tests ciblés.
+
 
