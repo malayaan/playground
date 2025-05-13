@@ -1,48 +1,109 @@
-Méthodologie (étapes) et livrables – version bullet points
-
-Étape 1 – Sélection des journées de stress
-
-Flag un « crisis day » chaque fois que |Δ MSCI ACWI| > 2 × volatilité mobile (90 jours).
-
-La liste de ces dates constitue le jeu d’observation.
+Méthodologie complète (avec rendus associés à chaque étape)
 
 
-Étape 2 – Construction du jeu de données stress
+---
 
-Pour chaque date retenue :
-• variation journalière (%) de tous les secteurs (GICS niveau 1) ;
-• variation journalière (%) des entreprises du panel (top-capi + grands clients SG) ;
-• indicateurs déclencheurs (surprise Fed/BCE, choc pétrole, publication de résultats, VIX, etc.).
+Étape 1 : Détection des « crisis days »
+
+Calcul du score stress quotidien
+
+|Δ clôture| (variation jour / jour du MSCI ACWI).
+
+Volatilité intraday = (High − Low) / Close.
+
+Score = |Δ clôture| + Volatilité intraday.
+
+
+Seuil automatique
+
+Moyenne mobile + 2 σ (90 jours) ou algorithme du coude.
+
+Flag « crisis day » quand Score > seuil.
+
+
+Rendu : liste datée des stress days + histogramme des scores avec la barre-seuil.
 
 
 
 ---
 
-Rendus « niveau secteur »
+Étape 2 : Construction du dataset « stress »
 
-Matrice inter-sectorielle : corrélations des variations sectorielles sur l’ensemble des crisis days (heat-map).
+Pour chaque date flaggée :
 
-Vue secteur individuelle : pour chaque branche, drawdown moyen et ranking de volatilité relative.
+Variation journalière (%) des secteurs GICS (>70 % capi).
 
-Modèle prédictif sectoriel : gradient boosting qui prédit la variation % d’un secteur à partir des indicateurs macro.
+Variation journalière (%) des entreprises : panel top-capi + grands clients SG.
 
-Variable importance : SHAP pour déterminer les facteurs déclencheurs dominants de chaque move sectoriel.
+Indicateurs déclencheurs : tag Fed/BCE, choc pétrole, surprises de résultats, VIX, gros titres.
+
+
+Rendu : table consolidée prête pour analyse + descriptif statistique (moyenne, médiane, max des moves).
 
 
 
 ---
 
-Rendus « niveau entreprise »
+Étape 3 : Vue inter-sectorielle
 
-Matrice inter-companies : corrélations des variations des titres du panel sur les crisis days (heat-map).
+Matrice de corrélation des variations sectorielles sur l’ensemble des crisis days.
 
-Vue “compagnie” : pour chaque titre, drawdown moyen, volatilité relative vs ACWI, sensibilité sectorielle.
+Rendu : heat-map « inter-sector correlations in stress ».
 
-Corrélations titre-indicateurs : coefficients entre variation % d’un titre et chaque facteur macro.
 
-Modèle prédictif entreprise : gradient boosting (par titre ou global) pour estimer le move % de l’action.
 
-Variable importance par titre : SHAP pour classer les déclencheurs clés de la réaction boursière d’une entreprise.
+---
+
+Étape 4 : Vue inter-entreprises
+
+Matrice de corrélation des variations des titres du panel sur les crisis days.
+
+Rendu : heat-map « inter-companies correlations in stress ».
+
+
+
+---
+
+Étape 5 : Analyse “vue compagnie”
+
+Pour chaque titre : drawdown moyen, volatilité relative (vs ACWI), sensibilité secteur.
+
+Rendu : dashboard interactif company-level (Plotly / Power BI).
+
+
+
+---
+
+Étape 6 : Modélisation prédictive sectorielle
+
+Modèle Gradient Boosting (XGBoost).
+
+Cible : variation % sectorielle.
+
+Features : indicateurs macro/news.
+
+
+Rendu :
+
+Courbe réelle vs prédite (RMSE).
+
+Graphe SHAP « variable importance par secteur ».
+
+
+
+
+---
+
+Étape 7 : Modélisation prédictive entreprise
+
+Modèle Gradient Boosting par titre (ou modèle global avec ID_titre).
+
+Rendu :
+
+Courbe réelle vs prédite pour chaque entreprise sensible.
+
+SHAP par titre : top déclencheurs des moves d’action.
+
 
 
 
@@ -50,12 +111,12 @@ Variable importance par titre : SHAP pour classer les déclencheurs clés de la 
 
 Livrables finaux
 
-Deux heat-maps (secteurs et entreprises) pour visualiser les corrélations en stress.
+Deux heat-maps (secteurs, entreprises) + liste explicite des crisis days.
 
-Un dashboard interactif “compagnie” récapitulant drawdowns et sensibilités.
+Dashboard interactif « vue compagnie ».
 
-Modèles XGBoost + rapports SHAP (secteurs et titres).
+Rapports SHAP (secteurs & titres) + synthèse facteurs déclencheurs.
 
-Note synthèse : secteurs/clients les plus sensibles, facteurs déclencheurs majeurs, recommandations de stress-tests ciblés.
+Note d’interprétation : secteurs/clients les plus sensibles, triggers dominants, axes de stress-test recommandés.
 
 
