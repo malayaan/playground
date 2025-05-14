@@ -1,128 +1,27 @@
-Voici la répartition mise à jour avec pour chaque étape :
-
-Temps estimé (JH)
-
-Rendu
-
-Impact métier
-
-Complexité technique (Low, Medium, High, Very High)
-
+Parfait, voici une version révisée du contexte, plus prudente sur l’Espagne :
 
 
 ---
 
-Étape 1 – Détection des journées de stress
+Contexte – Use case 3 : Alignement Ayvens / CGI sur la valeur véhicule et le risque lié
 
-Temps estimé : 4 JH
+Société Générale dispose de deux sources majeures de données sur les véhicules, historiquement séparées :
 
-Rendu : Liste des journées de stress + score de crise (vol + variation)
+Ayvens collecte les valeurs résiduelles prédites et réalisées sur ses flottes de leasing B2B (essentiellement pour les grandes entreprises), avec des données précises et standardisées.
 
-Impact métier : Medium
+CGI Finance, de son côté, dispose d’informations détaillées sur les véhicules d’occasion financés via les concessionnaires (bonne qualité mais échantillon partiel), ainsi que sur les stocks globaux de VO lorsqu’ils sont déclarés (exhaustif mais bruité).
 
-Complexité : Medium (définition du seuil, méthode du coude, traitement de séries temporelles)
 
+Ces deux visions capturent des dynamiques différentes du marché automobile (haut de gamme entreprise vs grand public occasion), et ne sont pas exploitées conjointement à ce jour. Il existe par ailleurs des réflexions en local (ex. Espagne) sur les arbitrages entre revente B2B ou B2C, mais leur portée reste à clarifier et généraliser.
 
+L’intérêt stratégique pour le Groupe est triple :
 
----
+Mieux relier le risque sur valeur résiduelle (Ayvens) et le risque crédit sur les concessionnaires (CGI) en détectant les décalages structurels ou conjoncturels.
 
-Étape 2 – Construction du dataset "crise"
+Cartographier les véhicules les plus risqués ou les plus liquides en croisant performance réelle, délais de vente et modèles de prévision.
 
-Temps estimé : 6 JH
+Capitaliser sur un volume inédit de données véhicules pour construire des modèles explicables (interprétables), utiles à la prise de décision conjointe entre Ayvens et CGI.
 
-Rendu : Table enrichie avec secteurs, titres, indicateurs macro
 
-Impact métier : Very High
-
-Complexité : High (multi-sources, matching temporel, nettoyage des données, normalisation)
-
-
-
----
-
-Étape 3 – Corrélations intersectorielles
-
-Temps estimé : 4 JH
-
-Rendu : Heatmap des corrélations sectorielles pendant les crises
-
-Impact métier : High
-
-Complexité : Medium (statistiques standards, visualisation métier)
-
-
-
----
-
-Étape 4 – Corrélations inter-entreprises
-
-Temps estimé : 4 JH
-
-Rendu : Heatmap entreprises + top drawdowns
-
-Impact métier : Medium
-
-Complexité : Medium (analyse pairwise, sélection d’échantillons pertinents)
-
-
-
----
-
-Étape 5 – Vue individuelle entreprise
-
-Temps estimé : 5 JH
-
-Rendu : Profils de sensibilité par entreprise / client SG
-
-Impact métier : High
-
-Complexité : High (matching entre typologies SG et données externes, granularité fine)
-
-
-
----
-
-Étape 6 – Modèle de prédiction sectorielle
-
-Temps estimé : 6 JH
-
-Rendu : Modèle (XGBoost ou Lasso) + importance des variables
-
-Impact métier : Very High
-
-Complexité : Very High (feature engineering, tuning, interprétabilité, validation)
-
-
-
----
-
-Étape 7 – Modèle prédictif entreprise
-
-Temps estimé : 4 JH
-
-Rendu : Modèles individuels + SHAP par titre
-
-Impact métier : Medium
-
-Complexité : High (multi-modélisation + faible volume par entreprise)
-
-
-
----
-
-Étape 8 – Synthèse & recommandations
-
-Temps estimé : 2 JH
-
-Rendu : Note d’analyse + axes de stress tests à approfondir
-
-Impact métier : High
-
-Complexité : Low (synthèse narrative à partir des outputs)
-
-
-
----
-
-Souhaites-tu un format Word/Markdown à intégrer dans un doc formel ?
+Des différences de gammes, de canaux et de profondeur de données existent, mais c’est précisément cette complémentarité qui constitue un terrain propice à des analyses croisées à forte valeur ajoutée.
 
