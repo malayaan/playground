@@ -1,13 +1,128 @@
-Voici une formulation synthétique en bullet points, adaptée à une fiche mission :
+Voici la répartition mise à jour avec pour chaque étape :
 
-Quantifier les réactions sectorielles typiques lors de journées de stress boursier (variation, volatilité).
+Temps estimé (JH)
 
-Situer la sensibilité relative du secteur automobile par rapport aux autres secteurs.
+Rendu
 
-Identifier les corrélations sectorielles spécifiques en période de crise (effets de propagation croisée).
+Impact métier
 
-Déterminer les facteurs déclencheurs majeurs des mouvements sectoriels via un modèle explicatif.
+Complexité technique (Low, Medium, High, Very High)
 
-Fournir un socle empirique pour orienter les scénarios de stress-tests sectoriels au sein du groupe.
 
+
+---
+
+Étape 1 – Détection des journées de stress
+
+Temps estimé : 4 JH
+
+Rendu : Liste des journées de stress + score de crise (vol + variation)
+
+Impact métier : Medium
+
+Complexité : Medium (définition du seuil, méthode du coude, traitement de séries temporelles)
+
+
+
+---
+
+Étape 2 – Construction du dataset "crise"
+
+Temps estimé : 6 JH
+
+Rendu : Table enrichie avec secteurs, titres, indicateurs macro
+
+Impact métier : Very High
+
+Complexité : High (multi-sources, matching temporel, nettoyage des données, normalisation)
+
+
+
+---
+
+Étape 3 – Corrélations intersectorielles
+
+Temps estimé : 4 JH
+
+Rendu : Heatmap des corrélations sectorielles pendant les crises
+
+Impact métier : High
+
+Complexité : Medium (statistiques standards, visualisation métier)
+
+
+
+---
+
+Étape 4 – Corrélations inter-entreprises
+
+Temps estimé : 4 JH
+
+Rendu : Heatmap entreprises + top drawdowns
+
+Impact métier : Medium
+
+Complexité : Medium (analyse pairwise, sélection d’échantillons pertinents)
+
+
+
+---
+
+Étape 5 – Vue individuelle entreprise
+
+Temps estimé : 5 JH
+
+Rendu : Profils de sensibilité par entreprise / client SG
+
+Impact métier : High
+
+Complexité : High (matching entre typologies SG et données externes, granularité fine)
+
+
+
+---
+
+Étape 6 – Modèle de prédiction sectorielle
+
+Temps estimé : 6 JH
+
+Rendu : Modèle (XGBoost ou Lasso) + importance des variables
+
+Impact métier : Very High
+
+Complexité : Very High (feature engineering, tuning, interprétabilité, validation)
+
+
+
+---
+
+Étape 7 – Modèle prédictif entreprise
+
+Temps estimé : 4 JH
+
+Rendu : Modèles individuels + SHAP par titre
+
+Impact métier : Medium
+
+Complexité : High (multi-modélisation + faible volume par entreprise)
+
+
+
+---
+
+Étape 8 – Synthèse & recommandations
+
+Temps estimé : 2 JH
+
+Rendu : Note d’analyse + axes de stress tests à approfondir
+
+Impact métier : High
+
+Complexité : Low (synthèse narrative à partir des outputs)
+
+
+
+---
+
+Souhaites-tu un format Word/Markdown à intégrer dans un doc formel ?
 
