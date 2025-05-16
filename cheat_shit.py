@@ -1,30 +1,32 @@
-Étape 2 - Jeu de données “crise” (version courte)
+Étape 3 – Analyses et rendus (vue Secteurs & vue Entreprises)
 
-Y : indices sectoriels
+Vue Secteurs
 
-Télécharger les variations journalières des indices listés (photo) sur 5 ans.
-
-Nettoyer (dividendes, devises) et garder une série par secteur.
+1. Matrice corrélations inter-secteurs (Δ % secteurs vs secteurs) → heat-map.
 
 
-X : indicateurs de marché
-
-Flags 0/1 : annonces Fed, BCE, CPI US/UE, emplois US, OPEP.
-
-Séries continues : VIX, VSTOXX, taux 10 ans US/Bund, spreads HY, WTI / Brent, Dollar Index.
-
-Convertir en rendements ou écarts journaliers.
-
-
-Alignement & validation
-
-Joindre toutes les séries sur le même calendrier ouvré.
-
-Vérifier rapidement la pertinence auprès de l’éco-research (check signal, pas de trous majeurs).
+2. Matrice corrélations secteurs × indicateurs (Δ % secteurs vs X macro) → heat-map.
 
 
 
-> Rendu fin d’étape : table propre Date × (Y secteurs + X facteurs) prête pour régression / modèles SHAP.
+Vue Entreprises
+
+1. Matrice corrélations inter-titres (Δ % des grandes capitalisations + clients SG).
+
+
+2. Matrice corrélations titres × indicateurs (Δ % titres vs X macro).
+
+
+
+Focal Auto SG
+
+Sélection des sociétés auto les plus financées/exposées par SG.
+
+Matrice corrélations titres auto × indicateurs pour isoler les déclencheurs clés du risque VR/EAD.
+
+
+
+> Livrables : trois heat-maps principales (inter-secteurs, inter-titres, auto-SG × indicateurs) + tableaux synthèse des top facteurs par couleur.
 
 
 
