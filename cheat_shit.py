@@ -1,32 +1,18 @@
-Étape 3 – Analyses et rendus (vue Secteurs & vue Entreprises)
+Étape 6 – Facteurs déclencheurs (secteurs & entreprises)
 
-Vue Secteurs
+Modèle prévu : XGBoost (variations % secteur / titre ⇆ indicateurs marché).
 
-1. Matrice corrélations inter-secteurs (Δ % secteurs vs secteurs) → heat-map.
-
-
-2. Matrice corrélations secteurs × indicateurs (Δ % secteurs vs X macro) → heat-map.
+Contrôle qualité : erreur de prévision < seuil sur l’historique.
 
 
+Rendus
 
-Vue Entreprises
+Variable Importance par secteur : top 3 facteurs pour chaque branche GICS.
 
-1. Matrice corrélations inter-titres (Δ % des grandes capitalisations + clients SG).
+Variable Importance par entreprise : top 3 facteurs pour chaque grand titre suivi.
 
+Zoom “Automobile SG” : top 3 facteurs pour chaque acteur auto auquel SG est exposée.
 
-2. Matrice corrélations titres × indicateurs (Δ % titres vs X macro).
-
-
-
-Focal Auto SG
-
-Sélection des sociétés auto les plus financées/exposées par SG.
-
-Matrice corrélations titres auto × indicateurs pour isoler les déclencheurs clés du risque VR/EAD.
-
-
-
-> Livrables : trois heat-maps principales (inter-secteurs, inter-titres, auto-SG × indicateurs) + tableaux synthèse des top facteurs par couleur.
-
+Mini-graphes prévu vs réel pour les cas les plus sensibles.
 
 
