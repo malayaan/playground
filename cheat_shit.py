@@ -1,18 +1,51 @@
-Étape 6 – Facteurs déclencheurs (secteurs & entreprises)
+Étape 1 – Sélection des “stress days”
 
-Modèle prévu : XGBoost (variations % secteur / titre ⇆ indicateurs marché).
+Charge : 6 JH
 
-Contrôle qualité : erreur de prévision < seuil sur l’historique.
+Complexité : Medium
+
+Impact : Medium
+
+Tâche : utiliser VIX & VSTOXX (> 2 σ mobile 90 j) pour établir la liste officielle des journées de crise.
 
 
-Rendus
+Étape 2 – Constitution du jeu de données “crise”
 
-Variable Importance par secteur : top 3 facteurs pour chaque branche GICS.
+Charge : 10 JH
 
-Variable Importance par entreprise : top 3 facteurs pour chaque grand titre suivi.
+Complexité : High
 
-Zoom “Automobile SG” : top 3 facteurs pour chaque acteur auto auquel SG est exposée.
+Impact : Very High
 
-Mini-graphes prévu vs réel pour les cas les plus sensibles.
+Tâche :   – extraire les Y (indices secteurs + titres) ;
+– collecter les X macro (taux, pétrole, flags Fed/BCE, etc.) ;
+– nettoyer, aligner calendriers, vérifier la pertinence des indicateurs.
+
+
+Étape 3 – Analyses de corrélation
+
+Charge : 9 JH
+
+Complexité : Medium
+
+Impact : High
+
+Tâche :   – heat-map inter-secteurs ;
+– heat-map inter-entreprises ;
+– corrélations secteurs/titres ↔ indicateurs, comparaison au benchmark ACWI.
+
+
+Étape 4 – Modèle XGBoost + SHAP (facteurs déclencheurs)
+
+Charge : 10 JH
+
+Complexité : High
+
+Impact : Very High
+
+Tâche :   – entraîner XGBoost pour prédire chaque variation secteur / titre ;
+– calculer l’importance SHAP (top-3 facteurs) par secteur, par entreprise et pour les expositions auto SG ;
+– livrer tableaux facteurs + mini-graphiques prévu vs réel.
+
 
 
