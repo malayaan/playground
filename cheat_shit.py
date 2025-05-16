@@ -1,102 +1,80 @@
-import pandas as pd
-
-# 1. Lecture des fichiers Excel avec Pandas
-
-# Chargement de deux feuilles Excel (choisir `engine="openpyxl"` pour éviter de lire les formules)
-df_employees = pd.read_excel("employees.xlsx", sheet_name="Employees", engine="openpyxl")
-df_sales = pd.read_excel("sales.xlsx", sheet_name="Sales", engine="openpyxl")
-
-# Visualiser les premières lignes
-print("Employés:")
-print(df_employees.head())
-print("\nVentes:")
-print(df_sales.head())
-
-# 2. Sélectionner des colonnes spécifiques pour la fusion
-
-# Garder uniquement les colonnes pertinentes pour chaque DataFrame
-df_employees_selected = df_employees[["Employee_ID", "Name", "Department", "Country"]]
-df_sales_selected = df_sales[["Sale_ID", "Employee_ID", "Product", "Amount", "Date"]]
-
-# 3. Fusionner les données sur la colonne Employee_ID
-
-# Fusion des données d'employés et de ventes
-df_merged = pd.merge(df_sales_selected, df_employees_selected, on="Employee_ID", how="inner")
-print("\nDonnées Fusionnées:")
-print(df_merged.head())
-
-# 4. Concaténer des données additionnelles
-
-# Ajout de nouvelles ventes (exemple de nouvelles données)
-new_sales = pd.DataFrame({
-    "Sale_ID": [101, 102],
-    "Employee_ID": [1, 3],
-    "Product": ["Product_X", "Product_Y"],
-    "Amount": [1500, 2300],
-    "Date": ["2023-10-01", "2023-10-02"]
-})
-
-# Concaténer les nouvelles ventes au DataFrame fusionné
-df_merged = pd.concat([df_merged, new_sales], ignore_index=True)
-print("\nDonnées après concaténation:")
-print(df_merged.tail())
-
-# 5. Mapping pour transformer des valeurs
-
-# Créer un dictionnaire pour mapper les codes de pays en noms de pays
-country_map = {
-    "USA": "United States",
-    "CAN": "Canada",
-    "FRA": "France",
-    "DEU": "Germany"
+# Symboles regroupés par zone géographique
+symbols_by_region = {
+    "USA": ["TSLA", "F", "GM"],
+    "Japon": ["TM", "HMC", "NSANY", "MZDAY", "FUJHY", "MMTOF", "SZKMY"],
+    "Europe": ["STLA", "MBGYY", "BMW.DE", "RACE", "VWAGY", "RNLSY", "VLVLY"],
+    "Chine": ["BYDDY", "NIO", "XPEV", "0175.HK"],
+    "Corée du Sud": ["HYMTF", "KIMTF"]
 }
 
-# Appliquer le mapping pour convertir les codes de pays en noms complets
-df_merged["Country"] = df_merged["Country"].map(country_map)
-print("\nDonnées après mapping des pays:")
-print(df_merged[["Employee_ID", "Country"]].drop_duplicates())
+# Période = 6 ans pour permettre une analyse glissante dès 2020
+period_days = 6 * 365
+interval = "1d"
+end_time = int(time.time())
+start_time = end_time - (period_days * 24 * 60 * 60)
+headers = {"User-Agent": "Mozilla/5.0"}
 
-# 6. Groupby pour analyser les données
+region_dfs = {}
 
-# Calculer le montant total des ventes par pays et produit
-sales_summary = df_merged.groupby(["Country", "Product"]).agg(
-    total_sales=("Amount", "sum"),
-    average_sales=("Amount", "mean"),
-    sale_count=("Sale_ID", "count")
-).reset_index()
+# Récupération des données par région
+for region, symbols in symbols_by_region.items():
+    dfs = []
+    for symbol in symbols:
+        try:
+            url = f"https://query1.finance.yahoo.com/v8/finance/chart/{symbol}?period1={start_time}&period2={end_time}&interval={interval}"
+            response = requests.get(url, headers=headers)
+            data = response.json()
 
-print("\nRésumé des ventes par pays et produit:")
-print(sales_summary)
+            timestamps = data['chart']['result'][0]['timestamp']
+            closes = data['chart']['result'][0]['indicators']['quote'][0]['close']
+            df = pd.DataFrame({"Date": pd.to_datetime(timestamps, unit='s'), symbol: closes})
+            df.set_index("Date", inplace=True)
+            dfs.append(df)
+        except Exception as e:
+            print(f"❌ Erreur pour {symbol}: {e}")
 
-# 7. Ajouter des colonnes calculées et réorganiser les colonnes
+    if dfs:
+        merged_df = pd.concat(dfs, axis=1)
+        region_dfs[region] = merged_df
 
-# Calculer une colonne de taxe (ex. 5%) sur le montant des ventes
-df_merged["Tax"] = df_merged["Amount"] * 0.05
+# Initialisation des résultats
+performance_df = pd.DataFrame()
+monthly_correlation_trends = {}
 
-# Ajouter une colonne "Revenue" avec la somme de l'Amount et de la Tax
-df_merged["Revenue"] = df_merged["Amount"] + df_merged["Tax"]
+for region, df in region_dfs.items():
+    df = df.dropna(how="all", axis=1)
+    returns = df.pct_change()
+    perf = (1 + returns).cumprod()
+    performance_df[region] = perf.mean(axis=1)
 
-# Réorganiser les colonnes pour que Revenue soit à la fin
-columns_order = ["Sale_ID", "Employee_ID", "Name", "Department", "Country", "Product", "Amount", "Tax", "Revenue", "Date"]
-df_merged = df_merged[columns_order]
+    # Cohérence intra-zone mois par mois
+    monthly_corr = {}
+    for date in returns.index.to_period("M").unique():
+        df_month = returns[returns.index.to_period("M") == date]
+        if df_month.shape[1] > 1 and df_month.shape[0] > 1:
+            corr_matrix = df_month.corr()
+            # Moyenne des corrélations hors diagonale
+            mean_corr = corr_matrix.where(~np.eye(len(corr_matrix), dtype=bool)).stack().mean()
+            monthly_corr[date.to_timestamp()] = mean_corr
 
-print("\nDonnées après ajout et réorganisation des colonnes:")
-print(df_merged.head())
+    monthly_correlation_trends[region] = pd.Series(monthly_corr)
 
-# 8. Filtrer selon des caractéristiques spécifiques
+# 📈 Performance par région
+performance_df.plot(title="Performance sectorielle - Automobile", figsize=(12, 6))
+plt.xlabel("Date")
+plt.ylabel("Indice de performance moyen")
+plt.grid()
+plt.show()
 
-# Exemple : filtrer les ventes au-dessus de 2000 et pour les employés du département "Sales"
-filtered_df = df_merged[(df_merged["Amount"] > 2000) & (df_merged["Department"] == "Sales")]
+# 📊 Cohérence sectorielle par mois
+plt.figure(figsize=(12, 6))
+for region, series in monthly_correlation_trends.items():
+    plt.plot(series.index, series.values, label=region)
 
-print("\nVentes filtrées (montant > 2000 et département 'Sales'):")
-print(filtered_df)
-
-# 9. Sauvegarder le résultat final dans un fichier Excel
-
-# Sauvegarde du DataFrame fusionné et filtré dans un nouveau fichier Excel
-with pd.ExcelWriter("final_sales_report.xlsx", engine="openpyxl") as writer:
-    df_merged.to_excel(writer, sheet_name="All_Data", index=False)
-    sales_summary.to_excel(writer, sheet_name="Sales_Summary", index=False)
-    filtered_df.to_excel(writer, sheet_name="Filtered_Sales", index=False)
-
-print("\nLes données finales ont été sauvegardées dans 'final_sales_report.xlsx'.")
+plt.title("Évolution mensuelle de la cohérence sectorielle (corrélation intra-zone)")
+plt.xlabel("Date")
+plt.ylabel("Corrélation moyenne")
+plt.legend()
+plt.grid()
+plt.tight_layout()
+plt.show()
