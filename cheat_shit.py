@@ -1,9 +1,30 @@
-Étape 1 – Sélection simplifiée des journées « stress »
+Étape 2 - Jeu de données “crise” (version courte)
 
-Indicateurs retenus : indice de volatilité américain VIX et européen VSTOXX (clôture journalière).
+Y : indices sectoriels
 
-Règle : une date est marquée « stress » si, le même jour, VIX ou VSTOXX dépasse 2 écarts-types au-dessus de leur moyenne mobile 90 jours.
+Télécharger les variations journalières des indices listés (photo) sur 5 ans.
 
-Résultat attendu : liste concise des journées à haute tension de marché (≈ 3-5 par an) qui servira de base aux analyses sectorielles ultérieures.
+Nettoyer (dividendes, devises) et garder une série par secteur.
+
+
+X : indicateurs de marché
+
+Flags 0/1 : annonces Fed, BCE, CPI US/UE, emplois US, OPEP.
+
+Séries continues : VIX, VSTOXX, taux 10 ans US/Bund, spreads HY, WTI / Brent, Dollar Index.
+
+Convertir en rendements ou écarts journaliers.
+
+
+Alignement & validation
+
+Joindre toutes les séries sur le même calendrier ouvré.
+
+Vérifier rapidement la pertinence auprès de l’éco-research (check signal, pas de trous majeurs).
+
+
+
+> Rendu fin d’étape : table propre Date × (Y secteurs + X facteurs) prête pour régression / modèles SHAP.
+
 
 
