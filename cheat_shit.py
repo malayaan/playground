@@ -28,7 +28,7 @@ for name, symbol in indices.items():
         timestamps = data['chart']['result'][0]['timestamp']
         closes = data['chart']['result'][0]['indicators']['quote'][0]['close']
         df = pd.DataFrame({
-            "Date": pd.to_datetime(timestamps, unit='s'),
+            "Date": pd.to_datetime(timestamps, unit='s').floor('D'),
             name: closes
         }).set_index("Date")
         series[name] = df
@@ -36,8 +36,15 @@ for name, symbol in indices.items():
     except Exception as e:
         print(f"❌ Erreur pour {name}: {e}")
 
-# Fusion et base 100
+# Fusion par date
 df = pd.concat(series.values(), axis=1)
+df = df.groupby(df.index).first()  # regroupe par jour
+df = df.sort_index()
+
+# Supprimer les lignes incomplètes
+df = df.dropna()
+
+# Base 100
 df_base100 = df / df.iloc[0] * 100
 
 # Affichage
@@ -47,9 +54,9 @@ plt.tight_layout()
 plt.show()
 
 # Export Excel
-excel_path = "/mnt/data/indices_base100_SP_Eurostoxx.xlsx"
+excel_path = "/mnt/data/indices_base100_alignes.xlsx"
 with pd.ExcelWriter(excel_path, engine="xlsxwriter") as writer:
     for col in df_base100.columns:
-        df_base100[[col]].to_excel(writer, sheet_name=col[:31])  # max 31 caractères
+        df_base100[[col]].to_excel(writer, sheet_name=col[:31])
 
 print(f"✅ Export Excel terminé : {excel_path}")
