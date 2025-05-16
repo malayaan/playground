@@ -1,19 +1,11 @@
-Voici une version encore plus concise avec les points regroupés :
+Voici la traduction en anglais :
 
 
 ---
 
-Final Deliverables
+Context
 
-Stress day analysis pack:
-– List of identified stress days (VIX/VSTOXX)
-– Correlation matrices: intersector, inter-company, sector↔macro, company↔macro
+This approach aims to better understand how economic sectors — especially the automotive sector — react to macroeconomic shocks. By identifying “stressed” market days (using VIX/VSTOXX), we observe major sectoral and company-level movements. The goal is to uncover cross-sensitivities between sectors, firms, and macro factors to highlight potential vulnerabilities.
 
-Insight extraction:
-– SHAP-based feature importance by sector, company, and SG automotive exposures
-– Summary of key market move drivers
-
-Documentation:
-– Clean, reusable work sheet for sharing and inspection reporting
-
+Limitations: empirical approach reliant on the quality of selected indicators and stress thresholds; does not directly model financial losses or exposure.
 
