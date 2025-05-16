@@ -4,7 +4,7 @@ import time
 from datetime import datetime
 import matplotlib.pyplot as plt
 
-# Dates de janvier à mars 2025 en timestamp Unix
+# Dates de janvier à mars 2025
 start_time = int(time.mktime(datetime(2025, 1, 1).timetuple()))
 end_time = int(time.mktime(datetime(2025, 3, 31).timetuple()))
 interval = "1d"
@@ -67,7 +67,7 @@ sector_indices = {
     }
 }
 
-# Récupération
+# Récupération des données et stockage
 all_series = {}
 for sector, indices in sector_indices.items():
     for name, symbol in indices.items():
@@ -75,28 +75,33 @@ for sector, indices in sector_indices.items():
             url = f"https://query1.finance.yahoo.com/v8/finance/chart/{symbol}?period1={start_time}&period2={end_time}&interval={interval}"
             response = requests.get(url, headers=headers)
             data = response.json()
-
             timestamps = data['chart']['result'][0]['timestamp']
             closes = data['chart']['result'][0]['indicators']['quote'][0]['close']
-
             df = pd.DataFrame({
                 "Date": pd.to_datetime(timestamps, unit='s'),
                 f"{sector} - {name}": closes
             }).set_index("Date")
-
             all_series[f"{sector} - {name}"] = df
             print(f"✅ {name} téléchargé")
         except Exception as e:
             print(f"❌ Erreur pour {name} ({symbol}): {e}")
 
 # Fusion
-df_all = pd.concat(all_series.values(), axis=1)
-df_all = df_all.sort_index()
-df_all.to_csv("indices_sectoriels_janv_mars_2025.csv")
-print("✅ Export terminé")
+df_all = pd.concat(all_series.values(), axis=1).sort_index()
 
-# Exemple d’affichage
-df_all.plot(figsize=(16, 8), title="Indices sectoriels - Janv à Mars 2025")
+# Conversion base 100
+df_base100 = df_all / df_all.iloc[0] * 100
+
+# Affichage des courbes
+df_base100.plot(figsize=(18, 10), title="Indices sectoriels en base 100 (Janv-Mars 2025)")
 plt.grid()
 plt.tight_layout()
 plt.show()
+
+# Export Excel
+excel_path = "/mnt/data/indices_sectoriels_base100.xlsx"
+with pd.ExcelWriter(excel_path, engine="xlsxwriter") as writer:
+    for column in df_base100.columns:
+        df_base100[[column]].to_excel(writer, sheet_name=column[:31])  # max 31 caractères
+
+excel_path
