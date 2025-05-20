@@ -1,36 +1,54 @@
-Compte rendu – Entretien avec José-María Lucas (Data Scientist, Ayvens Espagne)
+Objet : Suivi de notre échange sur PrediXia – éléments complémentaires
 
-Contexte opérationnel
-• Canaux de revente : B2B, B2C, Second Lease.
-• Problème : ~1 / 3 des véhicules sont rechannellisés (> 60 j sans vente) ⇒ frais stockage + transport.
-• Objectif data : réduire ce rechannelling et améliorer le choix initial de canal.
+Bonjour José-María,
 
-Modèle PrediXia
-• Algorithme : CatBoost (catégorielles natives).
-• Données : 4-5 ans d’historique ventes + market data ; date encodée pour pondération fraîcheur.
-• Trois familles de features : Auction Info (nb traders, nb bids…), Sales Historical (couleur, modèle, âge, km…), Market Data.
-• Sorties : prix de revente prédit + proba de vente ≤ 60 j.
-• KPI : MAPE sur prix, taux de réussite ≤ 60 j ; monitoring quotidien.
-• Usage : les équipes remarketing lancent chaque jour les enchères au prix PrediXia.
+Merci encore pour le temps que tu m’as accordé lundi. Pour m’assurer d’avoir bien saisi votre approche et préparer le cadrage France, je récapitule brièvement :
 
-Applicabilité France / points de vigilance
-• Règles d’allocation françaises à documenter ; modèle à ré-entraîner.
-• Besoin d’un historique FR équivalent (4-5 ans) et des mêmes market data.
-• Second Lease moins développé en France, impact à évaluer.
-• Garder les mêmes indicateurs (MAPE, taux ≤ 60 j) pour comparer.
+PrediXia utilise 4–5 ans d’historique ventes + données marché pour prédire
 
-Demandes adressées à José-María
-• Détail complet des features + feature importance CatBoost.
-• Métriques de performance et courbes de suivi.
-• Slides business (objectif & impact).
-• Dictionnaire de données : Sales Historical, Market Data, Auction Info.
-• Contacts data owners ou export anonymisé.
-
-Prochaines étapes
-• Réception du package documentaire & data-dictionary (José-María, sous 1 semaine).
-• Analyse de transposabilité pour le périmètre France (Inspection, sous 3 semaines).
-• Validation métier avec Remarketing France et décision Go/No-Go POC (sous 5 semaines).
+1. le prix de revente optimum et
 
 
-Cette synthèse met en évidence le potentiel du modèle espagnol et les conditions essentielles pour un déploiement en France.
+2. la probabilité de vendre en ≤ 60 jours.
+
+
+
+L’algorithme CatBoost exploite trois familles de variables :
+• Auction Info (nb de traders, nb de bids, etc.)
+• Sales Historical (segment, motorisation, âge, km, couleur…)
+• Market Data externes.
+
+Objectif principal : réduire ~33 % de rechannelling et les coûts associés (stockage, transport).
+
+KPI suivis : MAPE sur le prix et taux de succès ≤ 60 jours, monitorés quotidiennement.
+
+
+Peux-tu, lorsque tu auras un créneau, partager les éléments ci-dessous ?
+
+1. Liste détaillée des features + ranking d’importance CatBoost.
+
+
+2. Slides business présentant le problème, le modèle et les gains constatés.
+
+
+3. Métriques de performance (MAPE, taux de succès, courbes de suivi).
+
+
+4. Dictionnaire de données (sources Sales Historical, Market Data, Auction Info) + contact des data owners.
+
+
+5. Si possible, un export anonymisé (échantillon) ou un notebook illustrant la préparation des données.
+
+
+
+Ces documents nous permettront d’évaluer plus précisément la transférabilité en France et de préparer un POC aligné avec nos règles d’allocation locales.
+
+N’hésite pas si tu vois des points à corriger dans mon résumé.
+Un grand merci d’avance pour ton aide !
+
+Bien cordialement,
+
+[Prénom Nom]
+Inspection Générale – Data Scientist
+Société Générale
 
