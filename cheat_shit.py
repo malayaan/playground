@@ -1,80 +1,77 @@
 Quick context
 
-We are running an inspection on Société Générale’s automotive exposure. One work-stream is to benchmark vehicle-resale performance in two channels—Ayvens (B2B leasing) and CGI (B2C dealer financing)—and to spot the factors that lift margin or shorten time-to-sale.
+We are conducting an inspection focused on Société Générale’s overall exposure to the automotive sector, including remarketing practices across business lines.
 
 
 ---
 
-Questions to ask the Spanish data-science lead
+Questions for the Spanish data-science lead
 
-A. Broad “setting the scene” questions
+A. Scene-setting
 
-1. Business goal – What exact outcome did your model aim to improve (profit per car, stock days, channel mix, …)?
-
-
-2. Stakeholders – Which teams owned / used the model (Remarketing, Risk, Finance, IT)?
+1. Business goal – Which outcome did the model seek to optimise (profit/car, stock days, channel mix)?
 
 
-3. Data scope – Roughly how many vehicles and what time span did you cover?
+2. Stakeholders – Which teams used or sponsored the model (Remarketing, Risk, Finance, IT)?
+
+
+3. Data scope – Rough size of the dataset (vehicles, years)?
 
 
 
-B. Specific follow-ups
+B. Data & features
 
-Data & features
+What minimum data fields were indispensable (VIN, purchase price, mileage, channel, etc.)?
 
-Which vehicle attributes mattered most (segment, fuel type, age, mileage…)?
+Which optional or nice-to-have variables improved accuracy?
 
-Any external data added (market price indices, seasonality, tax incentives)?
+Sources and refresh frequency of those data feeds?
 
-Biggest data-quality issues (missing VINs, wrong dates, gaps)?
+Any external data added (market prices, seasonality, tax rules)?
 
-
-Method
-
-Which algorithm(s) finally deployed (XGBoost, RF, survival model)?
-
-How did you explain the predictions (SHAP, feature importance)?
-
-Validation setup (train/test split, time-based back-test)?
+Biggest data-quality issues (missing VINs, wrong dates, gaps) and how you fixed them?
 
 
-Results & insights
+C. Method
 
-In which segments does B2C clearly beat B2B—or the reverse?
+Algorithm(s) chosen and why (XGBoost, RF, survival …)?
 
-Typical gains (€/car, days saved) for best-performing channels.
+How were predictions explained (SHAP, feature importance)?
 
-Examples where the model mis-predicted and why.
-
-
-Transferability
-
-Spain-specific tax or regulatory factors that could limit reuse elsewhere?
-
-Minimum data volume needed for robust results in France.
-
-Parts easy to retune vs parts that need a full rebuild.
+Validation approach (time split, back-test)?
 
 
-Deliverables & tools
+D. Results & insights
+
+Segments where B2C clearly beats B2B (or reverse)?
+
+Typical gains (€ per car, days saved) from the best channel?
+
+Examples where the model mis-predicted and causes?
+
+
+E. Transferability
+
+Spain-specific tax or regulatory factors that might limit reuse?
+
+Minimum data volume and granularity needed for robust results in France?
+
+Parts easy to retune vs parts needing rebuild?
+
+
+F. Deliverables & tools
 
 Notebook, dashboard, or report template you can share?
 
-Data dictionary available?
-
-Cleaning or preprocessing scripts that can be reused?
+Data dictionary and reusable cleaning scripts?
 
 
-Lessons learned
+G. Lessons learned
 
-Biggest data pitfalls encountered.
+Biggest data pitfalls encountered?
 
-Key stakeholders to involve early.
+Stakeholders to involve early?
 
-One thing you would change if starting over.
+One thing you’d change if starting over?
 
-
-
-These questions should give you the technical recipe, practical hurdles, and business value needed to adapt the Spanish model to your French analysis.
 
