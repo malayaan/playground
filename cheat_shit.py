@@ -1,54 +1,54 @@
-Objet : Suivi de notre échange sur PrediXia – éléments complémentaires
+Subject: Follow-up on PrediXia – request for additional details
 
-Bonjour José-María,
+Hi José-María,
 
-Merci encore pour le temps que tu m’as accordé lundi. Pour m’assurer d’avoir bien saisi votre approche et préparer le cadrage France, je récapitule brièvement :
+Thank you again for the time you gave me on Monday. To confirm my understanding and prepare the French scoping, here is a brief recap:
 
-PrediXia utilise 4–5 ans d’historique ventes + données marché pour prédire
+PrediXia uses 4–5 years of sales history plus market data to predict
 
-1. le prix de revente optimum et
-
-
-2. la probabilité de vendre en ≤ 60 jours.
+1. the optimal resale price and
 
 
-
-L’algorithme CatBoost exploite trois familles de variables :
-• Auction Info (nb de traders, nb de bids, etc.)
-• Sales Historical (segment, motorisation, âge, km, couleur…)
-• Market Data externes.
-
-Objectif principal : réduire ~33 % de rechannelling et les coûts associés (stockage, transport).
-
-KPI suivis : MAPE sur le prix et taux de succès ≤ 60 jours, monitorés quotidiennement.
-
-
-Peux-tu, lorsque tu auras un créneau, partager les éléments ci-dessous ?
-
-1. Liste détaillée des features + ranking d’importance CatBoost.
-
-
-2. Slides business présentant le problème, le modèle et les gains constatés.
-
-
-3. Métriques de performance (MAPE, taux de succès, courbes de suivi).
-
-
-4. Dictionnaire de données (sources Sales Historical, Market Data, Auction Info) + contact des data owners.
-
-
-5. Si possible, un export anonymisé (échantillon) ou un notebook illustrant la préparation des données.
+2. the probability of selling within 60 days.
 
 
 
-Ces documents nous permettront d’évaluer plus précisément la transférabilité en France et de préparer un POC aligné avec nos règles d’allocation locales.
+The CatBoost model relies on three feature families:
+• Auction info (number of traders, bids, etc.)
+• Sales historical data (segment, power-train, age, mileage, colour, …)
+• External market data.
 
-N’hésite pas si tu vois des points à corriger dans mon résumé.
-Un grand merci d’avance pour ton aide !
+Main goal: reduce the ~33 % of vehicles that need re-channeling (and the related storage/transport costs).
 
-Bien cordialement,
+KPIs tracked: MAPE on price and success rate ≤ 60 days, monitored daily.
 
-[Prénom Nom]
-Inspection Générale – Data Scientist
+
+Could you, when convenient, share the following items?
+
+1. Full feature list and CatBoost feature-importance ranking.
+
+
+2. Business slides describing the problem, the model, and the achieved gains.
+
+
+3. Performance metrics (MAPE, success rate, monitoring curves).
+
+
+4. Data dictionary (sources for Sales Historical, Market Data, Auction Info) + data-owner contacts.
+
+
+5. If possible, an anonymised sample or a notebook showing the data-prep steps.
+
+
+
+These documents will help us assess how to transfer the approach to France and prepare a POC aligned with our local allocation rules.
+
+Please let me know if I mis-stated anything above.
+Many thanks in advance for your help!
+
+Best regards,
+
+[First Name Last Name]
+Data Scientist – Group Inspection
 Société Générale
 
