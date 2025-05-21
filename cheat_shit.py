@@ -1,39 +1,70 @@
-Voici le récapitulatif de ce que tu avais prévu de dire pour chaque point RH :
+Note RH – version mise à jour (points forts, points faibles, ajustements)
+
+Intérêt & motivation
+
+Sujet « Exposition Automotive Sector » très motivant : mix macro + terrain concret.
+
+Forte envie de creuser, d’apporter une plus-value data.
+
+
+Équipe & supervision
+
+Équipe équilibrée (Charlotte junior, Béatrice expérimentée, Nicolas manager) ; feedbacks clairs et réactifs.
+
+Qualité des livrables déjà produite par la mission : source d’inspiration et d’exigence.
+
 
 Clarté des attentes
 
-Ce que tu dis : rôle encore flou sur la phase Diagnostic ; besoin d’un cadrage court (périmètre + livrables).
+Point encore flou : je ne participe pas directement à la fiche Diag → proposer qu’on me confie une fiche ou une section à rédiger pour clarifier mon périmètre.
 
-Point fort : proactif sur l’idéation, tu sollicites le Data Lab pour rester aligné.
+Besoin d’un mini-cadre écrit (1 page) « quoi / quand » pour mes livrables data.
+
+
+Relations avec les audités
+
+Contacts identifiés mais liens encore superficiels ; objectif : créer un binôme “référent” par grand sujet pour ancrer mes analyses dans la réalité métier.
 
 
 Communication & pédagogie
 
-Ce que tu dis : vulgarisation est un de tes points forts.
+Point fort : explications claires, préparation accrue avant réunion.
 
-Ajustement : au démarrage tu posais beaucoup de questions en réunion ; tu as réduit et préparé davantage en amont.
+Ajustement comportemental : vigilance posture (éviter de jouer avec la chaise en réunion).
 
 
 Priorisation & gestion du temps
 
-Ce que tu dis : bon découpage en sous-tâches, blocages signalés rapidement.
+Découpage en sous-tâches et remontée rapide des blocages (data, accès).
 
-Ajustement : prévoir un buffer spécial « data cleaning ».
+Prévoir systématiquement un buffer pour le nettoyage des données.
 
 
 Esprit critique & intégrité
 
-Ce que tu dis : tu as déjà détecté des incohérences en analysant les datasets avec Béatrice ; respect strict de la confidentialité.
+Détection d’incohérences lors des premiers tests data avec Béatrice ; respect strict de la confidentialité IG.
 
 
-Coopération équipe
+Coopération & partage
 
-Ce que tu dis : partage transparent de tes scripts et résultats ; aides tes collègues (graphes, relectures).
-
-
-Posture terrain
-
-Ce que tu dis : neutre, précis, courtois avec les audités ; discours adapté au niveau de chacun.
+Code et constats transparents sur Drive ; soutien aux collègues non-tech (graphes, vulgarisation).
 
 
+
+
+---
+
+Axes d’amélioration concrets
+
+1. Intégration Diag : rédiger (ou co-rédiger) une fiche-Diag pour ancrer ma contribution dans la trame IG.
+
+
+2. Ancrage terrain : identifier 1–2 audités clés par use-case et instaurer des points mensuels.
+
+
+3. Posture pro : maintenir les bonnes pratiques d’écoute active, éviter les gestes distrayants en réunion.
+
+
+
+Cette synthèse reflète mon engagement, les points solides et les ajustements à mettre en place pour la suite de la mission.
 
