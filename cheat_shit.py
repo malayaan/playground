@@ -1,36 +1,39 @@
-import pandas as pd
-import plotly.express as px
 import plotly.graph_objects as go
+import pandas as pd
 
-# Exemple de données
+# Données d’exemple (à adapter selon ton cas réel)
 df = pd.DataFrame({
     "team": ["Équipe A", "Équipe B", "Équipe C", "Équipe D"],
     "real_staff": [12, 18, 15, 20],
     "target_staff": [15, 16, 15, 22]
 })
 
-# Ajouter la ligne Total
+# Ajout de la ligne Total
 df.loc[len(df)] = ["Total", df["real_staff"].sum(), df["target_staff"].sum()]
 
-# Bar chart avec plotly express
-fig = px.bar(
-    df,
-    x="team",
-    y="real_staff",
-    title="Effectif réel vs cible par équipe",
-    labels={"real_staff": "Effectif réel"},
-    color_discrete_sequence=["grey"] * (len(df) - 1) + ["red"]
-)
+# Création de la figure avec go.Bar pour garder le contrôle
+fig = go.Figure()
 
-# Ajout des lignes horizontales de target (on "écarte" les x pour que ce soit visible)
+# Barres d'effectif réel
+fig.add_trace(go.Bar(
+    x=df["team"],
+    y=df["real_staff"],
+    marker_color=["grey"] * (len(df) - 1) + ["red"],
+    name="Effectif réel"
+))
+
+# Ajout des lignes horizontales cibles
 for i, row in df.iterrows():
-    fig.add_trace(go.Scatter(
-        x=[row["team"], row["team"] + " "],  # Espace pour forcer une ligne visible
-        y=[row["target_staff"], row["target_staff"]],
-        mode="lines",
+    fig.add_shape(
+        type="line",
+        x0=i - 0.3,
+        x1=i + 0.3,
+        y0=row["target_staff"],
+        y1=row["target_staff"],
         line=dict(color="black", width=2),
-        showlegend=False
-    ))
+        xref="x",
+        yref="y"
+    )
 
 # Ajout des flèches
 for i, row in df.iterrows():
@@ -51,8 +54,9 @@ for i, row in df.iterrows():
         arrowcolor="black"
     )
 
-# Améliorations esthétiques
+# Layout
 fig.update_layout(
+    title="Effectif réel vs cible par équipe",
     yaxis_title="Nombre de personnes",
     xaxis_title="Équipe",
     template="simple_white",
