@@ -1,54 +1,39 @@
-Subject: Follow-up on PrediXia – request for additional details
+Voici le récapitulatif de ce que tu avais prévu de dire pour chaque point RH :
 
-Hi José-María,
+Clarté des attentes
 
-Thank you again for the time you gave me on Monday. To confirm my understanding and prepare the French scoping, here is a brief recap:
+Ce que tu dis : rôle encore flou sur la phase Diagnostic ; besoin d’un cadrage court (périmètre + livrables).
 
-PrediXia uses 4–5 years of sales history plus market data to predict
-
-1. the optimal resale price and
+Point fort : proactif sur l’idéation, tu sollicites le Data Lab pour rester aligné.
 
 
-2. the probability of selling within 60 days.
+Communication & pédagogie
+
+Ce que tu dis : vulgarisation est un de tes points forts.
+
+Ajustement : au démarrage tu posais beaucoup de questions en réunion ; tu as réduit et préparé davantage en amont.
 
 
+Priorisation & gestion du temps
 
-The CatBoost model relies on three feature families:
-• Auction info (number of traders, bids, etc.)
-• Sales historical data (segment, power-train, age, mileage, colour, …)
-• External market data.
+Ce que tu dis : bon découpage en sous-tâches, blocages signalés rapidement.
 
-Main goal: reduce the ~33 % of vehicles that need re-channeling (and the related storage/transport costs).
-
-KPIs tracked: MAPE on price and success rate ≤ 60 days, monitored daily.
+Ajustement : prévoir un buffer spécial « data cleaning ».
 
 
-Could you, when convenient, share the following items?
+Esprit critique & intégrité
 
-1. Full feature list and CatBoost feature-importance ranking.
-
-
-2. Business slides describing the problem, the model, and the achieved gains.
+Ce que tu dis : tu as déjà détecté des incohérences en analysant les datasets avec Béatrice ; respect strict de la confidentialité.
 
 
-3. Performance metrics (MAPE, success rate, monitoring curves).
+Coopération équipe
+
+Ce que tu dis : partage transparent de tes scripts et résultats ; aides tes collègues (graphes, relectures).
 
 
-4. Data dictionary (sources for Sales Historical, Market Data, Auction Info) + data-owner contacts.
+Posture terrain
+
+Ce que tu dis : neutre, précis, courtois avec les audités ; discours adapté au niveau de chacun.
 
 
-5. If possible, an anonymised sample or a notebook showing the data-prep steps.
-
-
-
-These documents will help us assess how to transfer the approach to France and prepare a POC aligned with our local allocation rules.
-
-Please let me know if I mis-stated anything above.
-Many thanks in advance for your help!
-
-Best regards,
-
-[First Name Last Name]
-Data Scientist – Group Inspection
-Société Générale
 
