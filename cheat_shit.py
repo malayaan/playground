@@ -2,7 +2,7 @@ import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
 
-# Données exemple
+# Exemple de données
 df = pd.DataFrame({
     "team": ["Équipe A", "Équipe B", "Équipe C", "Équipe D"],
     "real_staff": [12, 18, 15, 20],
@@ -12,7 +12,7 @@ df = pd.DataFrame({
 # Ajouter la ligne Total
 df.loc[len(df)] = ["Total", df["real_staff"].sum(), df["target_staff"].sum()]
 
-# Barres avec Plotly Express
+# Bar chart avec plotly express
 fig = px.bar(
     df,
     x="team",
@@ -22,10 +22,10 @@ fig = px.bar(
     color_discrete_sequence=["grey"] * (len(df) - 1) + ["red"]
 )
 
-# Ajout des traits horizontaux pour les cibles
+# Ajout des lignes horizontales de target (on "écarte" les x pour que ce soit visible)
 for i, row in df.iterrows():
     fig.add_trace(go.Scatter(
-        x=[row["team"], row["team"]],
+        x=[row["team"], row["team"] + " "],  # Espace pour forcer une ligne visible
         y=[row["target_staff"], row["target_staff"]],
         mode="lines",
         line=dict(color="black", width=2),
@@ -51,11 +51,12 @@ for i, row in df.iterrows():
         arrowcolor="black"
     )
 
-# Affichage
+# Améliorations esthétiques
 fig.update_layout(
     yaxis_title="Nombre de personnes",
     xaxis_title="Équipe",
-    template="simple_white"
+    template="simple_white",
+    bargap=0.4
 )
 
 fig.show()
