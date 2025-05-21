@@ -1,70 +1,42 @@
-Note RH – version mise à jour (points forts, points faibles, ajustements)
+import matplotlib.pyplot as plt
+import pandas as pd
 
-Intérêt & motivation
+# Exemple de données (remplace-les par les tiennes)
+df = pd.DataFrame({
+    "team": ["Équipe A", "Équipe B", "Équipe C", "Équipe D"],
+    "real_staff": [12, 18, 15, 20],
+    "target_staff": [15, 16, 15, 22]
+})
 
-Sujet « Exposition Automotive Sector » très motivant : mix macro + terrain concret.
+# Ajouter la ligne agrégée
+total_row = pd.DataFrame({
+    "team": ["Total"],
+    "real_staff": [df["real_staff"].sum()],
+    "target_staff": [df["target_staff"].sum()]
+})
 
-Forte envie de creuser, d’apporter une plus-value data.
+df = pd.concat([df, total_row], ignore_index=True)
 
+# Couleurs : rouge pour la moyenne
+colors = ['grey'] * (len(df) - 1) + ['red']
 
-Équipe & supervision
+# Création du graphique
+fig, ax = plt.subplots(figsize=(12, 6))
+bars = ax.bar(df["team"], df["real_staff"], color=colors)
 
-Équipe équilibrée (Charlotte junior, Béatrice expérimentée, Nicolas manager) ; feedbacks clairs et réactifs.
+# Cibles et flèches
+for i, row in df.iterrows():
+    # Ligne pointillée horizontale à la hauteur de la cible
+    ax.hlines(y=row["target_staff"], xmin=i - 0.3, xmax=i + 0.3, color="black", linestyle="--")
+    # Flèche entre réel et cible
+    ax.annotate("",
+                xy=(i, row["target_staff"]),
+                xytext=(i, row["real_staff"]),
+                arrowprops=dict(arrowstyle="->", color="black"))
 
-Qualité des livrables déjà produite par la mission : source d’inspiration et d’exigence.
-
-
-Clarté des attentes
-
-Point encore flou : je ne participe pas directement à la fiche Diag → proposer qu’on me confie une fiche ou une section à rédiger pour clarifier mon périmètre.
-
-Besoin d’un mini-cadre écrit (1 page) « quoi / quand » pour mes livrables data.
-
-
-Relations avec les audités
-
-Contacts identifiés mais liens encore superficiels ; objectif : créer un binôme “référent” par grand sujet pour ancrer mes analyses dans la réalité métier.
-
-
-Communication & pédagogie
-
-Point fort : explications claires, préparation accrue avant réunion.
-
-Ajustement comportemental : vigilance posture (éviter de jouer avec la chaise en réunion).
-
-
-Priorisation & gestion du temps
-
-Découpage en sous-tâches et remontée rapide des blocages (data, accès).
-
-Prévoir systématiquement un buffer pour le nettoyage des données.
-
-
-Esprit critique & intégrité
-
-Détection d’incohérences lors des premiers tests data avec Béatrice ; respect strict de la confidentialité IG.
-
-
-Coopération & partage
-
-Code et constats transparents sur Drive ; soutien aux collègues non-tech (graphes, vulgarisation).
-
-
-
-
----
-
-Axes d’amélioration concrets
-
-1. Intégration Diag : rédiger (ou co-rédiger) une fiche-Diag pour ancrer ma contribution dans la trame IG.
-
-
-2. Ancrage terrain : identifier 1–2 audités clés par use-case et instaurer des points mensuels.
-
-
-3. Posture pro : maintenir les bonnes pratiques d’écoute active, éviter les gestes distrayants en réunion.
-
-
-
-Cette synthèse reflète mon engagement, les points solides et les ajustements à mettre en place pour la suite de la mission.
-
+# Ajustements
+ax.set_ylabel("Effectif")
+ax.set_title("Effectif réel vs cible par équipe")
+plt.xticks(rotation=45)
+plt.tight_layout()
+plt.show()
