@@ -1,42 +1,56 @@
-import matplotlib.pyplot as plt
+import plotly.graph_objects as go
 import pandas as pd
 
-# Exemple de données (remplace-les par les tiennes)
+# Exemple de données
 df = pd.DataFrame({
     "team": ["Équipe A", "Équipe B", "Équipe C", "Équipe D"],
     "real_staff": [12, 18, 15, 20],
     "target_staff": [15, 16, 15, 22]
 })
 
-# Ajouter la ligne agrégée
-total_row = pd.DataFrame({
-    "team": ["Total"],
-    "real_staff": [df["real_staff"].sum()],
-    "target_staff": [df["target_staff"].sum()]
-})
+# Ajouter ligne agrégée
+df.loc[len(df)] = ["Total", df["real_staff"].sum(), df["target_staff"].sum()]
 
-df = pd.concat([df, total_row], ignore_index=True)
+fig = go.Figure()
 
-# Couleurs : rouge pour la moyenne
-colors = ['grey'] * (len(df) - 1) + ['red']
+# Barres d'effectif réel
+fig.add_trace(go.Bar(
+    x=df["team"],
+    y=df["real_staff"],
+    name="Réel",
+    marker_color=["grey"] * (len(df) - 1) + ["red"]
+))
 
-# Création du graphique
-fig, ax = plt.subplots(figsize=(12, 6))
-bars = ax.bar(df["team"], df["real_staff"], color=colors)
-
-# Cibles et flèches
+# Lignes de cible + flèches
 for i, row in df.iterrows():
-    # Ligne pointillée horizontale à la hauteur de la cible
-    ax.hlines(y=row["target_staff"], xmin=i - 0.3, xmax=i + 0.3, color="black", linestyle="--")
-    # Flèche entre réel et cible
-    ax.annotate("",
-                xy=(i, row["target_staff"]),
-                xytext=(i, row["real_staff"]),
-                arrowprops=dict(arrowstyle="->", color="black"))
+    fig.add_trace(go.Scatter(
+        x=[row["team"], row["team"]],
+        y=[row["real_staff"], row["target_staff"]],
+        mode="lines+markers",
+        marker=dict(size=1),
+        line=dict(color="black", dash="dot"),
+        showlegend=False
+    ))
+    fig.add_annotation(
+        x=row["team"],
+        y=(row["real_staff"] + row["target_staff"]) / 2,
+        ax=0,
+        ay=row["real_staff"] - row["target_staff"],
+        xanchor='center',
+        text="",
+        arrowhead=3,
+        arrowsize=1,
+        arrowwidth=1.5,
+        arrowcolor="black"
+    )
 
-# Ajustements
-ax.set_ylabel("Effectif")
-ax.set_title("Effectif réel vs cible par équipe")
-plt.xticks(rotation=45)
-plt.tight_layout()
-plt.show()
+# Mise en forme
+fig.update_layout(
+    title="Effectif réel vs cible par équipe",
+    yaxis_title="Effectif",
+    xaxis_title="Équipe",
+    template="simple_white",
+    bargap=0.4
+)
+
+fig.show()
