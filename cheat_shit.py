@@ -1,7 +1,8 @@
-import plotly.graph_objects as go
 import pandas as pd
+import plotly.express as px
+import plotly.graph_objects as go
 
-# Exemple de données
+# Données exemple
 df = pd.DataFrame({
     "team": ["Équipe A", "Équipe B", "Équipe C", "Équipe D"],
     "real_staff": [12, 18, 15, 20],
@@ -11,18 +12,17 @@ df = pd.DataFrame({
 # Ajouter la ligne Total
 df.loc[len(df)] = ["Total", df["real_staff"].sum(), df["target_staff"].sum()]
 
-# Créer la figure
-fig = go.Figure()
+# Barres avec Plotly Express
+fig = px.bar(
+    df,
+    x="team",
+    y="real_staff",
+    title="Effectif réel vs cible par équipe",
+    labels={"real_staff": "Effectif réel"},
+    color_discrete_sequence=["grey"] * (len(df) - 1) + ["red"]
+)
 
-# Barres d'effectif réel
-fig.add_trace(go.Bar(
-    x=df["team"],
-    y=df["real_staff"],
-    name="Réel",
-    marker_color=["grey"] * (len(df) - 1) + ["red"]
-))
-
-# Ajout des lignes de target (traits fins pleins)
+# Ajout des traits horizontaux pour les cibles
 for i, row in df.iterrows():
     fig.add_trace(go.Scatter(
         x=[row["team"], row["team"]],
@@ -32,18 +32,18 @@ for i, row in df.iterrows():
         showlegend=False
     ))
 
-# Ajout des flèches (bonne direction)
+# Ajout des flèches
 for i, row in df.iterrows():
     fig.add_annotation(
         x=row["team"],
         y=row["target_staff"],
         ax=row["team"],
         ay=row["real_staff"],
-        xref='x',
-        yref='y',
-        axref='x',
-        ayref='y',
-        text="",  # Pas de texte
+        xref="x",
+        yref="y",
+        axref="x",
+        ayref="y",
+        text="",
         showarrow=True,
         arrowhead=3,
         arrowsize=1,
@@ -51,13 +51,11 @@ for i, row in df.iterrows():
         arrowcolor="black"
     )
 
-# Mise en forme
+# Affichage
 fig.update_layout(
-    title="Effectif réel vs cible par équipe",
     yaxis_title="Nombre de personnes",
     xaxis_title="Équipe",
-    template="simple_white",
-    bargap=0.4
+    template="simple_white"
 )
 
 fig.show()
