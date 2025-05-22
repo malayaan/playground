@@ -1,7 +1,7 @@
 import pandas as pd
 import plotly.graph_objects as go
 
-# Données (Confirmed et Intermediate extraits manuellement)
+# === Données ===
 data = [
     ["CFM", "Confirmed", 15.0, 22.64],
     ["CFM", "Intermediate", 15.0, 20.75],
@@ -16,87 +16,77 @@ data = [
 ]
 df = pd.DataFrame(data, columns=["team", "data_skill_cat", "target_ratio", "real_ratio"])
 
-# Ajouter "Beginner" par complément à 100%
-def complete_beginner_ratios(group):
+# === Ajout de la ligne "Beginner" par différence ===
+def add_beginner(group):
+    team = group["team"].iloc[0]
     t_sum = group["target_ratio"].sum()
     r_sum = group["real_ratio"].sum()
-    group = group.copy()
-    group.loc[len(group.index)] = [
-        group["team"].iloc[0], "Beginner",
-        max(0, 100 - t_sum),
-        max(0, 100 - r_sum)
-    ]
-    return group
+    return pd.concat([group, pd.DataFrame([{
+        "team": team,
+        "data_skill_cat": "Beginner",
+        "target_ratio": max(0, 100 - t_sum),
+        "real_ratio": max(0, 100 - r_sum)
+    }])])
 
-df = df.groupby("team", group_keys=False).apply(complete_beginner_ratios)
+df = df.groupby("team", group_keys=False).apply(add_beginner)
 
-# Totaux par équipe
-team_totals = {
-    "CFM": 30,
-    "GBI": 120,
-    "GIS": 24,
-    "IRB": 84,
-    "RPI": 33
-}
-
-# Calcul des effectifs
+# === Totaux par équipe ===
+team_totals = {"CFM": 30, "GBI": 120, "GIS": 24, "IRB": 84, "RPI": 33}
 df["total_nb"] = df["team"].map(team_totals)
 df["target_nb"] = (df["target_ratio"] * df["total_nb"] / 100).round(1)
 df["real_nb"] = (df["real_ratio"] * df["total_nb"] / 100).round(1)
 
-# Création du graphique
+# === Création du graphique ===
 fig = go.Figure()
-color_map = {"Beginner": "red", "Intermediate": "pink", "Confirmed": "black"}
 levels = ["Beginner", "Intermediate", "Confirmed"]
+colors = {"Beginner": "red", "Intermediate": "pink", "Confirmed": "black"}
 
-# Barres Target
+# Pour chaque niveau, on trace les barres target et real côte à côte
 for level in levels:
     sub = df[df["data_skill_cat"] == level]
+    
     fig.add_bar(
         name=f"Target - {level}",
         x=sub["team"],
         y=sub["target_ratio"],
-        marker_color=color_map[level],
-        offsetgroup=0,
-        legendgroup="Target",
-        opacity=0.5,
         text=sub["target_nb"],
-        textposition="inside"
+        textposition="inside",
+        marker_color=colors[level],
+        offsetgroup="target",
+        base=0,
+        legendgroup="Target",
+        showlegend=(level == "Beginner")
     )
-
-# Barres Real
-for level in levels:
-    sub = df[df["data_skill_cat"] == level]
+    
     fig.add_bar(
         name=f"Real - {level}",
         x=sub["team"],
         y=sub["real_ratio"],
-        marker_color=color_map[level],
-        offsetgroup=1,
-        legendgroup="Real",
         text=sub["real_nb"],
-        textposition="inside"
+        textposition="inside",
+        marker_color=colors[level],
+        offsetgroup="real",
+        base=0,
+        legendgroup="Real",
+        showlegend=(level == "Beginner")
     )
 
-# Ajout des totaux
-for team, total in team_totals.items():
+# === Totaux affichés au-dessus ===
+for team in df["team"].unique():
+    total = team_totals[team]
     fig.add_annotation(
-        x=team, y=105,
-        text=f"Total: {total}",
-        showarrow=False,
-        font=dict(size=12),
-        xanchor="center"
+        x=team, y=105, text=f"Total: {total}", showarrow=False,
+        xanchor="center", yanchor="bottom", font=dict(size=12)
     )
 
-# Mise en forme finale
+# === Mise en page ===
 fig.update_layout(
     barmode="stack",
-    title="Répartition des niveaux de compétence par équipe : Réel vs Cible",
+    title="Répartition des niveaux par équipe : Réel vs Cible",
     xaxis_title="Équipe",
     yaxis_title="Pourcentage (%)",
     yaxis=dict(range=[0, 110]),
     height=600
 )
 
-# Affichage
 fig.show()
