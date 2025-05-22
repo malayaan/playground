@@ -1,25 +1,102 @@
-Voici une version un peu plus étoffée mais toujours concise et claire, en réponse à ses questions :
+import pandas as pd
+import plotly.graph_objects as go
 
+# Données (Confirmed et Intermediate extraits manuellement)
+data = [
+    ["CFM", "Confirmed", 15.0, 22.64],
+    ["CFM", "Intermediate", 15.0, 20.75],
+    ["GBI", "Confirmed", 20.10, 6.10],
+    ["GBI", "Intermediate", 20.33, 20.73],
+    ["GIS", "Confirmed", 20.0, 7.69],
+    ["GIS", "Intermediate", 50.0, 30.77],
+    ["IRB", "Confirmed", 4.55, 3.88],
+    ["IRB", "Intermediate", 21.22, 14.56],
+    ["RPI", "Confirmed", 4.23, 0.0],
+    ["RPI", "Intermediate", 26.47, 29.79],
+]
+df = pd.DataFrame(data, columns=["team", "data_skill_cat", "target_ratio", "real_ratio"])
 
----
+# Ajouter "Beginner" par complément à 100%
+def complete_beginner_ratios(group):
+    t_sum = group["target_ratio"].sum()
+    r_sum = group["real_ratio"].sum()
+    group = group.copy()
+    group.loc[len(group.index)] = [
+        group["team"].iloc[0], "Beginner",
+        max(0, 100 - t_sum),
+        max(0, 100 - r_sum)
+    ]
+    return group
 
-Bonjour Chema,
+df = df.groupby("team", group_keys=False).apply(complete_beginner_ratios)
 
-Merci beaucoup pour le document.
+# Totaux par équipe
+team_totals = {
+    "CFM": 30,
+    "GBI": 120,
+    "GIS": 24,
+    "IRB": 84,
+    "RPI": 33
+}
 
-Pour répondre à ta question, nous ne cherchons pas à auditer le modèle PrediXia au sens strict (code ou algo), mais à mieux comprendre son rôle dans la chaîne de décision de remarketing, notamment pour éclairer notre analyse sur les risques liés à la VR et au rechanneling.
+# Calcul des effectifs
+df["total_nb"] = df["team"].map(team_totals)
+df["target_nb"] = (df["target_ratio"] * df["total_nb"] / 100).round(1)
+df["real_nb"] = (df["real_ratio"] * df["total_nb"] / 100).round(1)
 
-Notre objectif est de :
+# Création du graphique
+fig = go.Figure()
+color_map = {"Beginner": "red", "Intermediate": "pink", "Confirmed": "black"}
+levels = ["Beginner", "Intermediate", "Confirmed"]
 
-Comprendre les données utilisées (features principales, sources internes/externes, fréquence de mise à jour) ;
+# Barres Target
+for level in levels:
+    sub = df[df["data_skill_cat"] == level]
+    fig.add_bar(
+        name=f"Target - {level}",
+        x=sub["team"],
+        y=sub["target_ratio"],
+        marker_color=color_map[level],
+        offsetgroup=0,
+        legendgroup="Target",
+        opacity=0.5,
+        text=sub["target_nb"],
+        textposition="inside"
+    )
 
-Appréhender le fonctionnement global du modèle (logique de prédiction, comment il est exploité opérationnellement, niveau d’automatisation des décisions) ;
+# Barres Real
+for level in levels:
+    sub = df[df["data_skill_cat"] == level]
+    fig.add_bar(
+        name=f"Real - {level}",
+        x=sub["team"],
+        y=sub["real_ratio"],
+        marker_color=color_map[level],
+        offsetgroup=1,
+        legendgroup="Real",
+        text=sub["real_nb"],
+        textposition="inside"
+    )
 
-Avoir une vision des performances observées (précision, taux de rechanneling, évolution dans le temps) et du monitoring mis en place.
+# Ajout des totaux
+for team, total in team_totals.items():
+    fig.add_annotation(
+        x=team, y=105,
+        text=f"Total: {total}",
+        showarrow=False,
+        font=dict(size=12),
+        xanchor="center"
+    )
 
+# Mise en forme finale
+fig.update_layout(
+    barmode="stack",
+    title="Répartition des niveaux de compétence par équipe : Réel vs Cible",
+    xaxis_title="Équipe",
+    yaxis_title="Pourcentage (%)",
+    yaxis=dict(range=[0, 110]),
+    height=600
+)
 
-Cela nous aidera à voir dans quelle mesure ce type de modèle pourrait être étendu à d'autres périmètres (ex. France), et à articuler les expertises data & métiers autour des décisions de remarketing.
-
-Merci encore pour ton aide,
-Paul
-
+# Affichage
+fig.show()
