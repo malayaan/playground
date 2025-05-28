@@ -1,84 +1,83 @@
-Voici un script complet de réunion en anglais, avec une formulation simple et structurée, incluant la nouvelle cible B2C :
+Compte-rendu d’entretien – PrediXia & Rechanneling (Ayvens France)
+
+Interlocuteur : [Nom – Product Owner PrediXia, Ayvens France]
+Date : [Date de l’entretien]
 
 
 ---
 
-✅ Meeting Script – Discussion with the Product Owner (PrediXia & Rechanneling)
+Rôle et responsabilités du Product Owner PrediXia
 
-1. Quick intro
+Responsable du développement et du déploiement opérationnel de la solution PrediXia en France.
 
-> Hi, thank you for taking the time.
-I’m part of the inspection team at Société Générale, currently working on the automotive sector.
-One of my tasks is to understand how data can help reduce risk and improve processes at Ayvens.
+Chargé de l’interface entre les équipes métier (Pré-marketing et Remarketing) et les équipes techniques (data science, IT) sur les problématiques liées à l’optimisation du choix du canal de revente des véhicules en sortie de leasing (B2B, B2C, Second Lease).
 
 
 
-2. Context of the mission
+---
 
-> In Spain, a data science model (PrediXia) was developed to improve resale channel allocation.
-The idea is to reduce rechanneling (around 30% today), which creates operational and financial costs.
-In France, a similar need exists, but the model is not used yet.
+Situation actuelle (France)
 
+Aujourd’hui, l’orientation des véhicules vers les différents canaux de vente se fait principalement sur la base de règles métier prédéfinies et manuellement par les équipes marketing.
 
+Un volume significatif de véhicules (près de 30%) nécessite une réorientation ultérieure (« rechanneling ») due à un choix initial inadéquat.
 
-3. Goals of the meeting
+Ce rechanneling entraîne des coûts importants liés au stockage prolongé, aux transports supplémentaires et aux délais accrus de vente.
 
-Understand the current status of the resale channel decision process in France.
-
-Identify technical and organizational blockers that may prevent using or improving the model.
-
-Get your view on how product owners see the potential of such a solution.
-
-
-> One of the targets identified during our mission is to increase B2C sales, as it seems to bring higher margins. We’d like to understand what limits this channel today.
+Actuellement, aucune solution analytique ou prédictive n'est utilisée en France pour améliorer cette orientation initiale.
 
 
 
-4. Questions – grouped by topic
+---
 
-🔧 Operational / Functional
+Situation cible (objectif à atteindre)
 
-How is the resale channel currently selected in France? Are there clear business rules?
+Déployer un modèle prédictif similaire à PrediXia (déjà en place en Espagne) afin d’optimiser dès le départ le choix du canal de revente pour chaque véhicule.
 
-Who decides? Is the process centralized or done by local teams?
+Réduire significativement les besoins en rechanneling en augmentant la précision des prédictions initiales.
 
-Is there data already used to help this decision?
-
-
-📊 Data & tools
-
-Is there a structured data set of past resale operations (channel, price, time to sell, etc.)?
-
-Can we access the current features used in Spain? Are they available in France?
-
-What KPIs are monitored today? Rechanneling rate? Profitability per channel?
+Accroître la part des véhicules orientés vers le canal B2C, potentiellement plus rentable, en fonction des caractéristiques du véhicule et des conditions du marché.
 
 
-🚧 Blockers
 
-From your point of view, what are the main limits today? Technical? Governance? Adoption?
+---
 
-Do you think the tool could be reused in France, or would it need major changes?
+Freins et limites identifiés à ce stade
 
-Is there interest on the business side for this kind of predictive tool?
+Le principal frein actuel est organisationnel plutôt que technique :
 
+Réticences de l’équipe métier (Pré-marketing) concernant la fiabilité perçue des modèles prédictifs.
 
-🤝 Collaboration
-
-Who should we talk to next (data owner, marketing lead, IT, etc.)?
-
-Is there a plan to deploy or test such tools in other countries?
+Complexité d’intégration des résultats du modèle dans le processus décisionnel quotidien (expérience utilisateur à améliorer).
 
 
-5. Wrap-up
+La plateforme espagnole actuelle, malgré des résultats prometteurs, rencontre des difficultés d’adoption en raison d'une expérience utilisateur jugée trop complexe par les équipes opérationnelles.
 
-> Thanks again. We’ll write a short note internally to summarize the situation.
-If possible, we may come back later with more precise questions, or for a follow-up session.
+Le coût de mise en œuvre de la solution technique reste un sujet important, mais ne semble pas être le frein principal.
+
+
+
+---
+
+Potentiel des données CGI (financement concessionnaires)
+
+Les données issues du financement des concessionnaires (CGI) pourraient éventuellement enrichir les modèles de prédiction en apportant une meilleure compréhension du marché B2C et des comportements d’achat particuliers.
+
+Cependant, leur intérêt immédiat pour PrediXia reste limité :
+
+Ces données sont intéressantes mais restent un « nice to have » en raison de différences structurelles (type de véhicules, marché cible différent, gamme, etc.) entre Ayvens (leasing professionnel) et CGI (vente occasion concessionnaire).
 
 
 
 
 ---
 
-Souhaites-tu aussi une version plus courte pour l’envoyer par mail avant le meeting ?
+Prochaines étapes proposées
+
+Réunion approfondie avec les équipes Pré-marketing pour mieux comprendre les besoins, réticences, et critères opérationnels concrets à intégrer dans une solution prédictive.
+
+Validation quantitative du bénéfice potentiel associé à l’augmentation du canal B2C.
+
+Evaluation approfondie de la faisabilité technique et opérationnelle d’une solution inspirée de PrediXia pour le marché français.
+
 
