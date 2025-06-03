@@ -1,31 +1,89 @@
-Voici une version ajustée qui inclut clairement ton objectif d’enrichir le modèle localement avec des données groupe pour améliorer les performances, tout en restant simple et polie :
+import plotly.graph_objects as go
 
+def plot_gauge(current_value, target_value, label):
+    """
+    Plots a simplified gauge chart with 4 segments (red, orange, yellow, green),
+    adds a text annotation below the gauge and an annotation above the gauge.
+    """
 
----
+    plot_bgcolor = "white"
+    text_color = "#000000"
 
-Subject: Questions about PrediXia model and local reproduction for enhancement
+    fig = go.Figure(
+        go.Indicator(
+            mode="gauge+number",
+            value=current_value,
+            title={"text": label, "font": {"color": text_color}},
+            gauge={
+                "axis": {"range": [0, target_value], "tickcolor": text_color, "showticklabels": False},
+                "bar": {"color": "black"},  # Needle color
+                "steps": [
+                    {"range": [0, target_value * 0.25], "color": "#f25829"},  # Red
+                    {"range": [target_value * 0.25, target_value * 0.5], "color": "#f2a529"},  # Orange
+                    {"range": [target_value * 0.5, target_value * 0.75], "color": "#f2e541"},  # Yellow
+                    {"range": [target_value * 0.75, target_value], "color": "#33cc33"},  # Green
+                ],
+            },
+            number={"font": {"color": text_color}},
+        )
+    )
 
-Hi José María,
+    # Ajouter un rectangle blanc arrondi en fond
+    fig.update_layout(
+        shapes=[
+            dict(
+                type="rect",
+                xref="paper",
+                yref="paper",
+                x0=0,
+                y0=0,
+                x1=1,
+                y1=1,
+                fillcolor="white",
+                line=dict(color="white"),
+                layer="below",
+                # Pour arrondir les bords, utiliser 'path' serait plus précis, mais Plotly ne supporte pas directement.
+                # Une astuce simple : définir un rectangle blanc derrière (sinon on peut jouer avec CSS dans l'app).
+            )
+        ],
+        plot_bgcolor=plot_bgcolor,
+        paper_bgcolor=plot_bgcolor,
+        font={"color": text_color},
+    )
 
-I hope you’re doing well.
+    # Ajouter annotation sous la jauge
+    annotation_text = (
+        f"<b>{current_value}</b> personnes avec le niveau <b>{label}</b> "
+        f"pour une target à <b>{target_value}</b>"
+    )
+    fig.update_layout(
+        annotations=[
+            dict(
+                x=0.5,
+                y=-0.2,
+                text=annotation_text,
+                showarrow=False,
+                font=dict(size=14, color=text_color),
+                xref="paper",
+                yref="paper",
+                xanchor="center",
+                yanchor="top",
+            ),
+            # Annotation au-dessus de la jauge avec texte en anglais demandé
+            dict(
+                x=0.5,
+                y=1.15,
+                text=f"{current_value} at the Skill {label} over a target of {target_value}",
+                showarrow=False,
+                font=dict(size=14, color=text_color),
+                xref="paper",
+                yref="paper",
+                xanchor="center",
+                yanchor="bottom",
+            ),
+        ]
+    )
 
-I’d like to confirm that the PrediXia model has been in production since January 2025.
-
-As I understand, in France the model calculates the sale price, which is then used as input for predicting sectoral sales probability. Could you please confirm this?
-
-I also noticed that in Spain, feature importance seems linked to one model, but there are actually two models (pricing and sectoral sales probability). Could you clarify this?
-
-My goal is to reproduce the model locally in France to test if enriching it with group-level data (specifically on vehicles financed by Société Générale) can improve its performance.
-
-Could you please share the data sources, preprocessing steps, and feature construction details needed for this?
-
-Thank you very much for your support.
-
-Best regards,
-[Your Name]
-
-
----
-
-Veux-tu que je fasse une version encore plus courte ?
-
+    # Afficher la figure avec Streamlit
+    import streamlit as st
+    st.plotly_chart(fig, use_container_width=True)
