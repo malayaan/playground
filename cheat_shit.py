@@ -1,11 +1,15 @@
-region = "US"
-list_of_factors = ["Value", "Momentum", "Low Risk", "Growth", "Fund. Quality"]
-
-instruments = [{"name": factor, "region": region} for factor in list_of_factors]
-
 parameters = {
-    "source": "Equity Factors",
-    "instruments": instruments,
-    "fields": ["long", "short"],
+    "source": "region",  # exemple: "US"
+    "product": "Equity Factors",
+    "instruments": [ 
+        {
+            "name": "Value", 
+            "fields": ["long", "short"]
+        },
+        {
+            "name": "Momentum", 
+            "fields": ["long", "short"]
+        }
+    ],
     "return_type": 1
 }
