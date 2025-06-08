@@ -1,17 +1,15 @@
-import requests
-import pandas as pd
-
-url = "https://ec.europa.eu/eurostat/api/dissemination/sdmx/2.1/data/prc_hicp_manr/FR.CP00.T.T.INX"
+url = "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/prc_hicp_manr"
 params = {
-    'format': 'json-stat',
-    'startPeriod': '2010-01'
+    'format': 'json',
+    'geo': 'FR',
+    'coicop': 'CP00',
+    'unit': 'T',
+    'time': '2010-01'
 }
 r = requests.get(url, params=params)
 r.raise_for_status()
 js = r.json()
 
-# json-stat → pandas
-# pip install pyjstat
-898-0from pyjstat import pyjstat 
-898-1df = pyjstat.from_json_stat(js) 
-898-2print(df.head())
+from pyjstat import pyjstat
+df = pyjstat.from_json_stat(js)
+print(df.head())
