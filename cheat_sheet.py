@@ -1,161 +1,91 @@
-Parfait, je te détaille une démarche complète et claire, à partir de tes cours sectoriels, pour produire :
-
-✅ un heatmap amplitude = qui est stressé quand
-✅ des courbes de phase moyenne = qui est en avance ou en retard dans le stress sectoriel
+Très bonne demande — je te donne des définitions précises et réutilisables pour ton rapport / ton chef de mission / ta note IG.
 
 
 ---
 
-Étape 1️⃣ — Préparer tes séries de base
+1️⃣ Définition de l’amplitude (→ "stress sectoriel")
 
-👉 Tu pars de cours sectoriels → DataFrame df (colonnes = secteurs, index = dates).
+👉 Quand on applique la transformée de Hilbert à une série temporelle  (ici : rolling std des returns ou returns), on obtient un signal complexe :
 
-A. Nettoyer
+z(t) = x(t) + i \cdot H(x)(t)
 
-# Par sécurité
-df = df.dropna()
+👉 L’amplitude instantanée du signal est :
 
-B. Calculer les rendements journaliers
-
-returns = df.pct_change().dropna()
-
-C. Option : rolling std (alternative aux returns)
-
-👉 Certains font la Hilbert non pas sur les returns mais sur leur rolling std → ça donne un stress encore plus lisible.
-
-rolling_std = returns.rolling(20).std().dropna()
+A(t) = |z(t)| = \sqrt{ x(t)^2 + H(x)(t)^2 }
 
 
 ---
 
-Étape 2️⃣ — Appliquer la transformée de Hilbert par secteur
+➡️ Définition claire :
 
-A. Initialiser DataFrames vides
+👉 L’amplitude instantanée , dans ce cadre, mesure l’intensité locale du stress sectoriel.
 
-from scipy.signal import hilbert
-import numpy as np
-import pandas as pd
+Si  est élevé → le secteur est dans une phase de forte instabilité / forte volatilité → période de stress élevé.
 
-sectors = returns.columns.tolist()
-amplitudes = pd.DataFrame(index=returns.index)
-phases = pd.DataFrame(index=returns.index)
-
-B. Boucle sur les secteurs
-
-for sec in sectors:
-    signal = returns[sec].values  # ou rolling_std[sec].values
-    analytic_signal = hilbert(signal)
-    
-    # Amplitude instantanée = "niveau de stress"
-    amplitudes[sec] = np.abs(analytic_signal)
-    
-    # Phase instantanée = "phase du stress"
-    phases[sec] = np.unwrap(np.angle(analytic_signal))
-
-👉 À ce stade tu as :
-
-amplitudes [dates x secteurs] → pour ton heatmap
-
-phases [dates x secteurs] → pour les comparaisons de phase
+Si  est faible → comportement stable du secteur → pas de stress.
 
 
 
 ---
 
-Étape 3️⃣ — Créer la heatmap amplitude
+En phrase prête à mettre dans un rapport IG :
 
-import matplotlib.pyplot as plt
-import seaborn as sns
-
-plt.figure(figsize=(15,8))
-sns.heatmap(amplitudes.T, cmap='Reds', cbar_kws={'label': 'Amplitude (Stress)'})
-plt.title("Heatmap du stress sectoriel (Amplitude Hilbert)")
-plt.xlabel("Date")
-plt.ylabel("Secteurs")
-plt.show()
-
-👉 Ça te donne :
-✅ “Qui est stressé quand”
+👉 “Nous mesurons le stress sectoriel comme l’amplitude instantanée obtenue via la transformée de Hilbert appliquée à la volatilité locale (rolling standard deviation) des rendements sectoriels. Cette amplitude reflète l’intensité du stress sectoriel à chaque date.”
 
 
 ---
 
-Étape 4️⃣ — Créer la phase moyenne roulante (rolling mean circulaire)
+2️⃣ Définition de la phase (→ "phase du stress sectoriel")
 
-A. Calculer les composantes sin/cos
+👉 La phase instantanée du signal complexe  est :
 
-sin_phase = np.sin(phases)
-cos_phase = np.cos(phases)
-
-B. Rolling mean sur sin / cos
-
-rolling_window = 20  # par ex. 1 mois glissant (~20j)
-
-sin_mean = sin_phase.rolling(rolling_window).mean()
-cos_mean = cos_phase.rolling(rolling_window).mean()
-
-C. Reconstruire la phase moyenne
-
-phase_mean = np.arctan2(sin_mean, cos_mean)
+\phi(t) = \arctan \left( \frac{H(x)(t)}{x(t)} \right)
 
 
 ---
 
-Étape 5️⃣ — Tracer les phases comparées
+➡️ Définition claire :
 
-plt.figure(figsize=(15,8))
-for sec in sectors:
-    plt.plot(phase_mean.index, phase_mean[sec], label=sec)
+👉 La phase instantanée  décrit la dynamique du stress sectoriel :
 
-plt.title("Phase moyenne roulante des secteurs (Hilbert Phase)")
-plt.xlabel("Date")
-plt.ylabel("Phase moyenne (radians)")
-plt.legend()
-plt.grid(True)
-plt.show()
+une phase croissante correspond à une phase de montée du stress ;
 
-👉 Ça te donne :
-✅ “Qui est en avance / en retard dans le cycle de stress”
+une phase proche de zéro ou plateau → stress maximal atteint ;
+
+une phase décroissante → retour progressif à une situation stable.
+
+
+→ Comparée entre secteurs, la phase permet de détecter quels secteurs rentrent en stress en avance ou en retard par rapport aux autres.
 
 
 ---
 
-Résultat final → tu obtiens :
+En phrase prête à mettre dans un rapport IG :
 
-Graphique	Info business que ça te donne
+👉 “Nous utilisons la phase instantanée extraite via la transformée de Hilbert pour caractériser la dynamique du stress sectoriel. Cette phase permet d’identifier les périodes de montée, de pic ou de décrue du stress, et de comparer la synchronisation des réactions sectorielles face aux chocs macroéconomiques.”
 
-Heatmap amplitude	Quels secteurs sont stressés à quels moments
-Courbes de phase	Quels secteurs entrent en stress en avance / en retard, comparés aux autres
+
+---
+
+En résumé simple pour ta note :
+
+Terme	Définition pratique pour IG
+
+Amplitude	Niveau instantané du stress sectoriel (volatilité locale amplifiée par Hilbert)
+Phase	Moment relatif du cycle de stress sectoriel (montée, pic, descente)
 
 
 
 ---
 
-Pourquoi c’est top pour ton rapport IG :
+Si tu veux, je peux aussi te rédiger une section "méthodologie" prête à coller dans ta note ou ton template de rapport IG, pour expliquer :
 
-Tu montres que les réactions sectorielles ne sont pas synchrones → hyper pertinent en approche intersectorielle.
+pourquoi utiliser amplitude & phase
 
-Tu identifies des périodes où certains secteurs prennent de l’avance → signal macro.
+comment on les calcule
 
-Tu enrichis ton score “qui est stressé quand” avec une dynamique → phase.
-
-
-
----
-
-👉 En résumé ta démarche complète est :
-
-1️⃣ Cours → returns ou rolling std
-2️⃣ Returns → Hilbert → amplitude + phase
-3️⃣ Heatmap amplitude → lecture horizontale → qui est stressé quand
-4️⃣ Rolling mean phase → lecture dynamique → qui entre/sort du stress en avance ou retard
+ce qu’elles apportent à l’analyse intersectorielle.
 
 
----
-
-Si tu veux, je peux te préparer un notebook complet clé en main avec ce pipeline propre → prêt à brancher sur tes data df.
-
-Ça te fera gagner du temps et tu auras des plots propres pour ton rapport IG.
-
-Veux-tu que je te prépare ce notebook template ? 🚀 (je te génère le bloc code direct).
+Veux-tu que je te prépare ce petit paragraphe clé en main ? (ça va vraiment bien “vendre” ta démarche auprès du chef de mission 🚀).
 
