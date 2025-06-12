@@ -1,91 +1,25 @@
-Très bonne demande — je te donne des définitions précises et réutilisables pour ton rapport / ton chef de mission / ta note IG.
+# Step 6: Compute phases on rolling std
+phases = pd.DataFrame(index=rolling_std.index)
 
+for sector in rolling_std.columns:
+    signal = rolling_std[sector].values
+    analytic_signal = hilbert(signal)
+    phases[sector] = np.unwrap(np.angle(analytic_signal))  # Phase in radians, unwrapped
 
----
+# Option: re-wrap to [-pi, pi] for heatmap clarity
+phases_wrapped = (phases + np.pi) % (2 * np.pi) - np.pi
 
-1️⃣ Définition de l’amplitude (→ "stress sectoriel")
+# Step 7: Plot phase heatmap
+plt.figure(figsize=(12, 8))
+ax = sns.heatmap(phases_wrapped.T, cmap='twilight_shifted', center=0,
+                 cbar_kws={'label': 'Phase (radians)', 'ticks': [-np.pi, -np.pi/2, 0, np.pi/2, np.pi]})
 
-👉 Quand on applique la transformée de Hilbert à une série temporelle  (ici : rolling std des returns ou returns), on obtient un signal complexe :
+# Clean x-axis
+ax.set_xticklabels(phases_wrapped.index[::30].strftime('%Y-%m-%d'), rotation=45, ha='right', fontsize=10)
 
-z(t) = x(t) + i \cdot H(x)(t)
-
-👉 L’amplitude instantanée du signal est :
-
-A(t) = |z(t)| = \sqrt{ x(t)^2 + H(x)(t)^2 }
-
-
----
-
-➡️ Définition claire :
-
-👉 L’amplitude instantanée , dans ce cadre, mesure l’intensité locale du stress sectoriel.
-
-Si  est élevé → le secteur est dans une phase de forte instabilité / forte volatilité → période de stress élevé.
-
-Si  est faible → comportement stable du secteur → pas de stress.
-
-
-
----
-
-En phrase prête à mettre dans un rapport IG :
-
-👉 “Nous mesurons le stress sectoriel comme l’amplitude instantanée obtenue via la transformée de Hilbert appliquée à la volatilité locale (rolling standard deviation) des rendements sectoriels. Cette amplitude reflète l’intensité du stress sectoriel à chaque date.”
-
-
----
-
-2️⃣ Définition de la phase (→ "phase du stress sectoriel")
-
-👉 La phase instantanée du signal complexe  est :
-
-\phi(t) = \arctan \left( \frac{H(x)(t)}{x(t)} \right)
-
-
----
-
-➡️ Définition claire :
-
-👉 La phase instantanée  décrit la dynamique du stress sectoriel :
-
-une phase croissante correspond à une phase de montée du stress ;
-
-une phase proche de zéro ou plateau → stress maximal atteint ;
-
-une phase décroissante → retour progressif à une situation stable.
-
-
-→ Comparée entre secteurs, la phase permet de détecter quels secteurs rentrent en stress en avance ou en retard par rapport aux autres.
-
-
----
-
-En phrase prête à mettre dans un rapport IG :
-
-👉 “Nous utilisons la phase instantanée extraite via la transformée de Hilbert pour caractériser la dynamique du stress sectoriel. Cette phase permet d’identifier les périodes de montée, de pic ou de décrue du stress, et de comparer la synchronisation des réactions sectorielles face aux chocs macroéconomiques.”
-
-
----
-
-En résumé simple pour ta note :
-
-Terme	Définition pratique pour IG
-
-Amplitude	Niveau instantané du stress sectoriel (volatilité locale amplifiée par Hilbert)
-Phase	Moment relatif du cycle de stress sectoriel (montée, pic, descente)
-
-
-
----
-
-Si tu veux, je peux aussi te rédiger une section "méthodologie" prête à coller dans ta note ou ton template de rapport IG, pour expliquer :
-
-pourquoi utiliser amplitude & phase
-
-comment on les calcule
-
-ce qu’elles apportent à l’analyse intersectorielle.
-
-
-Veux-tu que je te prépare ce petit paragraphe clé en main ? (ça va vraiment bien “vendre” ta démarche auprès du chef de mission 🚀).
-
+# Titles
+plt.title("Hilbert Phase Heatmap (Rolling Std Stress Cycles)", fontsize=16)
+plt.xlabel("Date", fontsize=12)
+plt.ylabel("Sectors", fontsize=12)
+plt.tight_layout()
+plt.show()
