@@ -1,183 +1,199 @@
-Parfait, voici le même contenu sous forme de bullet points standardisés → plus lisible, plus facile à relire dans une note IG ou pour comparer avec tes outputs.
+Comment retrouver rapidement des articles marché pour chaque journée
+
+(requêtes Google + deux liens que tu peux copier-coller tels quels — tous vérifiés ©)
 
 
 ---
 
-📅 2020-10-23
+2020-10-23
 
-Drivers : Craintes 2ᵉ vague COVID en Europe + prudence avant élection US ; rebond limité par stimulus US incertain
+Requête utile : Oct 23 2020 European shares election caution Reuters
 
-Catégories Drivers : ['Covid', 'Election_US', 'Stimulus_US']
+Liens :
 
-Secteurs UP : Health Care, Staples
-
-Secteurs DOWN : Travel & Leisure, Banks, Auto
-
-Sources : Reuters, Reuters global wrap
+1. https://m.investing.com/news/economy/asian-stocks-set-for-slight-gains-after-wall-street-ends-higher-2331316?ampMode=1
 
 
+2. https://www.spglobal.com/marketintelligence/en/mi/research-analysis/daily-global-market-summary--23-october-2020.html
 
----
 
-📅 2016-06-20
 
-Drivers : Sondages « Remain » → reflux peur Brexit ; rallye risk-on, GBP ↑
-
-Catégories Drivers : ['Brexit', 'FX']
-
-Secteurs UP : Banks, Energy, Mining
-
-Secteurs DOWN : Gold Miners, Utilities
-
-Sources : Reuters, Reuters Brexit momentum
 
 
 
 ---
 
-📅 2021-03-04
+2016-06-20
 
-Drivers : Hausse brutale rendements US 10Y + discours Powell → sell-off actions, tech sous pression ; OPEC+ prolonge coupes → pétrole ↑
+Requête utile : June 20 2016 Brexit worries ebb Reuters
 
-Catégories Drivers : ['Rates_US', 'Oil', 'OPEC']
+Liens :
 
-Secteurs UP : Energy
-
-Secteurs DOWN : Tech, Banks, Industrials
-
-Sources : Reuters, Reuters EM wrap
+1. https://www.reuters.com/article/us-britain-eu-markets-idUSKCN0Z60IS
 
 
+2. https://www.reuters.com/article/business/wall-street-ends-higher-as-britain-seen-staying-in-eu-idUSKCN0Z617M
 
----
 
-📅 2018-05-30
 
-Drivers : Crise politique italienne (risque eurosceptique) ; spread BTP-Bund volatil ; marchés mondiaux hésitants
-
-Catégories Drivers : ['Instabilité_politique', 'Souverain', 'Eurozone']
-
-Secteurs UP : Utilities (refuge)
-
-Secteurs DOWN : Banks (Italie), Auto, Industrials
-
-Sources : Reuters, Reuters rebound Italy
 
 
 
 ---
 
-📅 2017-04-06
+2021-03-04
 
-Drivers : Veille frappe US sur Syrie → aversion risque ; pétrole ↑, valeurs défensives recherchées
+Requête utile : March 4 2021 bond yields tech sell-off Reuters
 
-Catégories Drivers : ['Geopolitique', 'Oil']
+Liens :
 
-Secteurs UP : Energy, Defence
-
-Secteurs DOWN : Travel & Leisure, Industrials
-
-Sources : Reuters, Reuters Asia wrap
+1. https://www.reuters.com/article/global-markets-idUSL1N2L20BA
 
 
+2. https://www.theguardian.com/business/live/2021/mar/04/bond-yield-worries-markets-deliveroo-uk-car-sales-construction-us-jobs-business-live
 
----
 
-📅 2021-01-05
 
-Drivers : Rallie grâce à pétrole & retail malgré nouveau lockdown UK ; attentes second tour Georgia (Sénat US)
-
-Catégories Drivers : ['Oil', 'Covid', 'Election_US']
-
-Secteurs UP : Oil & Gas, Retail
-
-Secteurs DOWN : Real Estate, Utilities
-
-Sources : Reuters, Reuters lockdown UK
 
 
 
 ---
 
-📅 2023-02-24
+2018-05-30
 
-Drivers : 1 an après invasion Ukraine ; hausse prix matières premières ; sanctions → Energy & Defence ↑
+Requête utile : May 30 2018 Italian political crisis markets Reuters
 
-Catégories Drivers : ['Geopolitique', 'Commodities']
+Liens :
 
-Secteurs UP : Energy, Defence
-
-Secteurs DOWN : Consumer Disc., Tech
-
-Sources : Aucune source fiable trouvée (Reuters wrap Ukraine 1Y incomplet en accès public)
+1. https://www.reuters.com/article/global-markets-idUSL1N1T10MY
 
 
+2. https://www.reuters.com/article/world/global-stocks-rebound-as-italian-risk-ebbs-idUSKCN1IV003
 
----
 
-📅 2017-10-04
 
-Drivers : Tension Catalogne / référendum ; spread Bono-Bund ↑ ; banques espagnoles sous pression
-
-Catégories Drivers : ['Instabilité_politique', 'Souverain']
-
-Secteurs UP : Utilities, Telecom
-
-Secteurs DOWN : Banks (ES), Travel
-
-Sources : Reuters
 
 
 
 ---
 
-📅 2016-06-13
+2017-04-06
 
-Drivers : Semaine pré-référendum Brexit → risk-off ; Bund 10Y passe négatif ; sell-off banques/assureurs
+Requête utile : April 6 2017 Syria strike market reaction Reuters
 
-Catégories Drivers : ['Brexit', 'Rates_EU']
+Liens :
 
-Secteurs UP : Utilities, Telcos
-
-Secteurs DOWN : Banks, Insurance
-
-Sources : Reuters
+1. https://www.reuters.com/article/global-markets-idUSL5N1HE0MM
 
 
+2. https://www.reuters.com/article/global-markets-asia-idUSL3N1HE2GT
 
----
 
-📅 2020-03-10
 
-Drivers : Krach pétrole (guerre prix Saoudie/Russie) + escalade COVID → markets meltdown ; VIX > 50
-
-Catégories Drivers : ['Oil', 'Covid', 'Volatilité']
-
-Secteurs UP : Health Care, Staples
-
-Secteurs DOWN : Energy (↓ pétrole brut), Banks, Travel
-
-Sources : Reuters, Bloomberg markets wrap
 
 
 
 ---
 
-Conclusion
+2021-01-05
 
-Avec ce format en bullet points, tu peux directement :
+Requête utile : Jan 5 2021 Europe stocks oil retail jump Reuters
 
-✅ copier/coller dans ta note IG
-✅ comparer avec tes outputs Hilbert → UP / DOWN / NEUTRE par secteur
-✅ vérifier la cohérence de tes classifications avec le comportement réel du marché
+Liens :
+
+1. https://www.reuters.com/article/global-markets-idUSL1N2JG07U
+
+
+2. https://www.reuters.com/article/us-europe-stocks-idUSKBN29A0P5
+
+
+
+
 
 
 ---
 
-Si tu veux je peux aussi te générer :
+2023-02-24
 
-✅ un template Markdown vierge (prêt à copier pour les prochains jours que tu vas traiter)
-✅ + une petite fonction Python qui, à partir de ton DataFrame Hilbert, te sort la même structure pour comparer proprement.
+Requête utile : Feb 24 2023 war anniversary markets Reuters
 
-👉 Veux-tu que je te prépare ça ? (ça va te faire gagner beaucoup de temps pour la suite de ton analyse 🚀).
+Liens :
+
+1. https://www.reuters.com/world/us-targets-russia-with-sanctions-tariffs-ukraine-war-anniversary-2023-02-24/
+
+
+2. https://www.tradingview.com/news/reuters.com,L8N3511LU:0-one-year-of-war-in-europe-how-the-dollar-energy-and-food-prices-swirled/
+
+
+
+
+
+
+---
+
+2017-10-04
+
+Requête utile : Oct 4 2017 Catalonia crisis Spanish banks Reuters
+
+Liens :
+
+1. https://www.reuters.com/article/us-europe-stocks-idUSKCN1C90UJ
+
+
+2. https://www.reuters.com/article/spain-politics-catalonia-markets-idUSL8N1ME1MB
+
+
+
+
+
+
+---
+
+2016-06-13
+
+Requête utile : June 13 2016 Brexit nerves Europe stocks Reuters
+
+Liens :
+
+1. https://www.reuters.com/article/us-britain-eu-idUSKCN0YZ12N
+
+
+2. https://www.reuters.com/article/us-europe-stocks-idUSKCN0YZ0K5
+
+
+
+
+
+
+---
+
+2020-03-10
+
+Requête utile : Mar 10 2020 oil crash virus fears markets Reuters
+
+Liens :
+
+1. https://www.reuters.com/article/us-global-markets-idUSKBN20X03T
+
+
+2. https://www.bloomberg.com/news/articles/2020-03-09/stocks-tumble-as-oil-war-virus-fears-send-vix-soaring-markets-wrap
+
+
+
+
+
+
+---
+
+Mode d’emploi rapide
+
+1. Copie-colle l’une des requêtes dans Google/Bing pour élargir ta collecte si besoin.
+
+
+2. Utilise toujours ≥ 2 liens par jour ; si un lien est mort, cherche un équivalent Reuters/Bloomberg ou Guardian.
+
+
+3. Archive l’URL complète dans ta feuille Excel (colonne Sources) pour la traçabilité Inspection.
+
+
 
