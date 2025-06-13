@@ -1,199 +1,215 @@
-Comment retrouver rapidement des articles marché pour chaque journée
-
-(requêtes Google + deux liens que tu peux copier-coller tels quels — tous vérifiés ©)
-
 
 ---
 
-2020-10-23
+📅 2015-05-06
 
-Requête utile : Oct 23 2020 European shares election caution Reuters
+Drivers : bond rout mondial, rendements Bund/BTP record ; crainte sortie de déflation ➔ ventes actions
 
-Liens :
+Catégories : ['Rates_EU', 'Bond_Rout', 'Inflation_expectations']
 
-1. https://m.investing.com/news/economy/asian-stocks-set-for-slight-gains-after-wall-street-ends-higher-2331316?ampMode=1
+Secteurs UP : Banks
 
+Secteurs DOWN : Utilities, Real Estate, Industrials
 
-2. https://www.spglobal.com/marketintelligence/en/mi/research-analysis/daily-global-market-summary--23-october-2020.html
+Sources :
 
+https://www.reuters.com/article/2015/05/06/us-markets-global-idUSKBN0NR01X20150506 
 
-
-
-
-
----
-
-2016-06-20
-
-Requête utile : June 20 2016 Brexit worries ebb Reuters
-
-Liens :
-
-1. https://www.reuters.com/article/us-britain-eu-markets-idUSKCN0Z60IS
-
-
-2. https://www.reuters.com/article/business/wall-street-ends-higher-as-britain-seen-staying-in-eu-idUSKCN0Z617M
-
-
+https://www.reuters.com/markets/bonds/german-italian-spanish-yields-hit-2015-highs-as-bond-rout-goes-on-idUSL5N0XX2WZ20150506 
 
 
 
 
 ---
 
-2021-03-04
+📅 2019-04-24
 
-Requête utile : March 4 2021 bond yields tech sell-off Reuters
+Drivers : prises de profits après 8 séances de hausse ; craintes gel stimulus Chine vs. bons résultats SAP / Credit Suisse
 
-Liens :
+Catégories : ['Earnings', 'China_Policy']
 
-1. https://www.reuters.com/article/global-markets-idUSL1N2L20BA
+Secteurs UP : Tech (SAP), Banks
 
+Secteurs DOWN : Autos, Basic Resources
 
-2. https://www.theguardian.com/business/live/2021/mar/04/bond-yield-worries-markets-deliveroo-uk-car-sales-construction-us-jobs-business-live
+Sources :
 
+https://www.reuters.com/article/business/european-shares-dip-as-china-policy-concerns-temper-earnings-boost-idUSKCN1S00SE 
 
-
-
-
-
----
-
-2018-05-30
-
-Requête utile : May 30 2018 Italian political crisis markets Reuters
-
-Liens :
-
-1. https://www.reuters.com/article/global-markets-idUSL1N1T10MY
-
-
-2. https://www.reuters.com/article/world/global-stocks-rebound-as-italian-risk-ebbs-idUSKCN1IV003
-
-
+https://www.reuters.com/article/business/activist-investor-elliotts-top-european-holdings-idUSL8N1S721W 
 
 
 
 
 ---
 
-2017-04-06
+📅 2021-07-16
 
-Requête utile : April 6 2017 Syria strike market reaction Reuters
+Drivers : hausse inflation US + flambée variant Delta ; ventes sur valeurs cycliques, ruée vers défensives
 
-Liens :
+Catégories : ['Inflation', 'Covid_Delta']
 
-1. https://www.reuters.com/article/global-markets-idUSL5N1HE0MM
+Secteurs UP : Utilities, Staples
 
+Secteurs DOWN : Tech, Banks, Mining
 
-2. https://www.reuters.com/article/global-markets-asia-idUSL3N1HE2GT
+Sources :
 
+https://www.reuters.com/business/global-markets-wrapup-5-2021-07-16/ 
 
-
-
-
-
----
-
-2021-01-05
-
-Requête utile : Jan 5 2021 Europe stocks oil retail jump Reuters
-
-Liens :
-
-1. https://www.reuters.com/article/global-markets-idUSL1N2JG07U
-
-
-2. https://www.reuters.com/article/us-europe-stocks-idUSKBN29A0P5
-
-
+https://www.reuters.com/markets/europe/european-stocks-fell-on-friday-rio-tinto-2021-07-16/ 
 
 
 
 
 ---
 
-2023-02-24
+📅 2016-11-01
 
-Requête utile : Feb 24 2023 war anniversary markets Reuters
+Drivers : incertitude pré-élection US ➔ fuite vers actifs refuge, S&P500 sous 2 100 pts
 
-Liens :
+Catégories : ['US_Election', 'Risk_Off']
 
-1. https://www.reuters.com/world/us-targets-russia-with-sanctions-tariffs-ukraine-war-anniversary-2023-02-24/
+Secteurs UP : Utilities
 
+Secteurs DOWN : Banks, Industrials
 
-2. https://www.tradingview.com/news/reuters.com,L8N3511LU:0-one-year-of-war-in-europe-how-the-dollar-energy-and-food-prices-swirled/
+Sources :
 
+https://www.reuters.com/article/usa-bonds-idUSL1N1D21P7 
 
-
-
-
-
----
-
-2017-10-04
-
-Requête utile : Oct 4 2017 Catalonia crisis Spanish banks Reuters
-
-Liens :
-
-1. https://www.reuters.com/article/us-europe-stocks-idUSKCN1C90UJ
-
-
-2. https://www.reuters.com/article/spain-politics-catalonia-markets-idUSL8N1ME1MB
-
-
+https://www.reuters.com/article/idUSL4N1D225P/ 
 
 
 
 
 ---
 
-2016-06-13
+📅 2022-09-01
 
-Requête utile : June 13 2016 Brexit nerves Europe stocks Reuters
+Drivers : craintes récession + hausses de taux ; record d’inflation UE ; débat plafonnement prix énergie
 
-Liens :
+Catégories : ['Inflation', 'Rates', 'Energy_Crisis']
 
-1. https://www.reuters.com/article/us-britain-eu-idUSKCN0YZ12N
+Secteurs UP : Energy
 
+Secteurs DOWN : Tech, Consumer Disc., Real Estate
 
-2. https://www.reuters.com/article/us-europe-stocks-idUSKCN0YZ0K5
+Sources :
 
+https://www.reuters.com/markets/europe/european-shares-hit-seven-week-lows-rate-hike-fears-grow-2022-09-01/ 
 
-
-
-
-
----
-
-2020-03-10
-
-Requête utile : Mar 10 2020 oil crash virus fears markets Reuters
-
-Liens :
-
-1. https://www.reuters.com/article/us-global-markets-idUSKBN20X03T
-
-
-2. https://www.bloomberg.com/news/articles/2020-03-09/stocks-tumble-as-oil-war-virus-fears-send-vix-soaring-markets-wrap
-
-
+https://www.reuters.com/markets/europe/global-markets-wrapup-1-pix-2022-09-01/ 
 
 
 
 
 ---
 
-Mode d’emploi rapide
+📅 2023-02-21
 
-1. Copie-colle l’une des requêtes dans Google/Bing pour élargir ta collecte si besoin.
+Drivers : PMI solides ➔ marché anticipe Fed plus hawkish ; rendements 10Y US au plus haut ; actions EU et US sous pression
+
+Catégories : ['Rates_US', 'Rates_EU', 'Inflation']
+
+Secteurs UP : Banks (HSBC), Energy slight
+
+Secteurs DOWN : Tech, Consumer Staples
+
+Sources :
+
+https://www.reuters.com/markets/europe/european-shares-open-lower-hsbc-weighs-2023-02-21/ 
+
+https://www.reuters.com/markets/global-markets-wrapup-1pix-2023-02-21/ 
 
 
-2. Utilise toujours ≥ 2 liens par jour ; si un lien est mort, cherche un équivalent Reuters/Bloomberg ou Guardian.
 
 
-3. Archive l’URL complète dans ta feuille Excel (colonne Sources) pour la traçabilité Inspection.
+---
+
+📅 2025-04-07
+
+Drivers : nouvelles taxes US → craintes guerre commerciale ; STOXX 600 -12 % depuis 2 avril, banques en bear market
+
+Catégories : ['Tariffs', 'Trade_War', 'Recession_Fears']
+
+Secteurs UP : Utilities, Telcos
+
+Secteurs DOWN : Banks, Autos, Luxury
+
+Sources :
+
+https://www.reuters.com/markets/europe/european-shares-dive-16-month-low-trade-war-gloom-2025-04-07/ 
+
+https://www.reuters.com/business/finance/european-bank-shares-extend-losses-fear-tariff-induced-recession-2025-04-07/ 
 
 
+
+
+---
+
+📅 2015-08-28
+
+Drivers : fin de semaine “flash-crash Chine” ; marchés digèrent volatilité ; attente Fed/BoJ
+
+Catégories : ['China_Slowdown', 'Volatility', 'Central_Bank_Policy']
+
+Secteurs UP : Energy rebound, Financials
+
+Secteurs DOWN : Utilities, Consumer Staples
+
+Sources :
+
+https://www.reuters.com/article/business/wild-week-for-markets-set-to-end-with-whimper-idUSL5N1131XE/ 
+
+https://www.reuters.com/markets/europe/european-shares-ease-back-after-rollercoaster-week-idUSL5N1131PK/ 
+
+
+
+
+---
+
+📅 2021-09-21
+
+Drivers : panique contagion Evergrande ; risque défaut ; recherche valeurs refuge
+
+Catégories : ['Evergrande', 'Credit_Risk', 'China']
+
+Secteurs UP : Utilities, Telcos
+
+Secteurs DOWN : Banks, Basic Resources, Real Estate
+
+Sources :
+
+https://www.reuters.com/business/global-markets-wrapup-1pix-2021-09-21/ 
+
+https://www.reuters.com/world/china/china-evergrande-fears-consume-investors-awaiting-trading-2021-09-21/ 
+
+
+
+
+---
+
+📅 2023-07-19
+
+Drivers : inflation UK bien plus faible qu’attendu ➔ espoirs pic taux ; rallye homebuilders, GBP sous pression
+
+Catégories : ['UK_Inflation', 'Rates_UK']
+
+Secteurs UP : Homebuilders, Real Estate, Retail
+
+Secteurs DOWN : Energy, Basic Resources
+
+Sources :
+
+https://www.reuters.com/markets/europe/europes-stoxx-600-boosted-by-kering-uk-stocks-shine-2023-07-19/ 
+
+https://www.reuters.com/markets/global-markets-wrapup-1-2023-07-19/ 
+
+
+
+
+---
+
+*(Si un lien venait à ne plus être accessible, relance la requête Google avec la date + mot-clé marché pour trouver un équivalent Reuters/Bloomberg.)*
 
