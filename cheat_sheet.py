@@ -1,5 +1,22 @@
-Stream 1 – Analyse macro-sectorielle : corrélations STOXX 600 & CDS sectoriels ↔ indicateurs macro mensuels (VSTOXX, inflation, taux, PMI) → détection des phases de stress et drivers clés pour le secteur automobile.
+Réalisé
 
-Stream 2 – Synergie Ayvens × CGI : croisement données leasing (Ayvens) et revente concessionnaire (CGI) → modèle channeling B2B/B2C, estimation gains VR & réduction re-channeling.
+VIX / VSTOXX extraits
+
+12 / 21 indicateurs sectoriels Europe intégrés
+
+Accès CDS, FOREX, Eurostat validé
+
+Base CGI récupérée + premiers échanges Ayvens/CGI
+
+
+À faire (semaine prochaine)
+
+Boucler les 9 indicateurs sectoriels restants + macro mensuel
+
+Relancer quants (SG Trend & Sentiment) pour inputs journaliers
+
+Obtenir dataset Ayvens France + méthode PredictIA détaillée
+
+Mettre à jour variables manquantes CGI et aligner dictionnaire data
 
 
