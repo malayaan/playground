@@ -1,120 +1,118 @@
-Voici une version très claire sous forme de tirets, avec pour chaque indicateur la périodicité typique (important pour préparer ton dataframe !) :
-
-
----
-
-📌 Indicateurs macro Europe
-
-PIB Zone Euro → trimestriel
-
-Suivre aussi PIB Allemagne, France, Italie (trimestriel)
-
-Indicateur clé d’activité économique
-
-
-Inflation CPI Zone Euro → mensuel
-
-Suivre aussi CPI par pays si possible
-
-
-Taux directeur BCE (Main Refinancing Rate) → ad hoc (modifications BCE, surveillé en continu)
-
-Taux de chômage Zone Euro → mensuel
-
-Industrial Production Index (IPI) Zone Euro → mensuel
-
-Fort impact sur secteurs cycliques → auto & équipementiers
-
-
-Confidence des consommateurs (Consumer Confidence Index, DG ECFIN) → mensuel
-
-Indicateur avancé de consommation → ventes auto
-
-
-Balance commerciale Zone Euro → mensuel
-
-Compétitivité extérieure, flux de biens durables
-
-
-Prix pétrole Brent → quotidien / mensuel (prendre moyennes mensuelles)
-
-Impact direct sur la demande de certains types de véhicules (SUV, hybrides, électriques)
-
-
-Taux de change EUR/USD → quotidien / mensuel (prendre moyennes mensuelles)
-
-Forte influence sur export et import de composants auto
-
-
-Taux de change EUR/JPY → quotidien / mensuel
-
-Important pour la filière auto compte tenu du rôle du Japon
-
-
-Taux crédit consommation & auto (BCE) → trimestriel / mensuel (sources BCE/Eurostat)
-
-Suivre le coût réel du financement → impact leasing & achat
-
-
-Production automobile Europe (OICA, ACEA) → mensuel (ACEA, par constructeur / pays)
-
-Nouvelles immatriculations Europe (ACEA) → mensuel
-
-KPI très suivi → volume du marché auto neuf
-
-
-Commandes équipementiers → mensuel (souvent par sondage / IFO Allemagne par exemple)
-
-
-
----
-
-📌 Indicateurs macro US (à ajouter pour le spillover)
-
-Inflation CPI US → mensuel
-
-Fed Funds Rate → ad hoc + historique mensuel pour ta base
-
-US Industrial Production → mensuel
-
-US Retail Sales → mensuel
-
-US Auto Sales → mensuel
-
-Intéressant pour capter le cycle auto mondial
-
-
-US Consumer Confidence (University of Michigan) → mensuel
-
-US ISM Manufacturing PMI → mensuel
-
-Très fort impact sur les marchés européens, suivi par tous les traders / stratégistes
-
-
-
-
----
-
-📌 En résumé : ton tableau macro type → base mensuelle = la meilleure granularité
-
-Certains indicateurs ne seront qu’en trimestriel (PIB, taux de crédit), mais ça se gère en feature engineering.
-
-Le reste est en mensuel → cadence naturelle pour ton dataset et ta modélisation.
-
-Si tu pars en base mensuelle, tu pourras synchroniser correctement tous les indicateurs.
-
-
-
----
-
-👉 Si tu veux je peux aussi te donner :
-
-1. Les sources exactes (URL / API) pour chacun (beaucoup sont gratuits → Eurostat, FRED, BCE).
-
-
-2. Un exemple de table propre avec colonnes déjà listées pour ton dataframe macro → tu gagnes du temps.
-
-
-
-Veux-tu que je te prépare ça ? (ça sera très utile pour cadrer proprement ton approche 1) 📊✅.
-
+[
+  {
+    "date": "2022-09-01",
+    "events": [
+      {
+        "event_type": "Monetary Policy",
+        "event_name": "Global Interest Rate Hike Concerns",
+        "description": "Investors grew increasingly concerned about rising global interest rates, leading to a sell-off in equities. The U.S. dollar surged to a 24-year high against the yen, indicating a flight to safety.",
+        "impacted_sectors": ["Technology", "Consumer Discretionary", "Financials"],
+        "sources": [
+          {
+            "source_name": "Reuters",
+            "source_link": "https://www.reuters.com/markets/europe/global-markets-wrapup-1-pix-2022-09-01/"
+          }
+        ],
+        "timestamp_check": "2022-09-01"
+      },
+      {
+        "event_type": "Geopolitics",
+        "event_name": "Recession Fears Intensify",
+        "description": "Persistent worries about potential recessions in major economies weighed on market sentiment, leading to declines in risk-sensitive sectors.",
+        "impacted_sectors": ["Technology", "Consumer Discretionary", "Materials"],
+        "sources": [
+          {
+            "source_name": "Reuters",
+            "source_link": "https://www.reuters.com/markets/europe/global-markets-wrapup-1-pix-2022-09-01/"
+          }
+        ],
+        "timestamp_check": "2022-09-01"
+      }
+    ]
+  },
+  {
+    "date": "2021-06-02",
+    "events": [
+      {
+        "event_type": "Economic Data",
+        "event_name": "Mixed Economic Indicators",
+        "description": "Positive economic data was offset by growing concerns about inflation, leading to mixed stock price movements. The Dow managed to eke out gains while both the S&P 500 and the Nasdaq Composite ended in red.",
+        "impacted_sectors": ["Financials", "Consumer Discretionary", "Utilities"],
+        "sources": [
+          {
+            "source_name": "Nasdaq",
+            "source_link": "https://www.nasdaq.com/articles/stock-market-news-for-jun-2-2021-2021-06-02"
+          }
+        ],
+        "timestamp_check": "2021-06-02"
+      }
+    ]
+  },
+  {
+    "date": "2020-10-05",
+    "events": [
+      {
+        "event_type": "Economic Data",
+        "event_name": "Strong Job Growth",
+        "description": "The U.S. economy added 661,000 jobs in September, surpassing expectations. This robust employment data raised concerns about potential inflationary pressures, leading to a sell-off in interest-sensitive sectors.",
+        "impacted_sectors": ["Financials", "Real Estate", "Utilities"],
+        "sources": [
+          {
+            "source_name": "Reuters",
+            "source_link": "https://www.reuters.com/article/us-usa-economy-jobs-idUSKBN26A0B2"
+          }
+        ],
+        "timestamp_check": "2020-10-05"
+      },
+      {
+        "event_type": "Geopolitics",
+        "event_name": "U.S.-China Trade Tensions Escalate",
+        "description": "The U.S. imposed new tariffs on Chinese goods, prompting retaliatory measures from China. This escalation in trade tensions raised concerns about global economic growth, leading to declines in sectors with significant exposure to international trade.",
+        "impacted_sectors": ["Technology", "Consumer Discretionary", "Materials"],
+        "sources": [
+          {
+            "source_name": "Reuters",
+            "source_link": "https://www.reuters.com/article/us-usa-china-trade-idUSKBN26A0B2"
+          }
+        ],
+        "timestamp_check": "2020-10-05"
+      }
+    ]
+  },
+  {
+    "date": "2016-07-09",
+    "events": [
+      {
+        "event_type": "Economic Data",
+        "event_name": "Weak Economic Indicators",
+        "description": "U.S. economic data showed signs of weakness, with manufacturing and service sector activity slowing. This raised concerns about a potential economic slowdown, impacting sectors sensitive to economic cycles.",
+        "impacted_sectors": ["Financials", "Industrials", "Materials"],
+        "sources": [
+          {
+            "source_name": "Reuters",
+            "source_link": "https://www.reuters.com/article/us-usa-economy-idUSKCN0VB0Q1"
+          }
+        ],
+        "timestamp_check": "2016-07-09"
+      }
+    ]
+  },
+  {
+    "date": "2017-07-12",
+    "events": [
+      {
+        "event_type": "Monetary Policy",
+        "event_name": "Dovish Federal Reserve Comments",
+        "description": "Federal Reserve Chair Janet Yellen's dovish comments regarding monetary policy led to a rally in equities, with the Dow Jones Industrial Average closing at a record high.",
+        "impacted_sectors": ["Financials", "Technology", "Consumer Discretionary"],
+        "sources": [
+          {
+            "source_name": "MarketWatch",
+            "source_link": "https://www.marketwatch.com/story/us-stock-futures-in-holding-pattern-as-traders-wait-for-yellen-2017-07-12"
+          }
+        ],
+        "timestamp_check": "2017-07-12"
+      }
+    ]
+  }
+]
