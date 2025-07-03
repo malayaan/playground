@@ -1,65 +1,12 @@
-Super question ! Voici les principaux indices iTraxx sectoriels (focus Europe) que tu peux rencontrer, utiles pour tes analyses crédit sectorielles :
+# Étape 1 : Agrégation des données
+grouped_data = catalogue.groupby([group_column, 'NB_GRP_VHC'])['MNT_PRX_VNT_TTC'].sum().reset_index()
+total_by_group = grouped_data.groupby(group_column)['MNT_PRX_VNT_TTC'].sum().reset_index()
+total_by_group.rename(columns={'MNT_PRX_VNT_TTC': 'Valeur Percée'}, inplace=True)
 
+# Ajouter la colonne "Group EAD" si sort_by == 'Groupe EAD'
+if sort_by == 'Groupe EAD':
+    total_by_group['Group EAD'] = catalogue.groupby(group_column)['Groupe EAD'].first().reset_index()['Groupe EAD']
 
----
-
-✅ iTraxx Europe – principaux indices sectoriels
-
-Ces indices regroupent des CDS single-name émis sur des sociétés du même secteur, en Europe.
-
-Indice	Secteur couvert	Remarques
-
-iTraxx Europe Autos	Constructeurs & équipementiers auto	Ex. VW, BMW, Continental, Faurecia…
-iTraxx Europe Energy	Pétrole, gaz, services énergie	TotalEnergies, BP, Shell, etc.
-iTraxx Europe Financials	Banques, assurances, services fin.	BNP, Deutsche Bank, AXA…
-iTraxx Europe Industrial	Industrie, chimie, biens d’équipement	Siemens, BASF, Schneider…
-iTraxx Europe Consumer	Conso discrétionnaire & staples	Nestlé, LVMH, Adidas, etc.
-iTraxx Europe Utilities	Électricité, gaz, eau	Enel, EDF, Iberdrola…
-iTraxx Europe Telecom	Télécoms fixes et mobiles	Orange, Vodafone, Deutsche Telekom…
-iTraxx Europe Technology	Tech, hardware, software, semi-conducteurs	SAP, Infineon, ASML…
-iTraxx Europe Healthcare	Pharma, biotech, équipements médicaux	Sanofi, Roche, Novartis…
-iTraxx Europe Media	Media, loisirs, jeux vidéo	Vivendi, RTL, etc.
-
-
-
----
-
-✅ Autres indices iTraxx « thématiques »
-
-Indice	Spécificité
-
-iTraxx Europe Crossover	High Yield (BBB- et en dessous)
-iTraxx Senior Financials	Senior debt des banques/assurances
-iTraxx Sub Financials	Subordinated debt des financiers
-iTraxx ESG Screened	Exclut certains secteurs (armes, charbon, etc.)
-
-
-
----
-
-✅ Notes importantes
-
-✅ Les indices sectoriels iTraxx :
-
-sont moins « officiels » que le iTraxx Main ou Crossover, mais sont construits par les desks pour benchmarker les spreads sectoriels.
-
-ne sont pas toujours publiés sous forme d’indices tradables : parfois, c’est juste une moyenne des spreads single-name.
-
-
-👉 Pour ton cas SG :
-
-L’indice iTraxx Europe Autos est particulièrement pertinent.
-
-Tu peux aussi t’inspirer de la répartition sectorielle de l’iTraxx Main pour construire tes propres agrégats sectoriels.
-
-
-
----
-
-Tu souhaites :
-
-la liste encore plus courte ?
-
-ou savoir où trouver ces indices (Bloomberg, Markit, etc.) ?
-
-
+# Fusionner les données agrégées avec le pourcentage
+grouped_data = grouped_data.merge(total_by_group, on=group_column)
+grouped_data['PERCENT'] = (grouped_data['MNT_PRX_VNT_TTC'] / grouped_data['Valeur Percée']) * 100
