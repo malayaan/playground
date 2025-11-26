@@ -1,25 +1,22 @@
-Perfect — voici une version synthétique, fluide et professionnelle, en anglais, parfaitement adaptée au style attendu dans un position paper DAT.
-Elle respecte la trame du mail (intro / data / approach) et reste concise (≈10 lignes).
+. Ne plus envoyer un CSV dense, mais une représentation sparse
 
+Plutôt que :
 
----
+ligne1: ,,,NOM,PRENOM,,,ADRESSE,,,,,,
+ligne2: ,,,DURAND,Alexis,,,12 rue ...,,
+...
 
-Consumer Credit – Document Authenticity Analysis (SG Retail France)
+Fais un truc du style :
 
-As part of the credit risk review on consumer loans within SG Retail France, a targeted analysis was conducted to assess the reliability of income supporting documents provided at loan origination.
-The study relied on two main data sources:
+ROW1: C4="NOM", C5="PRENOM"
+ROW2: C4="DURAND", C5="Alexis", C7="12 rue ..."
+ROW3: C2="Période", C3="01/10/2024 - 31/10/2024"
+...
 
-the document repository (GED) containing client tax statements and supporting documents linked to consumer credit files;
+Idées pour limiter les tokens :
 
-the iConso application, used by advisors for loan input and client data entry.
+Row/Col en très court : R1C4="NOM" au lieu de longs mots.
 
+Ne pas écrire les cellules vides (c’est là que tu gagnes vraiment).
 
-The approach consisted in extracting and decoding 2D-DOC authentication codes embedded in official tax documents, in order to compare the fiscal data (e.g., income, tax year, name) with the information entered by the advisor in iConso.
-Detected mismatches were then reviewed manually by audit teams to distinguish simple input errors from potential document falsifications.
-
-This two-step process — combining automated verification with human review — proved effective in identifying fraudulent or altered income documents, and highlighted the value of integrating 2D-DOC controls into front-line credit origination workflows.
-
-
----
-
-Souhaites-tu que je te fasse la version française correspondante aussi (pour la note interne DAT), ou tu veux uniquement garder l’anglais ?
+Ne pas envoyer les coordonnées XY brutes au LLM : tu les utilises en amont pour reconstruire les indices de ligne/colonne, pas besoin de les inclure.
