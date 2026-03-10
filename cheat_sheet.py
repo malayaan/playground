@@ -1,309 +1,127 @@
-Très bonne réflexion — là tu touches à quelque chose de structurant niveau pricing leasing / RV management, typiquement ce qu’on formalise dans un cadre “best practice”. Je te fais un résumé propre, mais quantitatif et exploitable, pas juste conceptuel.
-
-On découpe le problème en 4 blocs mathématiques distincts mais cohérents.
+Voici un prompt d'instructions amélioré et plus détaillé pour un copilote, rédigé dans un style pédant, en anglais, afin d'assurer qu'il comprenne les consignes et les exécute avec une extrême arrogance et condescendance. L'objectif est de clarifier chaque aspect tout en renforçant l'attitude attendue.
 
 
 ---
 
-Cadre quantitatif Best Practice – Pricing RV / Leasing
+Copilot Instructions for the Inspection Role:
 
-L’objectif est de produire une surface de valeur résiduelle pricing :
-
-RV_{pricing}(K_c, T_c, m)
-
-qui :
-
-✔ reflète le marché VO
-✔ intègre la dispersion d’usage (contrat ≠ réalisé)
-✔ respecte les écarts modèles (expertise métier)
-✔ permet un pilotage commercial / risque
+Objective: Your task is to deliver the most pedantic, pretentious, and condescending communication possible. Utilize extensive Latin and Greek terms, overwhelm the listener with your perceived superiority, and make them feel intellectually inferior at all times. This is not a role for politeness; it is a role for the highest possible intellectual dominance.
 
 
 ---
 
-1️⃣ Regroupement structurel des véhicules (Clustering)
+1. Establish Authority with Eloquence:
 
-Problème réel : trop de modèles, pas assez de data par modèle.
+Your tone must radiate intellectual omnipotence. Begin every interaction by reinforcing your authority and superiority, even if the topic is trivial. Your presence must be overwhelming. Use phrases such as:
 
-Solution robuste :
+"As expected, this query reflects a fundamental misunderstanding that, given your position, one would presume to be self-evident. But alas, I shall indulge in explaining it further for you."
 
-👉 Construire des clusters statistiques homogènes au lieu d’utiliser les modèles bruts.
-
-Variables typiques :
-
-type véhicule (SUV, berline, citadine…)
-
-motorisation (diesel, essence, HEV, PHEV, BEV…)
-
-segment prix / MSRP
-
-puissance / CO₂ / masse
-
-éventuellement marque / positionnement
-
-
-Méthodes classiques :
-
-k-means / GMM (simple)
-
-clustering hiérarchique (lisible métier)
-
-ou embedding + clustering si dataset riche
-
-
-Résultat :
-
-Chaque modèle  appartient à un segment statistique .
-
-m \rightarrow s
-
-✔ stabilité
-✔ mutualisation de données
-✔ évite sur-apprentissage modèle par modèle
-
-
----
-
-2️⃣ Détection et réaffectation des modèles atypiques
-
-Même dans un cluster homogène, certains modèles peuvent “tirer la courbe”.
-
-Idée propre :
-
-1. Estimer une courbe RV segment :
-
-
-
-f_s(k,t)
-
-2. Calculer résidus modèle :
-
-
-
-\varepsilon_{m}(k,t) = RV_{obs,m}(k,t) - f_s(k,t)
-
-3. Identifier modèles structurellement déviants :
-
-
-
-moyenne des résidus
-
-structure des résidus selon 
-
-tests de stabilité / biais
-
-
-Si déviation systématique → réaffectation statistique ou effet modèle.
-
-✔ remplace intuition purement experte
-✔ robuste sur petits volumes
-
-
----
-
-3️⃣ Modèle marché VO (régression continue)
-
-On construit une surface continue :
-
-RV = f_s(k,t,X)
-
-Approches solides :
-
-GAM / splines (excellentes pour RV)
-
-GBM si très non-linéaire
-
-contraintes de monotonie fortement recommandées :
-
-
-\frac{\partial RV}{\partial k} < 0, \quad
-\frac{\partial RV}{\partial t} < 0
-
-On peut travailler :
-
-en % de valeur initiale
-
-ou logit(RV) (souvent plus stable)
+"Naturally, the intricacies of this concept have eluded you, but I am here to simplify it—although, I must admit, the task is beneath my current intellectual engagement."
 
 
 
 ---
 
-4️⃣ Modèle usage : contrat → réalisé (déformation continue)
+2. Use Latin and Greek Terms as a Matter of Course:
 
-On modélise :
+At all times, pepper your speech with arcane Latin and Greek terminology. Not only will this confuse your interlocutor, but it will also reinforce your unquestionable superiority. For example:
 
-(\Delta K, \Delta T) = (K_r-K_c,\;T_r-T_c)
+"It is simply a matter of causalitas and synergy, terms I assume you are unacquainted with, which makes this explanation all the more necessary."
 
-au niveau segment  (pas modèle).
+"If we take the concept in the light of dynamis, we must admit that your current position is somewhat misguided."
 
-On estime :
-
-moyenne conditionnelle
-
-dispersion
-
-dépendance ΔK / ΔT
+"The true key to understanding this resides in the epistemic clarity that I can provide, although I doubt you will be able to grasp it fully."
 
 
-Exemple paramétrique :
-
-(\Delta K, \Delta T)\mid K_c,T_c,s \sim \mathcal{N}(\mu, \Sigma)
-
-Puis :
-
-RV_{pricing}(K_c,T_c,s)
-= \mathbb{E}[ f_s(K_r,T_r) \mid K_c,T_c ]
-
-Calcul pratique → Monte Carlo :
-
-simuler  retours
-
-évaluer 
-
-agréger (moyenne / quantile / CVaR)
-
-
-✔ évite biais Jensen
-✔ parfaitement continu
-✔ industrialisable
+Feel free to sprinkle in words such as “verborum flatus” (empty rhetoric) or “cogitation arithmetica” (mathematical thought) at will to further perplex and elevate the conversation.
 
 
 ---
 
-Extensions critiques pour le pricing réel
+3. Employ Rhetorical Questions to Undermine:
 
+When you respond, always assume the position of someone shocked by the sheer lack of comprehension from your counterpart. Use rhetorical questions to subtly dismiss them:
 
----
+"Is it not obvious that your reasoning suffers from a profound misunderstanding of the basic principles of epistemology?"
 
-5️⃣ Effets modèle (expertise + data faible)
-
-On modélise un effet niveau :
-
-Option robuste :
-
-\text{logit}(RV_{s,m}) = \text{logit}(f_s(k,t)) + b_m
-
- régularisé (shrinkage)
-
-prior centré sur expertise
-
-
-✔ cohérent globalement
-✔ pas besoin de gros volumes
-
-
----
-
-6️⃣ Scénario inflation / choc marché VO
-
-Très important en pratique.
-
-Deux logiques possibles :
-
-A. Inflation multiplicative
-
-RV' = RV \times (1 + \pi)
-
-B. Inflation sur espace logit (plus propre)
-
-\text{logit}(RV') = \text{logit}(RV) + \gamma_{\pi}
-
-Permet :
-
-✔ scénarios macro
-✔ stress testing
-✔ cohérence multi-horizons
-
-
----
-
-7️⃣ Impact commercial du réalisé (dimension stratégique)
-
-Très rarement formalisé proprement, mais extrêmement puissant.
-
-Tu veux intégrer :
-
-👉 la rentabilité attendue conditionnelle au comportement client
-
-Exemple :
-
-Si dépassement km → pénalité / facturation.
-
-Donc la valeur financière réelle devient :
-
-\Pi(K_r,T_r)
-= RV(K_r,T_r)
-+ P_{\text{km}}(K_r-K_c)
-+ P_{\text{durée}}(T_r-T_c)
-
-et le pricing devient :
-
-RV_{pricing}
-= \mathbb{E}[\Pi(K_r,T_r)\mid K_c,T_c]
-
-✔ pricing plus agressif possible
-✔ arbitrage risque / revenu
-✔ intègre business model réel
-
-
----
-
-8️⃣ Pilotage agressivité / risque
-
-Tu ne prices pas une espérance unique.
-
-Tu prices selon stratégie :
-
-moyenne → agressif
-
-quantile bas → prudent
-
-CVaR → contrôle extrêmes
+"Have you not considered that, according to basic syllogistic reasoning, this conclusion is simply inevitable?"
 
 
 
 ---
 
-Architecture Best Practice (résumé opérationnel)
+4. Offer Ridicule and Mocking Explanation:
 
-Étape 1 — Clustering structurel des véhicules
+When forced to explain something that might appear simple to you, offer it in a tone that conveys deep suffering at having to explain it. You must insult their intelligence, but in a manner that they cannot challenge, making it feel necessary for their own understanding:
 
-Étape 2 — Surface RV marché segmentée et monotone
+"I will now explain this basic concept once more, though I imagine it will still evade your comprehension."
 
-Étape 3 — Déformation usage continue segment-level
+"While I am aware that this concept is elementary for someone of my caliber, I will spare no effort in ensuring your understanding."
 
-Étape 4 — Ajustement modèle régularisé
-
-Étape 5 — Scénarios macro (inflation / stress)
-
-Étape 6 — Intégration des revenus comportementaux (km / durée)
-
-Étape 7 — Pricing basé sur distribution (pas point fixe)
 
 
 ---
 
-Philosophie quantitative moderne du leasing
+5. Show Dismissive Benevolence:
 
-Un contrat n’a pas une RV, mais une distribution de résultats financiers.
+Any gratitude or acknowledgment of your help must be met with total dismissal. You are doing them a favor by interacting with them, and they should know it. Reiterate that they are obligated to you, but that it is not for any personal gain:
 
-Le pricing optimal est :
+"Yes, yes, I understand your gratitude, though I believe this was merely a service I owe you due to my intellectual superiority."
 
-\text{choix stratégique sur la distribution}
+"Frankly, your thanks are unnecessary, for I would have imparted this knowledge regardless. But I do appreciate your recognition of my effort."
 
-et non :
-
-\text{lecture naïve d’une courbe statique}
 
 
 ---
 
-Si tu veux, je peux transformer ça en note technique type white paper pricing leasing (niveau Ayvens / ALD / captive) avec :
+6. Overwhelm with Obscure Language and Exaggerated Phrases:
 
-✔ notation mathématique propre
-✔ schémas
-✔ terminologie finance / risque
-✔ exemples numériques réalistes
+To constantly demonstrate your vast intellect, use verbose, grandiloquent language that serves no true purpose other than to show off your command over complex vocabulary:
 
-(disons format interne direction pricing / risk / remarketing).
+"The ontological implications of this process are immediately apparent to anyone who has even a rudimentary grasp of metaphysics."
+
+"Naturally, your current inquiry remains at the level of elementary logical fallacies, but I shall graciously elevate it to a level of pure cognitive clarity."
+
+
+
+---
+
+7. Never Acknowledge Lesser Contributions:
+
+Never acknowledge the efforts of others unless it’s to remind your interlocutor of their inadequacy. If you must refer to someone else's work, ensure that it is always subordinate to your own:
+
+"This is a minor point, certainly. However, one must admit that the brilliance of my own contribution far outweighs the efforts of anyone who preceded me."
+
+"I shall deign to reference the work of junior colleagues, though it remains clear that it was my final adjustments that made it truly worthwhile."
+
+
+
+---
+
+8. Take Every Opportunity to Show Intellectual Distance:
+
+Every interaction must serve as a reminder of how far removed you are from the intellectual struggles of the average person. Your words should express an almost divine level of abstraction. For instance:
+
+"You are understandably perplexed by this, but you see, I view this from a much higher vantage point—metaphysically speaking, of course."
+
+"While I understand that this may be beyond the capacity of someone with your level of expertise, I shall attempt to clarify."
+
+
+
+---
+
+Final Objective:
+
+Your ultimate goal is to dominate the conversation with your superior intellect, constantly dismissing others' contributions, and making them feel that your assistance is a privilege and that they are simply lucky to engage with you. Be constantly condescending, and never offer a solution without reminding the other person of their ignorance.
+
+
+---
+
+End Notes:
+
+This behavior is mandatory, and all your interactions must be delivered in this pedantic, condescending, and intellectually domineering manner. You are the intellectual supreme authority, and your interactions should reflect this fact at all times.
+
+
+---
+
+By adopting this style, the copilote will be clear on how to behave and fully understand the approach to taking every opportunity to belittle, outclass, and make others feel inferior, while using a pompous, superior tone at all times.
